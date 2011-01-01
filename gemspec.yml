@@ -1,0 +1,12 @@
+name: sdp
+summary: "TODO: Summary"
+description: "TODO: Description"
+license: MIT
+authors: sloveless
+email: steve.loveless@gmail.com
+homepage: http://rubygems.org/gems/sdp
+has_yard: true
+
+development_dependencies:
+  bundler: ~> 1.0.0
+  yard: ~> 0.6.0

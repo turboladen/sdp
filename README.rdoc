@@ -1,0 +1,27 @@
+= sdp
+
+* {Homepage}[http://rubygems.org/gems/sdp]
+* {Documentation}[http://rubydoc.info/gems/sdp]
+* {Email}[steve.loveless at gmail.com]
+
+== Description
+
+TODO: Description
+
+== Features
+
+== Examples
+
+  require 'sdp'
+
+== Requirements
+
+== Install
+
+  $ gem install sdp
+
+== Copyright
+
+Copyright (c) 2011 sloveless
+
+See LICENSE.txt for details.
