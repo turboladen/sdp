@@ -8,3 +8,8 @@ Feature: Programmatically create an SDP file
     Given I know what the SDP file should look like
     When I build the Ruby object with the appropriate fields
     Then the resulting file should look like the intended description
+
+  Scenario: Create a basic SDP object
+    Given I create an SDP object with no parameters
+    When I convert it to a String
+    Then it should look like what's in the file "basic_sdp.txt"

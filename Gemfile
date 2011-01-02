@@ -2,6 +2,7 @@ source :rubygems
 
 gemspec
 gem 'net-ntp', :require => 'net/ntp'
+gem 'hashie'
 
 group :development do
   gem 'rake',     '~> 0.8.7'
@@ -10,4 +11,5 @@ group :development do
   gem 'ore-tasks', '~> 0.3.0'
   gem 'rspec', '~> 2.3.0'
   gem 'yard', '~> 0.6.0'
+  gem 'infinity_test'
 end
