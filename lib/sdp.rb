@@ -3,10 +3,10 @@ require 'net/ntp'
 require 'sdp/version'
 require 'sdp/types'
 require 'sdp/description_field'
-#require 'sdp/parser'
+require 'sdp/parser'
 
 class SDP < Hash
-  #include SDP::Parser
+  include SDP::Parser
   include SDP::Types
 
   SDP_VERSION = 0
