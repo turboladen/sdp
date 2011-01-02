@@ -1,14 +1,13 @@
-require 'sdp'
+require 'sdp/description'
 
 Given /^I know what the SDP file should look like$/ do
-  pending
   @example_sdp_file = File.open(File.dirname(__FILE__) + "/../support/sdp_file.txt", 'r')
 end
 
 When /^I build the Ruby object with the appropriate fields$/ do
-  pending
-  @sdp = SDP.new
-  @sdp.add_field :version => 0
+  @sdp = SDP::Description.new
+  @sdp[:version] = 0
+  @sdp[:origin][:username] = "jdoe"
 end
 
 Then /^the resulting file should look like the intended description$/ do
@@ -16,7 +15,7 @@ Then /^the resulting file should look like the intended description$/ do
 end
 
 Given /^I create an SDP object with no parameters$/ do
-  @sdp = SDP.new
+  @sdp = SDP::Description.new
 end
 
 When /^I convert it to a String$/ do
