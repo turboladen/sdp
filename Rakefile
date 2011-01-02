@@ -26,7 +26,10 @@ require 'ore/tasks'
 Ore::Tasks.new
 
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.ruby_opts = "-w"
+  t.rspec_opts = ['--format', 'documentation', '--color']
+end
 task :default => :spec
 
 require 'yard'
