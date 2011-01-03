@@ -6,6 +6,10 @@ class SDP::DescriptionFields
   class OriginField < SDP::DescriptionField
 
     # TODO: The origin <username> MUST NOT contain spaces.
+    # TODO: Its
+    #      usage is up to the creating tool, so long as <sess-version> is
+    #      increased when a modification is made to the session data.  Again,
+    #      it is RECOMMENDED that an NTP format timestamp is used.
     def initialize value=nil
       @sdp_type = 'o'
       @ruby_type = :origin
