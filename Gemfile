@@ -2,7 +2,6 @@ source :rubygems
 
 gemspec
 gem 'net-ntp', :require => 'net/ntp'
-gem 'hashie'
 
 group :development do
   gem 'rake',     '~> 0.8.7'
