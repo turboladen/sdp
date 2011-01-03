@@ -29,7 +29,7 @@ class SDP::DescriptionField
   # line that would be found in a real SDP description.  This String
   # contains the required \r\n (CRLF or 0x0d0a).
   # 
-  # @return [String] A String in the form: "v=0\r\n"
+  # @return [String] A String in the form: "v=0\r\n".
   def to_sdp_s
     if @value.class == String || @value.class == Fixnum
       return "#{@sdp_type}=#{@value.to_s}\r\n"
