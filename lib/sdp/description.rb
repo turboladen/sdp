@@ -64,18 +64,6 @@ class SDP
       field
     end
 
-    def field_exists?(field_type)    
-      #puts "field type: #{field_type}"
-      #puts self[field_type.to_sym] if field_type == :attributes
-      begin
-        self[field_type].value
-      rescue NoMethodError
-        return false
-      end
-      
-      true
-    end
-
     # Turns the current SDP::Description object into the SDP description,
     # ready to be used.
     #
