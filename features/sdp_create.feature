@@ -12,4 +12,5 @@ Feature: Programmatically create an SDP file
   Scenario: Create a basic SDP object
     Given I create an SDP object with no parameters
     When I convert it to a String
-    Then it should look like what's in the file "basic_sdp.txt"
+    Then it should have :version set to 0
+    And it should have all :origin fields set

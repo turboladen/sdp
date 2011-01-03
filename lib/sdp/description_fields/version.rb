@@ -1,10 +1,12 @@
+require 'sdp'
+
 class SDP::DescriptionFields
   class VersionField < SDP::DescriptionField
-    def initialize value
+    def initialize value=nil
       @sdp_type = 'v'
       @ruby_type = :version
       @required = true
-      @value = value.to_i
+      @value = SDP::SDP_VERSION
     end
   end
 end

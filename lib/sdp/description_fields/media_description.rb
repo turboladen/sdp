@@ -1,14 +1,20 @@
 class SDP::DescriptionFields
   class MediaDescriptionField < SDP::DescriptionField
-    def initialize value
+    def initialize value=nil
       @sdp_type = 'm'
       @ruby_type = :media_description
       @required = true
-      @value = Hash.new(:media => "", :port => "", :protocol => "",
-        :format => "")
+      @value = {
+        :media => "",
+        :port => "",
+        :protocol => "",
+        :format => ""
+      }
 
-      super
-      map_values
+      unless value.nil?
+        super
+        map_values
+      end
     end
 
     def map_values

@@ -2,16 +2,20 @@ require 'net/ntp'
 
 class SDP::DescriptionFields
   class TimingField < SDP::DescriptionField
-    def initialize value
+    def initialize value=nil
       @sdp_type = 't'
       @ruby_type = :timing
       @required = true
       ntp = Net::NTP.get
-      @value = Hash.new(:start_time=>ntp.receive_timestamp.to_i,
-        :stop_time => ntp.receive_timestamp.to_i)
+      @value = {
+        :start_time => ntp.receive_timestamp.to_i,
+        :stop_time => ntp.receive_timestamp.to_i
+      }
 
-      super
-      map_values
+      unless value.nil?
+        super
+        map_values
+      end
     end
 
     def map_values

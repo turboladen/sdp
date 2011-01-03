@@ -10,11 +10,29 @@ class SDP
     #      increased when a modification is made to the session data.  Again,
     #      it is RECOMMENDED that an NTP format timestamp is used.
     def initialize fields={}
-      self[:version]            = SDP_VERSION
-      self[:origin]             = Etc.getlogin
-      self[:session_name]       = " "
-      self[:timing]             = "0 0"
-      self[:media_description]  = ""
+      register_field :version
+      register_field :origin
+      register_field :session_name
+      register_field :timing
+      register_field :media_description
+    end
+
+    def register_field(field_type)
+      retried = false
+
+      begin
+        const_name = field_type.to_s.capitalize.gsub(/_(.)/) { $1.upcase }
+        field = SDP::DescriptionFields.const_get("#{const_name}Field").new
+        store(field.ruby_type, field)
+      rescue NameError
+        if retried then
+          raise
+        else
+          retried = true
+          require "sdp/description_fields/#{field_type.to_s}"
+          retry
+        end
+      end
     end
 
     def []=(field_type, field_value)
