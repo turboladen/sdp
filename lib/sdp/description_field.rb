@@ -1,3 +1,4 @@
+require 'sdp'
 
 # Describes an SDP description field.  Field types are defined by
 # the RFC 4566 document and can only be from that list.  The class
@@ -10,7 +11,6 @@ class SDP::DescriptionField
   attr_reader :required
   attr_accessor :value
 
-  # @param [Symbol,String] type The SDP field type to create.
   # @param [Fixnum,String,Hash] value The SDP value(s) to create.
   def initialize(values)
     @parsed_values = parse_values(values)
