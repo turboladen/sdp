@@ -11,7 +11,7 @@ describe SDP::DescriptionFields::TimingField do
       @timing_field.sdp_type.should == 't'
     end
 
-    it "sets :ruby_type set to :uri" do
+    it "sets :ruby_type set to :timing" do
       @timing_field.ruby_type.should == :timing
     end
 
