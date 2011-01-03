@@ -17,6 +17,7 @@ class SDP
       register_field :uri
       register_field :email_address
       register_field :phone_number
+      register_field :connection_data
       register_field :timing
       register_field :media_description
     end
@@ -65,6 +66,7 @@ class SDP
       sdp_string << add_to_string(:uri)
       sdp_string << add_to_string(:email_address)
       sdp_string << add_to_string(:phone_number)
+      sdp_string << add_to_string(:connection_data)
       sdp_string << add_to_string(:timing)
       sdp_string << add_to_string(:media_description)
     end

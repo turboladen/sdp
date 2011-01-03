@@ -17,6 +17,9 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @sdp[:session_information] = "A Seminar on the session description protocol"
   @sdp[:uri] = "http://www.example.com/seminars/sdp.pdf"
   @sdp[:email_address] = "j.doe@example.com (Jane Doe)"
+  @sdp[:connection_data].value[:net_type] = "IN"
+  @sdp[:connection_data].value[:address_type] = "IP4"
+  @sdp[:connection_data].value[:connection_address] = "224.2.17.12/127"
 end
 
 Then /^the resulting file should look like the intended description$/ do
