@@ -20,6 +20,7 @@ class SDP
       register_field :connection_data
       register_field :bandwidth
       register_field :timing
+      register_field :repeat_times
       register_field :media_description
     end
 
@@ -70,6 +71,7 @@ class SDP
       sdp_string << add_to_string(:connection_data)
       sdp_string << add_to_string(:bandwidth)
       sdp_string << add_to_string(:timing)
+      sdp_string << add_to_string(:repeat_times)
       sdp_string << add_to_string(:media_description)
     end
 
