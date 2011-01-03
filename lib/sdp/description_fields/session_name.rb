@@ -1,3 +1,5 @@
+require 'sdp/description_field'
+
 class SDP::DescriptionFields
   class SessionNameField < SDP::DescriptionField
     def initialize value=nil

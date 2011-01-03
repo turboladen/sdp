@@ -1,8 +1,8 @@
 class SDP::DescriptionFields
-  class AttributesField < SDP::DescriptionField
+  class AttributeField < SDP::DescriptionField
     def initialize value=nil
       @sdp_type = 'a'
-      @ruby_type = :attributes
+      @ruby_type = :attribute
       @required = false
       @value = {
         :attribute => "",

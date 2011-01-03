@@ -1,4 +1,5 @@
 require 'uri'
+require 'sdp/description_field'
 
 class SDP::DescriptionFields
   class UriField < SDP::DescriptionField

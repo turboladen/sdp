@@ -19,7 +19,7 @@ class SDP
         :repeat_times => /^r=(.*)/,       # Multi-type
         :time_zones => /^z=(.*)/,         # Multi-type
         :encryption_keys => /^k=(.*)/,    # Multi-type
-        :attributes => /^a=(.*)/
+        :attribute => /^a=(.*)/
       }
 
       def parse_sdp sdp_text

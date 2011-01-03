@@ -1,3 +1,5 @@
+require 'sdp/description_field'
+
 class SDP::DescriptionFields
 
   # TODO: Fix to allow a list of adjustment time/offset combos.

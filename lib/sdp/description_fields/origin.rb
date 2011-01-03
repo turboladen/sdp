@@ -1,5 +1,6 @@
 require 'etc'
 require 'net/ntp'
+require 'sdp/description_field'
 
 class SDP::DescriptionFields
   class OriginField < SDP::DescriptionField

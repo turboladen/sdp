@@ -1,3 +1,5 @@
+require 'sdp/description_field'
+
 class SDP::DescriptionFields
   class PhoneNumberField < SDP::DescriptionField
     def initialize value=nil

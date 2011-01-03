@@ -1,4 +1,5 @@
 require 'net/ntp'
+require 'sdp/description_field'
 
 class SDP::DescriptionFields
   class TimingField < SDP::DescriptionField

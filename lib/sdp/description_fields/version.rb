@@ -1,4 +1,5 @@
 require 'sdp'
+require 'sdp/description_field'
 
 class SDP::DescriptionFields
   class VersionField < SDP::DescriptionField

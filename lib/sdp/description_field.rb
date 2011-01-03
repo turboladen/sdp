@@ -50,7 +50,7 @@ class SDP::DescriptionField
   # not.
   def valid?
     if @value.class == String || @value.class == Fixnum
-      if @value.nil? || @value.empty?
+      if @value.nil? || @value.to_s.empty?
         return false
       end
     else
