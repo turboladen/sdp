@@ -38,32 +38,6 @@ class SDP
       end
     end
 
-    # Takes a Symbol that represents an SDP field type, then creates the
-    # corresponding [type]Field object and returns it.  Field classes are
-    # defined in the ./description_fields/ directory.
-    #
-    # @param [Symbol] field_type
-    # @return [] Returns the SDP::DescriptionField child class described
-    # by the value passed in.
-    def create_field_object(field_type)
-      retried = false
-
-      begin
-        const_name = field_type.to_s.capitalize.gsub(/_(.)/) { $1.upcase }
-        field = SDP::DescriptionFields.const_get("#{const_name}Field").new
-      rescue NameError
-        if retried then
-          raise
-        else
-          retried = true
-          require "sdp/description_fields/#{field_type.to_s}"
-          retry
-        end
-      end
-
-      field
-    end
-
     # Turns the current SDP::Description object into the SDP description,
     # ready to be used.
     #
@@ -94,6 +68,41 @@ class SDP
       sdp_string
     end
 
+    #----------------------------------------------------------------------
+    # PRIVATES!
+    private
+
+    # Takes a Symbol that represents an SDP field type, then creates the
+    # corresponding [type]Field object and returns it.  Field classes are
+    # defined in the ./description_fields/ directory.
+    #
+    # @param [Symbol] field_type
+    # @return [] Returns the SDP::DescriptionField child class described
+    # by the value passed in.
+    def create_field_object(field_type)
+      retried = false
+
+      begin
+        const_name = field_type.to_s.capitalize.gsub(/_(.)/) { $1.upcase }
+        field = SDP::DescriptionFields.const_get("#{const_name}Field").new
+      rescue NameError
+        if retried then
+          raise
+        else
+          retried = true
+          require "sdp/description_fields/#{field_type.to_s}"
+          retry
+        end
+      end
+
+      field
+    end
+
+    # Converts a DescriptionField child to a String that is used in an SDP
+    # description.
+    # 
+    # @param [Symbol] field_type
+    # @return [String] The line used in an SDP description.
     def add_to_string field_type
       field = find_field(field_type)
 
