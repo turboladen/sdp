@@ -21,6 +21,9 @@ class SDP
       register_field :bandwidth
       register_field :timing
       register_field :repeat_times
+      register_field :time_zones
+      register_field :encryption_keys
+      register_field :attributes
       register_field :media_description
     end
 
@@ -72,6 +75,9 @@ class SDP
       sdp_string << add_to_string(:bandwidth)
       sdp_string << add_to_string(:timing)
       sdp_string << add_to_string(:repeat_times)
+      sdp_string << add_to_string(:time_zones)
+      sdp_string << add_to_string(:encryption_keys)
+      sdp_string << add_to_string(:attributes)
       sdp_string << add_to_string(:media_description)
     end
 

@@ -5,7 +5,7 @@ class SDP::DescriptionFields
       @ruby_type = :encryption_keys
       @required = false
       @value = {
-        :method => "",    # CT or AS
+        :method => "",
         :encryption_key => nil
       }
 

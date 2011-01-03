@@ -22,6 +22,9 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @sdp[:connection_data].value[:connection_address] = "224.2.17.12/127"
   @sdp[:timing].value[:start_time] = 2873397496
   @sdp[:timing].value[:stop_time] = 2873404696
+  @sdp[:attributes].value[:attribute] = "recvonly"
+  #@sdp[:attributes].value[:attribute] = "rtpmap"
+  #@sdp[:attributes].value[:value] = "99 h263-1998/90000"
 end
 
 Then /^the resulting file should look like the intended description$/ do
