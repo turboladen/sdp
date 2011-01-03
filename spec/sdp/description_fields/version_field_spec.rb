@@ -22,6 +22,10 @@ describe SDP::DescriptionFields::VersionField do
     it "sets :value set to SDP::SDP_VERSION" do
       @version_field.value.should == SDP::SDP_VERSION
     end
+
+    it "is valid" do
+      @version_field.valid?.should be_true
+    end
   end
 
   context "working with the object" do
