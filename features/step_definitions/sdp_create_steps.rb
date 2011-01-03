@@ -5,7 +5,6 @@ Given /^I know what the SDP file should look like$/ do
 end
 
 When /^I build the Ruby object with the appropriate fields$/ do
-  pending
   @sdp = SDP::Description.new
   @sdp[:version] = 0
   @sdp[:origin][:username] = "jdoe"
@@ -21,7 +20,6 @@ end
 
 When /^I convert it to a String$/ do
   @sdp_string = @sdp.to_s
-  puts @sdp_string
 end
 
 Then /^it should have :version set to (\d+)$/ do |value|
