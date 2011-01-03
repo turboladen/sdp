@@ -11,12 +11,6 @@ class SDP
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
   class Description < Array
-
-    # TODO: The origin <username> MUST NOT contain spaces.
-    # TODO: Its
-    #      usage is up to the creating tool, so long as <sess-version> is
-    #      increased when a modification is made to the session data.  Again,
-    #      it is RECOMMENDED that an NTP format timestamp is used.
     def initialize
       @logger = Logger.new STDOUT
       @logger.level = Logger::WARN

@@ -4,6 +4,8 @@ require 'sdp/description_field'
 
 class SDP::DescriptionFields
   class OriginField < SDP::DescriptionField
+
+    # TODO: The origin <username> MUST NOT contain spaces.
     def initialize value=nil
       @sdp_type = 'o'
       @ruby_type = :origin
