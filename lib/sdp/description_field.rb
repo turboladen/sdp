@@ -30,6 +30,8 @@ class SDP::DescriptionField
   # contains the required \r\n (CRLF or 0x0d0a).
   # 
   # @return [String] A String in the form: "v=0\r\n".
+  # @todo For Ruby 1.8 this can return a String with values that are out
+  # of order, due to lack of Hash ordering.  This needs to be fixed.
   def to_sdp_s
     if @value.class == String || @value.class == Fixnum
       return "#{@sdp_type}=#{@value.to_s}\r\n"
