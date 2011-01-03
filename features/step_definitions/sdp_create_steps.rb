@@ -7,11 +7,20 @@ end
 When /^I build the Ruby object with the appropriate fields$/ do
   @sdp = SDP::Description.new
   @sdp[:version] = 0
-  @sdp[:origin][:username] = "jdoe"
+  @sdp[:origin].value[:username] = "jdoe"
+  @sdp[:origin].value[:session_id] = 2890844526
+  @sdp[:origin].value[:session_version] = 2890842807
+  @sdp[:origin].value[:net_type] = "IN"
+  @sdp[:origin].value[:address_type] = :IP4
+  @sdp[:origin].value[:unicast_address] = "10.47.16.5"
+  @sdp[:session_name] = "SDP Seminar"
+  @sdp[:session_information] = "A Seminar on the session description protocol"
+  @sdp[:uri] = "http://www.example.com/seminars/sdp.pdf"
+  @sdp[:email_address] = "j.doe@example.com (Jane Doe)"
 end
 
 Then /^the resulting file should look like the intended description$/ do
-  pending # express the regexp above with the code you wish you had
+  puts @sdp.to_s
 end
 
 Given /^I create an SDP object with no parameters$/ do

@@ -13,6 +13,10 @@ class SDP
       register_field :version
       register_field :origin
       register_field :session_name
+      register_field :session_information
+      register_field :uri
+      register_field :email_address
+      register_field :phone_number
       register_field :timing
       register_field :media_description
     end
@@ -55,10 +59,18 @@ class SDP
 
     def to_s
       sdp_string = self[:version].to_sdp_s
-      sdp_string << self[:origin].to_sdp_s
-      sdp_string << self[:session_name].to_sdp_s
-      sdp_string << self[:timing].to_sdp_s
-      sdp_string << self[:media_description].to_sdp_s
+      sdp_string << add_to_string(:origin)
+      sdp_string << add_to_string(:session_name)
+      sdp_string << add_to_string(:session_information)
+      sdp_string << add_to_string(:uri)
+      sdp_string << add_to_string(:email_address)
+      sdp_string << add_to_string(:phone_number)
+      sdp_string << add_to_string(:timing)
+      sdp_string << add_to_string(:media_description)
+    end
+
+    def add_to_string field_type
+      self[field_type].value.empty? ? "" : self[field_type].to_sdp_s
     end
   end
 end
