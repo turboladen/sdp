@@ -42,4 +42,25 @@ class SDP::DescriptionField
       return "#{@sdp_type}=#{values.chop!}\r\n"
     end
   end
+
+  # Deterines is the field is valid or not based on whether or not its
+  # fields have been filled out.
+  # 
+  # @return [Boolean] true if field values have been populated; false if
+  # not.
+  def valid?
+    if @value.class == String || @value.class == Fixnum
+      if @value.nil? || @value.empty?
+        return false
+      end
+    else
+      @value.each_pair do |k,v|
+        if v.nil? || v.to_s.empty?
+          return false
+        end
+      end
+    end
+
+    true
+  end
 end

@@ -74,7 +74,7 @@ class SDP
     end
 
     def add_to_string field_type
-      self[field_type].value.empty? ? "" : self[field_type].to_sdp_s
+      self[field_type].valid? ? self[field_type].to_sdp_s : ""
     end
   end
 end

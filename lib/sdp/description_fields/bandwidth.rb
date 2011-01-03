@@ -6,7 +6,7 @@ class SDP::DescriptionFields
       @required = false
       @value = {
         :bandwidth_type => "",    # CT or AS
-        :bandwidth => 0
+        :bandwidth => nil
       }
 
       unless value.nil?
@@ -28,7 +28,9 @@ class SDP::DescriptionFields
     # 
     # @return [String] A String in the form: "b=0\r\n".
     def to_sdp_s
-      values = "#{@value[:bandwidth_type]}:#{@value[:bandwidth]}"
+      unless @value[:bandwidth_type].empty? || @value[:bandwidth].nil?
+        values = "#{@value[:bandwidth_type]}:#{@value[:bandwidth]}"
+      end
 
       return "#{@sdp_type}=#{values}\r\n"
     end
