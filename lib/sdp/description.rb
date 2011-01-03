@@ -90,7 +90,7 @@ class SDP
           raise
         else
           retried = true
-          require "sdp/description_fields/#{field_type.to_s}"
+          require "sdp/description_fields/#{field_type.to_s}_field"
           retry
         end
       end
