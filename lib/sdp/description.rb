@@ -88,7 +88,6 @@ class SDP
 =end
       sdp_string = ""
       self.each do |field|
-        #sdp_string << add_to_string(field.ruby_type)
         sdp_string << field.to_sdp_s
       end
 
