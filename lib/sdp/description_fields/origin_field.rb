@@ -29,17 +29,6 @@ class SDP::DescriptionFields
       end
     end
 
-    # Redefines value assingment to allow for changing parameters separately.
-    #
-    # @param [Hash] new_value Key must be an existing @value key or pair.
-    def value=(new_value)
-      @value.each_pair do |k,v|
-        if new_value.has_key?(k)
-          @value[k] = new_value[k]
-        end
-      end
-    end
-
     # If a values string was passed in, the parent class broken those up
     # to an Array.  This maps those values to the value Hash.
     def map_values

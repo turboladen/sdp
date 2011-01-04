@@ -16,6 +16,32 @@ class SDP::DescriptionField
     @parsed_values = parse_values(values)
   end
 
+  # Redefines value assingment to allow for changing parameters separately.
+  #
+  # @param [Hash] new_value Key must be an existing @value key or pair.
+  def value=(new_value)
+    if new_value.class == Hash
+      begin
+        new_value.each_key do |key|
+          unless @value.has_key?(key)
+            raise SDP::RuntimeError, "Invalid key: #{key} for class #{self.class}"
+          end
+        end
+      rescue SDP::RuntimeError => ex
+        puts ex.message
+        raise
+      end
+
+      @value.each_pair do |k,v|
+        if new_value.has_key?(k)
+          @value[k] = new_value[k]
+        end
+      end
+    else
+      @value = new_value
+    end
+  end
+
   # Splits a single-space-delimited String in to separate values to be
   # used by the inherited class.
   #

@@ -6,3 +6,5 @@ class SDP
 
   SDP_VERSION = 0
 end
+
+class SDP::RuntimeError < StandardError; end;
