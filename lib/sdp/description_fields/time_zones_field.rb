@@ -24,12 +24,10 @@ class SDP::DescriptionFields
     #
     # @param [Hash] new_value Key must be an existing @value key or pair.
     def value=(new_value)
-      if new_value[:adjustment_time] && new_value[:offset]
-        @value = new_value
-      elsif new_value[:adjustment_time]
-        @value[:adjustment_time] = new_value[:adjustment_time]
-      elsif new_value[:offset]
-        @value[:offset] = new_value[:offset]
+      @value.each_pair do |k,v|
+        if new_value.has_key?(k)
+          @value[k] = new_value[k]
+        end
       end
     end
 
