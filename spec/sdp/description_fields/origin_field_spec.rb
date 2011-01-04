@@ -49,45 +49,33 @@ describe SDP::DescriptionFields::OriginField do
   end
 
   context "working with the object" do
-    def validate_settings(new_values)
-      before_values = @origin_field.value
-      @origin_field.value = new_values
-      @origin_field.value.each_key do |key|
-        if new_values.has_key?(key)
-          @origin_field.value[key].should == new_values[key]
-        else
-          @origin_field.value[key].should == before_values[key]
-        end
-      end
-    end
-
     before :each do
       @origin_field = SDP::DescriptionFields::OriginField.new
     end
 
     context "values" do
       it "can accept a new value of :username => me" do
-        validate_settings :username => "me"
+        validate_settings @origin_field, :username => "me"
       end
 
       it "can accept a new value of :session_id => 1" do
-        validate_settings :session_id => 1
+        validate_settings @origin_field, :session_id => 1
       end
 
       it "can accept a new value of :session_version => 2" do
-        validate_settings :session_version => 2
+        validate_settings @origin_field, :session_version => 2
       end
 
       it "can accept a new value of :net_type => :BO" do
-        validate_settings :net_type => :BO
+        validate_settings @origin_field, :net_type => :BO
       end
 
       it "can accept a new value of :address_type => :IP6" do
-        validate_settings :address_type => :IP6
+        validate_settings @origin_field, :address_type => :IP6
       end
 
       it "can accept a new value of :unicast_address => '1.2.3.4'" do
-        validate_settings :unicast_address => '1.2.3.4'
+        validate_settings @origin_field, :unicast_address => '1.2.3.4'
       end
 
       it "can accept new value of 'me', 1, 2, :BO, :IP6, '1.2.3.4'" do
@@ -105,7 +93,7 @@ describe SDP::DescriptionFields::OriginField do
         new_values = { :username => 'bobo',
           :session_version => 23,
           :address_type => :IP98 }
-        validate_settings new_values
+        validate_settings @origin_field, new_values
       end
     end
 

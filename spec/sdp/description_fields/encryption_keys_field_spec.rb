@@ -33,29 +33,17 @@ describe SDP::DescriptionFields::EncryptionKeysField do
   end
 
   context "working with the object" do
-    def validate_settings(new_values)
-      before_values = @encryption_keys_field.value
-      @encryption_keys_field.value = new_values
-      @encryption_keys_field.value.each_key do |key|
-        if new_values.has_key?(key)
-          @encryption_keys_field.value[key].should == new_values[key]
-        else
-          @encryption_keys_field.value[key].should == before_values[key]
-        end
-      end
-    end
-
     before :each do
       @encryption_keys_field = SDP::DescriptionFields::EncryptionKeysField.new
     end
 
     context "values" do
       it "can accept a new value of :method => 'base64'" do
-        validate_settings :method => "base64"
+        validate_settings @encryption_keys_field, :method => "base64"
       end
 
       it "can accept a new value of :encryption_key => 'password'" do
-        validate_settings :encryption_key => 'password'
+        validate_settings @encryption_keys_field, :encryption_key => 'password'
       end
 
       it "can accept new values of :method => 'clear', :encryption_key => 'blah'" do

@@ -41,37 +41,25 @@ describe SDP::DescriptionFields::MediaDescriptionField do
   end
 
   context "working with the object" do
-    def validate_settings(new_values)
-      before_values = @media_description_field.value
-      @media_description_field.value = new_values
-      @media_description_field.value.each_key do |key|
-        if new_values.has_key?(key)
-          @media_description_field.value[key].should == new_values[key]
-        else
-          @media_description_field.value[key].should == before_values[key]
-        end
-      end
-    end
-
     before :each do
       @media_description_field = SDP::DescriptionFields::MediaDescriptionField.new
     end
 
     context "values" do
       it "can accept a new value of :media => 'audio'" do
-        validate_settings :media => "audio"
+        validate_settings @media_description_field, :media => "audio"
       end
 
       it "can accept a new value of :port => 1234" do
-        validate_settings :port => 1234
+        validate_settings @media_description_field, :port => 1234
       end
 
       it "can accept a new value of :protocol => 'RTP/AVP" do
-        validate_settings :protocol => 'RTP/AVP'
+        validate_settings @media_description_field, :protocol => 'RTP/AVP'
       end
 
       it "can accept a new value of :format => 31" do
-        validate_settings :format => 31
+        validate_settings @media_description_field, :format => 31
       end
 
       it "can accept new value of 'video', 9999, 'RTP/SAVP', 99" do
@@ -86,7 +74,7 @@ describe SDP::DescriptionFields::MediaDescriptionField do
       it "can accept new value of :port => 9999, :format => 99" do
         new_values = { :port => 9999,
           :format => 99 }
-        validate_settings new_values
+        validate_settings @media_description_field, new_values
       end
     end
 

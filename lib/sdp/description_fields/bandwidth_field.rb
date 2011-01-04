@@ -8,7 +8,7 @@ class SDP::DescriptionFields
       @required = false
       @value = {
         :bandwidth_type => "",    # CT or AS
-        :bandwidth => nil
+        :bandwidth => ""
       }
 
       unless value.nil?

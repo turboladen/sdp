@@ -38,33 +38,21 @@ describe SDP::DescriptionFields::ConnectionDataField do
   end
 
   context "working with the object" do
-    def validate_settings(new_values)
-      before_values = @connection_data_field.value
-      @connection_data_field.value = new_values
-      @connection_data_field.value.each_key do |key|
-        if new_values.has_key?(key)
-          @connection_data_field.value[key].should == new_values[key]
-        else
-          @connection_data_field.value[key].should == before_values[key]
-        end
-      end
-    end
-
     before :each do
       @connection_data_field = SDP::DescriptionFields::ConnectionDataField.new
     end
 
     context "values" do
       it "can accept a new value of :net_type => :OUT" do
-        validate_settings :net_type => :OUT
+        validate_settings @connection_data_field, :net_type => :OUT
       end
 
       it "can accept a new value of :address_type => :IP6" do
-        validate_settings :address_type => :IP6
+        validate_settings @connection_data_field, :address_type => :IP6
       end
 
       it "can accept a new value of :connection_address => '127.0.0.1'" do
-        validate_settings :connection_address => '127.0.0.1'
+        validate_settings @connection_data_field, :connection_address => '127.0.0.1'
       end
 
       it "can accept new value of :BLAH, :IP999, '192.168.12.34'" do
@@ -78,7 +66,7 @@ describe SDP::DescriptionFields::ConnectionDataField do
       it "can accept new value of :net_type => :BOBO, :address_type => :IP12" do
         new_values = { :net_type => :BOBO,
           :address_type => :IP12 }
-        validate_settings new_values
+        validate_settings @connection_data_field, new_values
       end
     end
 
