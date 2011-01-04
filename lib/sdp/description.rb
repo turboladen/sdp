@@ -48,12 +48,16 @@ class SDP
     # @param [] field_type
     # @return [] The value(s) for the given field types.
     def [](field_type)
-      field = find_field(field_type)
+      fields = find_fields(field_type)
 
-      if field.first.class == Array
-        return field.first
-      elsif field.first
-        return field.first.value
+      if fields.first.class == Array
+        values = []
+        fields.each do |f|
+          values << f.first.value
+        end
+        return values
+      else
+        return fields.first.value
       end
     end
 
@@ -141,7 +145,7 @@ class SDP
     # @param [Symbol] field_type
     # @param [] field_value
     # @return [Array] The object and its position in self's Array.
-    def find_field(field_type, field_value=nil)
+    def find_fields(field_type, field_value=nil)
       @logger.debug "field type: #{field_type}"
 
       fields = self.find_all do |f|

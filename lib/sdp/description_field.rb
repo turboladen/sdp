@@ -42,23 +42,6 @@ class SDP::DescriptionField
     end
   end
 
-  # Allows for retrieving values by using attribute[0] instead of calling
-  # the accessor.  If there are more than 1 fields registered with the same
-  # time, then an Array of those types and their index in the overall SDP
-  # description are given.
-  # 
-  # @param [] field_type
-  # @return [] The value(s) for the given field types.
-  def [](field_type)
-    field = find_field(field_type)
-
-    if field.first.class == Array
-      return field.first
-    elsif field.first
-      return field.first.value
-    end
-  end
-
   # Splits a single-space-delimited String in to separate values to be
   # used by the inherited class.
   #

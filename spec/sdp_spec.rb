@@ -22,6 +22,7 @@ describe SDP do
   end
   
   context "parses SDP text into a Hash" do
+    pending
     before do
       @parsed_sdp = SDP.parse_sdp SDP_TEXT
     end

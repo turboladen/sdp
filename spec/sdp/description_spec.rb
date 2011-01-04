@@ -116,22 +116,39 @@ describe SDP::Description do
     end
   end
 
-  context "can add and retrive > 1 field of same type" do
+  context "can add and retrieve > 1 field of same type" do
+    it ":attribute" do
+      new_values = []
+      new_values << { :attribute => 'recvonly',
+        :value => "" }
+      @sdp.add_field(:attribute, new_values[0])
+
+      new_values << { :attribute => 'rtpmap',
+        :value => '99 h263-1998/90000' }
+      @sdp.add_field(:attribute, new_values[1])
+
+      @sdp[:attribute].class.should == Array
+      @sdp[:attribute][0].should == new_values[0]
+      @sdp[:attribute][1].should == new_values[1]
+    end
+
     it ":media_description" do
-      new_values = { :media => 'audio',
+      new_values = []
+      new_values << { :media => 'audio',
         :port => 12345,
         :protocol => 'RTP/AVP',
         :format => 99 }
-      @sdp.add_field(:media_description, new_values)
+      @sdp.add_field(:media_description, new_values[0])
 
-      new_values = { :media => 'video',
+      new_values << { :media => 'video',
         :port => 5678,
         :protocol => 'RTP/AVP',
         :format => 33 }
-      @sdp.add_field(:media_description, new_values)
+      @sdp.add_field(:media_description, new_values[1])
 
-      @sdp[:media_description][0].should == new_values
-      @sdp[:media_description][1].should == new_values
+      @sdp[:media_description].class.should == Array
+      @sdp[:media_description][0].should == new_values[0]
+      @sdp[:media_description][1].should == new_values[1]
     end
   end
 end
