@@ -7,27 +7,27 @@ describe SDP::DescriptionFields::RepeatTimesField do
       @repeat_times_field = SDP::DescriptionFields::RepeatTimesField.new
     end
 
-    it "sets :sdp_type set to 'r'" do
+    it "sets :sdp_type to 'r'" do
       @repeat_times_field.sdp_type.should == 'r'
     end
 
-    it "sets :ruby_type set to :time_zones" do
+    it "sets :ruby_type to :time_zones" do
       @repeat_times_field.ruby_type.should == :repeat_times
     end
 
-    it "sets :required set to false" do
+    it "sets :required to false" do
       @repeat_times_field.required.should be_false
     end
 
-    it "sets :value[:repeat_interval] set to ''" do
+    it "sets :value[:repeat_interval] to ''" do
       @repeat_times_field.value[:repeat_interval].should == ''
     end
 
-    it "sets :value[:active_duration] set to ''" do
+    it "sets :value[:active_duration] to ''" do
       @repeat_times_field.value[:active_duration].should == ''
     end
 
-    it "sets :value[:offsets_from_start_time] set to ''" do
+    it "sets :value[:offsets_from_start_time] to ''" do
       @repeat_times_field.value[:offsets_from_start_time].should == ''
     end
 

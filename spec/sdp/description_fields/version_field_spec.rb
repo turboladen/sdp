@@ -7,19 +7,19 @@ describe SDP::DescriptionFields::VersionField do
       @version_field = SDP::DescriptionFields::VersionField.new
     end
 
-    it "sets :sdp_type set to 'v'" do
+    it "sets :sdp_type to 'v'" do
       @version_field.sdp_type.should == 'v'
     end
 
-    it "sets :ruby_type set to :version" do
+    it "sets :ruby_type to :version" do
       @version_field.ruby_type.should == :version
     end
 
-    it "sets :required set to true" do
+    it "sets :required to true" do
       @version_field.required.should be_true
     end
 
-    it "sets :value set to SDP::SDP_VERSION" do
+    it "sets :value to SDP::SDP_VERSION" do
       @version_field.value.should == SDP::SDP_VERSION
     end
 

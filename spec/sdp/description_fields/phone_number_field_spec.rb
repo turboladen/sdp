@@ -7,19 +7,19 @@ describe SDP::DescriptionFields::PhoneNumberField do
       @phone_number_field = SDP::DescriptionFields::PhoneNumberField.new
     end
 
-    it "sets :sdp_type set to 'p'" do
+    it "sets :sdp_type to 'p'" do
       @phone_number_field.sdp_type.should == 'p'
     end
 
-    it "sets :ruby_type set to :phone_number" do
+    it "sets :ruby_type to :phone_number" do
       @phone_number_field.ruby_type.should == :phone_number
     end
 
-    it "sets :required set to false" do
+    it "sets :required to false" do
       @phone_number_field.required.should be_false
     end
 
-    it "sets :value set to ''" do
+    it "sets :value to ''" do
       @phone_number_field.value.should == ''
     end
 

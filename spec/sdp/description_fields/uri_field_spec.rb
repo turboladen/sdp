@@ -7,19 +7,19 @@ describe SDP::DescriptionFields::UriField do
       @uri_field = SDP::DescriptionFields::UriField.new
     end
 
-    it "sets :sdp_type set to 'u'" do
+    it "sets :sdp_type to 'u'" do
       @uri_field.sdp_type.should == 'u'
     end
 
-    it "sets :ruby_type set to :uri" do
+    it "sets :ruby_type to :uri" do
       @uri_field.ruby_type.should == :uri
     end
 
-    it "sets :required set to false" do
+    it "sets :required to false" do
       @uri_field.required.should be_false
     end
 
-    it "sets :value set to ''" do
+    it "sets :value to ''" do
       @uri_field.value.should == ''
     end
 

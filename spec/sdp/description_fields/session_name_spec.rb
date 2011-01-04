@@ -7,19 +7,19 @@ describe SDP::DescriptionFields::SessionNameField do
       @session_name_field = SDP::DescriptionFields::SessionNameField.new
     end
 
-    it "sets :sdp_type set to 's'" do
+    it "sets :sdp_type to 's'" do
       @session_name_field.sdp_type.should == 's'
     end
 
-    it "sets :ruby_type set to :session_name" do
+    it "sets :ruby_type to :session_name" do
       @session_name_field.ruby_type.should == :session_name
     end
 
-    it "sets :required set to true" do
+    it "sets :required to true" do
       @session_name_field.required.should be_true
     end
 
-    it "sets :value set to ' '" do
+    it "sets :value to ' '" do
       @session_name_field.value.should == ' '
     end
 

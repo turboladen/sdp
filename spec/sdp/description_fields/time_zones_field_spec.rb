@@ -7,23 +7,23 @@ describe SDP::DescriptionFields::TimeZonesField do
       @time_zones_field = SDP::DescriptionFields::TimeZonesField.new
     end
 
-    it "sets :sdp_type set to 'z'" do
+    it "sets :sdp_type to 'z'" do
       @time_zones_field.sdp_type.should == 'z'
     end
 
-    it "sets :ruby_type set to :time_zones" do
+    it "sets :ruby_type to :time_zones" do
       @time_zones_field.ruby_type.should == :time_zones
     end
 
-    it "sets :required set to false" do
+    it "sets :required to false" do
       @time_zones_field.required.should be_false
     end
 
-    it "sets :value[:adjustment_time] set to ''" do
+    it "sets :value[:adjustment_time] to ''" do
       @time_zones_field.value[:adjustment_time].should == ''
     end
 
-    it "sets :value[:offset] set to ''" do
+    it "sets :value[:offset] to ''" do
       @time_zones_field.value[:offset].should == ''
     end
 

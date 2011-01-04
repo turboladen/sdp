@@ -7,23 +7,23 @@ describe SDP::DescriptionFields::TimingField do
       @timing_field = SDP::DescriptionFields::TimingField.new
     end
 
-    it "sets :sdp_type set to 't'" do
+    it "sets :sdp_type to 't'" do
       @timing_field.sdp_type.should == 't'
     end
 
-    it "sets :ruby_type set to :timing" do
+    it "sets :ruby_type to :timing" do
       @timing_field.ruby_type.should == :timing
     end
 
-    it "sets :required set to true" do
+    it "sets :required to true" do
       @timing_field.required.should be_true
     end
 
-    it "sets :value[:start_time] set to a number" do
+    it "sets :value[:start_time] to a number" do
       @timing_field.value[:start_time].class.should == Fixnum
     end
 
-    it "sets :value[:stop_time] set to a number" do
+    it "sets :value[:stop_time] to a number" do
       @timing_field.value[:stop_time].class.should == Fixnum
     end
 
