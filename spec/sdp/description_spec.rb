@@ -10,7 +10,7 @@ describe SDP::Description do
     @sdp.should == []
   end
 
-  context "can add fields" do
+  context "can add and retrieve fields" do
     it ":attribute" do
       new_values = { :attribute => 'rtpmap',
         :value => "99 h263-1998/90000" }
@@ -113,6 +113,25 @@ describe SDP::Description do
     it ":version" do
       @sdp.add_field(:version, 0)
       @sdp[:version].should == 0
+    end
+  end
+
+  context "can add and retrive > 1 field of same type" do
+    it ":media_description" do
+      new_values = { :media => 'audio',
+        :port => 12345,
+        :protocol => 'RTP/AVP',
+        :format => 99 }
+      @sdp.add_field(:media_description, new_values)
+
+      new_values = { :media => 'video',
+        :port => 5678,
+        :protocol => 'RTP/AVP',
+        :format => 33 }
+      @sdp.add_field(:media_description, new_values)
+
+      @sdp[:media_description][0].should == new_values
+      @sdp[:media_description][1].should == new_values
     end
   end
 end

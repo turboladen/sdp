@@ -1,3 +1,5 @@
+require 'logger'
+
 class SDP
 
   # Represents an SDP description as defined in RFC 4566.  This class allows
@@ -35,6 +37,23 @@ class SDP
 
       if field_value
         self.last.value = field_value
+      end
+    end
+
+    # Allows for retrieving values by using sdp[:version] instead of calling
+    # the accessor.  If there are more than 1 fields registered with the same
+    # time, then an Array of those types and their index in the overall SDP
+    # description are given.
+    # 
+    # @param [] field_type
+    # @return [] The value(s) for the given field types.
+    def [](field_type)
+      field = find_field(field_type)
+
+      if field.first.class == Array
+        return field.first
+      elsif field.first
+        return field.first.value
       end
     end
 
@@ -125,14 +144,25 @@ class SDP
     def find_field(field_type, field_value=nil)
       @logger.debug "field type: #{field_type}"
 
-      field = self.find do |f|
+      fields = self.find_all do |f|
         @logger.debug "f: #{f}"
         @logger.debug "f.ruby_type: #{f.ruby_type}"
         f.ruby_type == field_type
       end
 
-      @logger.debug "field: #{field}"
-      return [field, self.index(field)]
+      @logger.debug "fields: #{fields}"
+
+      if fields.length == 1
+        return [fields.first, self.index(fields.first)]
+      else
+        all_fields = []
+
+        fields.each do |field|
+          all_fields << [field, self.index(field)]
+        end
+
+        return all_fields
+      end
     end
   end
 end
