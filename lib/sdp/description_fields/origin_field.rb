@@ -1,5 +1,4 @@
 require 'etc'
-require 'net/ntp'
 require 'sdp/description_field'
 
 class SDP::DescriptionFields
@@ -15,11 +14,10 @@ class SDP::DescriptionFields
       @ruby_type = :origin
       @required = true
 
-      ntp = Net::NTP.get
       @value = {
         :username => Etc.getlogin,
-        :session_id => ntp.receive_timestamp.to_i,
-        :session_version => ntp.receive_timestamp.to_i,
+        :session_id => Time.now.to_i,
+        :session_version => Time.now.to_i,
         :net_type => :IN,
         :address_type => :IP4,
         :unicast_address => get_local_ip
@@ -28,6 +26,17 @@ class SDP::DescriptionFields
       unless value.nil?
         super
         map_values
+      end
+    end
+
+    # Redefines value assingment to allow for changing parameters separately.
+    #
+    # @param [Hash] new_value Key must be an existing @value key or pair.
+    def value=(new_value)
+      @value.each_pair do |k,v|
+        if new_value.has_key?(k)
+          @value[k] = new_value[k]
+        end
       end
     end
 

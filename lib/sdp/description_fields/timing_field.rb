@@ -1,4 +1,3 @@
-require 'net/ntp'
 require 'sdp/description_field'
 
 class SDP::DescriptionFields
@@ -7,10 +6,9 @@ class SDP::DescriptionFields
       @sdp_type = 't'
       @ruby_type = :timing
       @required = true
-      ntp = Net::NTP.get
       @value = {
-        :start_time => ntp.receive_timestamp.to_i,
-        :stop_time => ntp.receive_timestamp.to_i
+        :start_time => Time.now.to_i,
+        :stop_time => Time.now.to_i
       }
 
       unless value.nil?

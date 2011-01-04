@@ -7,7 +7,6 @@ class SDP::DescriptionFields
       @ruby_type = :connection_data
       @required = false
 
-      ntp = Net::NTP.get
       @value = {
         :net_type => :IN,
         :address_type => :IP4,
