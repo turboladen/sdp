@@ -1,3 +1,5 @@
+require 'sdp/description_field'
+
 class SDP::DescriptionFields
   class AttributeField < SDP::DescriptionField
     def initialize value=nil
@@ -6,7 +8,7 @@ class SDP::DescriptionFields
       @required = false
       @value = {
         :attribute => "",
-        :value => nil
+        :value => ""
       }
 
       unless value.nil?
