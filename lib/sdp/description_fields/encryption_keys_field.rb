@@ -8,7 +8,7 @@ class SDP::DescriptionFields
       @required = false
       @value = {
         :method => "",
-        :encryption_key => nil
+        :encryption_key => ""
       }
 
       unless value.nil?
@@ -35,6 +35,14 @@ class SDP::DescriptionFields
       end
 
       return "#{@sdp_type}=#{values}\r\n"
+    end
+
+    # Redefining parent method since the :value value can be nil.
+    # 
+    # @return [Boolean] true if field values have been populated; false if
+    # not.
+    def valid?
+      @value[:method].empty? ? false : true
     end
   end
 end
