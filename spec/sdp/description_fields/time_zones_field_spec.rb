@@ -15,7 +15,7 @@ describe SDP::DescriptionFields::TimeZonesField do
       @time_zones_field.ruby_type.should == :time_zones
     end
 
-    it "sets :required set to true" do
+    it "sets :required set to false" do
       @time_zones_field.required.should be_false
     end
 

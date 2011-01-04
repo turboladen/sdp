@@ -15,7 +15,7 @@ describe SDP::DescriptionFields::UriField do
       @uri_field.ruby_type.should == :uri
     end
 
-    it "sets :required set to true" do
+    it "sets :required set to false" do
       @uri_field.required.should be_false
     end
 
