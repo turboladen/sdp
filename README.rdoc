@@ -25,8 +25,8 @@ You can use this gem to marshall data
   
   # Use block style...
   sdp = SDP::Description.new do
-    session_description.add_field :version => 0
-    session_description.add_field :media_description => { :media => "video" }
+    protocol_version => 0
+    media_description => { :media => "video" }
     session_description.add_field :media_description => { :media => "audio" }
     session_description.add_field "a=rtpmap:99 h263-1998/90000"
   end
@@ -80,25 +80,39 @@ You can use this gem to marshall data
 
   session = SDP.parse sdp_string
   
-  session.class         # => SDP::Description
-  session.protocol_version   # => 0
-  session.media         # => [{ :media=>"audio", :port=>49170, :protocol=>"RTP/AVP", :format=>0 },
-                        #  { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
-                        #   :attributes=>[{"rtpmap" => "99 h263-1998/90000"}}]
-  session.username      # => "elvis"
-  session.id            # => 2890844526
-  session.version       # => 2890842807
-  session.network_type  # => :internet
-  session.address_type  # => :IPv4
-  session.unicast_address   # => "10.47.16.5"
-  session.name          # => "SDP Seminar"
-  session.information   # => "A Seminar on the session description protocol"
-  session.uri           # => "http://www.example.com/seminars/sdp.pdf"
-  session.email_address # => "j.doe@example.com (Jane Doe)"
+  session.class               # => SDP::Description
+  session.protocol_version    # => 0
+  session.media               # => [{ :media=>"audio", :port=>49170, :protocol=>"RTP/AVP", :format=>0 },
+                              #  { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
+                              #   :attributes=>[{"rtpmap" => "99 h263-1998/90000"}}]
+  session.username            # => "elvis"
+  session.id                  # => 2890844526
+  session.version             # => 2890842807
+  session.network_type        # => :internet
+  session.address_type        # => :IPv4
+  session.unicast_address     # => "10.47.16.5"
+  session.name                # => "SDP Seminar"
+  session.information         # => "A Seminar on the session description protocol"
+  session.uri                 # => "http://www.example.com/seminars/sdp.pdf"
+  session.email_address       # => "j.doe@example.com (Jane Doe)"
   session.connection_address  # => "224.2.17.12/127"
-  session.start_time    # => 2873397496
-  session.stop_type     # => 2873404696
+  session.start_time          # => 2873397496
+  session.stop_type           # => 2873404696
+  session.attributes          # => ["recvonly"]
   
+  # Put it back to a string...
+  session.to_s        # => "v=0\r\n
+                      #     o=elvis 2890844526 2890842807 IN IP4 10.47.16.5\r\n
+                      #     s=SDP Seminar
+                      #     i=A Seminar on the session description protocol
+                      #     u=http://www.example.com/seminars/sdp.pdf
+                      #     e=j.doe@example.com (Jane Doe)
+                      #     c=IN IP4 224.2.17.12/127
+                      #     t=2873397496 2873404696
+                      #     a=recvonly\r\n
+                      #     m=audio 49170 RTP/AVP 0\r\n
+                      #     m=video\r\n"
+                      #     a=rtpmap:99 h263-1998/90000\r\n"
 
 == Requirements
 
