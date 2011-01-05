@@ -6,15 +6,97 @@
 
 == Description
 
-TODO: Description
+SDP is used by a number of protocols for describing multimedia sessions; protocols
+include SIP (Session Initiation Protocol), SAP (Session Announcement Protocol),
+and RTSP (Real Time Streaming Protocol).
+
+You can use this gem to marshall data 
 
 == Features
 
+# Create new SDP string/file/whatever
+# Parse an SDP string/file/whatever to Ruby
+
 == Examples
 
-  require 'sdp'
+=== Creating an SDP description
+
+  require 'sdp/description'
+  
+  # Use block style...
+  sdp = SDP::Description.new do
+    session_description.add_field :version => 0
+    session_description.add_field :media_description => { :media => "video" }
+    session_description.add_field :media_description => { :media => "audio" }
+    session_description.add_field "a=rtpmap:99 h263-1998/90000"
+  end
+  
+  # ...or non-block style...
+  sdp = SDP::Description.new
+  sdp.inspect   # => <#SDP::Description session_description=[<#SDP::DescriptionFields::VersionField value=0>]>
+  sdp.to_s      # => "v=0\r\n"
+  sdp[:session_description].add_field { :origin => { :username => "elvis" } }
+  sdp[:media_description][0].add_field { :media_description => { :media => "video" } }
+  sdp[:media_description][0].add_field { :attribute => { :attribute => "recvonly" } }
+  sdp[:media_description][1].add_field { :media_description => { :media => "audio" } }
+  
+  # Add by passing in the SDP field string
+  sdp[:media_description][1].add_field "a=rtpmap:99 h263-1998/90000"
+
+  # Fields are ordered as they are entered, where Session Description comes first, then
+  # subsequent Media Description sections:
+  sdp.inspect     # => <#SDP::Description
+                  # [<#SDP::DescriptionFields::VersionField value=0>,
+                  #  <#SDP::DescriptionFields::OriginField value={:username=>"elvis"}>,
+                  #  <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video"}>,
+                  #  <#SDP::DescriptionFields::AttributeField value={:attribute=>"recvonly"}>,
+                  #  <#SDP::DescriptionFields::MediaDescriptionField value={:media => "audio"}>,
+                  #  <#SDP::DescriptionFields::AttributeField value={:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}>]
+  sdp.to_s        # => "v=0\r\n
+                  #     o=elvis\r\n
+                  #     m=video\r\n
+                  #     a=recvonly\r\n
+                  #     m=audio\r\n"
+                  #     a=rtpmap:99 h263-1998/90000\r\n"
+  sdp[:session_description][:version]         # => <#SDP::DescriptionFields::VersionField value=0>
+  sdp[:session_description][:version].index   # => 0
+  sdp[:session_description][:version].to_s    # => "v=0\r\n"
+  sdp[:session_description][:version] = 1     # => <#SDP::DescriptionFields::VersionField value=1>
+  
+  sdp[:media_description][0][:media_description]  # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video"}>
+  sdp[:media_description][0][:media_description] = { :port => 9999 }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video", :port=>9999}>
+  sdp[:media_description][0][:media_description] = { :media => "text" }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"text", :port=>9999}>
+  sdp[:media_description][0][:media_description] = { :media => "audio",
+    :port => 49154 }                          # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"audio", :port=>49154}>
+  sdp[:media_description][0].index            # => 2
+  sdp[:media_description][0][:attribute]      # => <#SDP::DescriptionFields::AttributeField value={:attribute=>"recvonly"}>
+  
+  # Delete fields from the list:
+  sdp[:session_description].delete_field "o=elvis"
+  sdp[:media_description][0].index            # => 1  
+
+
+=== Parsing an SDP description
+
+  sdp = SDP.parse sdp_string
+  
+  sdp.class         # => SDP::Description
+  sdp[:session_description][:version]   # => 0
+  sdp[:media_description][0][:media]    # => "audio"
+  sdp[:media_description][0][:port]     # => 49170
+  sdp[:media_description][0][:protocol] # => "RTP/AVP"
+  sdp[:media_description][0][:format]   # => 0
+  sdp[:media_description][1][:media]    # => "video"
+  sdp[:media_description][1][:port]     # => 51372
+  sdp[:media_description][1][:protocol] # => "RTP/AVP"
+  sdp[:media_description][1][:format]   # => 99
 
 == Requirements
+
+* Rubies (tested, at least):
+  * 1.8.7
+  * 1.9.1
+  * 1.9.2
 
 == Install
 
@@ -22,6 +104,6 @@ TODO: Description
 
 == Copyright
 
-Copyright (c) 2011 sloveless
+Copyright (c) 2011 Steve Loveless
 
 See LICENSE.txt for details.
