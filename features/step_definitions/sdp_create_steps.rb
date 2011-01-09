@@ -18,12 +18,9 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @sdp.uri = "http://www.example.com/seminars/sdp.pdf"
   @sdp.email_address = "j.doe@example.com (Jane Doe)"
   @sdp.connection_address = "224.2.17.12/127"
+  @sdp.start_time = 2873397496
+  @sdp.stop_time = 2873404696
 =begin
-  @sdp.add_field(:connection_data, {
-    :net_type           => "IN",
-    :address_type       => "IP4",
-    :connection_address => "224.2.17.12/127"
-  } )
   @sdp.add_field(:timing, {
     :start_time => 2873397496,
     :stop_time => 2873404696

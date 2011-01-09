@@ -124,6 +124,22 @@ class SDP
       self[:session_description][:connection_data].value[:connection_address]
     end
 
+    def start_time=(new_start_time)
+      add_field(:session_description, :timing, new_start_time, :start_time)
+    end
+
+    def start_time
+      self[:session_description][:timing].value[:start_time]
+    end
+
+    def stop_time=(new_stop_time)
+      add_field(:session_description, :timing, new_stop_time, :stop_time)
+    end
+
+    def stop_time
+      self[:session_description][:timing].value[:stop_time]
+    end
+
     # Add a new Media description section.
     def media=(new_media_description)
       media_description_field = create_field_object :media_description
@@ -167,6 +183,7 @@ class SDP
       sdp_string << self[:session_description][:uri].to_sdp_s
       sdp_string << self[:session_description][:email_address].to_sdp_s
       sdp_string << self[:session_description][:connection_data].to_sdp_s
+      sdp_string << self[:session_description][:timing].to_sdp_s
       self[:media_descriptions].each do |m|
         sdp_string << m.to_sdp_s
       end
