@@ -83,19 +83,19 @@ class SDP
       self[:session_description][:origin].value[:unicast_address]
     end
 
-    def session_name=(new_session_name)
+    def name=(new_session_name)
       add_field(:session_description, :session_name, new_session_name)
     end
 
-    def session_name
+    def name
       self[:session_description][:session_name].value
     end
 
-    def session_information=(new_session_information)
+    def information=(new_session_information)
       add_field(:session_description, :session_information, new_session_information)
     end
 
-    def session_information
+    def information
       self[:session_description][:session_information].value
     end
 
