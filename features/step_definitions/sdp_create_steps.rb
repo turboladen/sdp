@@ -17,6 +17,7 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @sdp.session_information = "A Seminar on the session description protocol"
   @sdp.uri = "http://www.example.com/seminars/sdp.pdf"
   @sdp.email_address = "j.doe@example.com (Jane Doe)"
+  @sdp.connection_address = "224.2.17.12/127"
 =begin
   @sdp.add_field(:connection_data, {
     :net_type           => "IN",

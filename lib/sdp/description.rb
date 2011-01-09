@@ -59,10 +59,12 @@ class SDP
 
     def network_type=(new_network_type)
       add_field(:session_description, :origin, new_network_type, :net_type)
+      add_field(:session_description, :connection_data, new_network_type, :net_type)
     end
 
     def network_type
-      self[:session_description][:origin].value[:net_type]
+      self[:session_description][:origin].value[:net_type] ||
+      self[:seesion_description][:connection_data].value[:net_type]
     end
 
     def address_type=(new_address_type)
@@ -113,6 +115,15 @@ class SDP
       self[:session_description][:email_address].value
     end
 
+    def connection_address=(new_connection_address)
+      add_field(:session_description, :connection_data,
+        new_connection_address, :connection_address)
+    end
+
+    def connection_address
+      self[:session_description][:connection_data].value[:connection_address]
+    end
+
     # Add a new Media description section.
     def media=(new_media_description)
       media_description_field = create_field_object :media_description
@@ -155,6 +166,7 @@ class SDP
       sdp_string << self[:session_description][:session_information].to_sdp_s
       sdp_string << self[:session_description][:uri].to_sdp_s
       sdp_string << self[:session_description][:email_address].to_sdp_s
+      sdp_string << self[:session_description][:connection_data].to_sdp_s
       self[:media_descriptions].each do |m|
         sdp_string << m.to_sdp_s
       end
