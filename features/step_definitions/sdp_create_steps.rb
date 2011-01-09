@@ -6,19 +6,18 @@ end
 
 When /^I build the Ruby object with the appropriate fields$/ do
   @sdp = SDP::Description.new
-  @sdp.add_field(:version, 0)
-  @sdp.add_field(:origin, {
-    :username         => "jdoe",
-    :session_id       => 2890844526,
-    :session_version  => 2890842807,
-    :net_type         => "IN",
-    :address_type     => :IP4,
-    :unicast_address  => "10.47.16.5"
-  } )
-  @sdp.add_field(:session_name, "SDP Seminar")
-  @sdp.add_field(:session_information, "A Seminar on the session description protocol")
-  @sdp.add_field(:uri, "http://www.example.com/seminars/sdp.pdf")
-  @sdp.add_field(:email_address, "j.doe@example.com (Jane Doe)")
+  @sdp.protocol_version = 0
+  @sdp.username = "jdoe"
+  @sdp.session_id = 2890844526
+  @sdp.session_version = 2890842807
+  @sdp.network_type = :IN
+  @sdp.address_type = :IP4
+  @sdp.unicast_address = "10.47.16.5"
+  @sdp.session_name = "SDP Seminar"
+  @sdp.session_information = "A Seminar on the session description protocol"
+  @sdp.uri = "http://www.example.com/seminars/sdp.pdf"
+  @sdp.email_address = "j.doe@example.com (Jane Doe)"
+=begin
   @sdp.add_field(:connection_data, {
     :net_type           => "IN",
     :address_type       => "IP4",
@@ -41,10 +40,15 @@ When /^I build the Ruby object with the appropriate fields$/ do
     :protocol => "RTP/AVP",
     :format => "99"
   })
+  #@sdp.media_description = { :media => "video", ... }
+  #@sdp.media_description = { :media => "audio", ... }
+  #@sdp.assoc   # => { :media => "video", ... }
+  #@sdp.media_description[1].media   # => { :media => "video", ... }
   @sdp.add_field(:attribute, {
     :attribute => "rtpmap",
     :value => "99 h263-1998/90000"
   })
+=end
 end
 
 Then /^the resulting file should look like the intended description$/ do

@@ -1,3 +1,5 @@
+require 'sdp/description'
+
 class SDP
   module Parser
     def self.included(base)
@@ -22,12 +24,13 @@ class SDP
         :attribute => /^a=(.*)/
       }
 
-      def parse_sdp sdp_text
-        sdp = {}
+      def parse sdp_text
+        sdp = SDP::Description.new
 
         SDP_TYPE.each_pair do |sdp_type, regex|
           sdp_text =~ regex
 
+=begin
           if sdp_type == :origin
             sdp[sdp_type] = parse_origin $1
           elsif sdp_type == :connection_data
@@ -35,6 +38,9 @@ class SDP
           else
             sdp[sdp_type] = $1
           end
+=end
+          value = $1.strip unless $1.nil?
+          sdp.add_field(sdp_type, value)
         end
 
         sdp

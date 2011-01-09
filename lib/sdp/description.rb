@@ -12,53 +12,119 @@ class SDP
   # After building the description up, call #to_s to render it.  This
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
-  class Description < Array
+  class Description < Hash
     def initialize
-      @logger = Logger.new STDOUT
-      @logger.level = Logger::WARN
+      self[:session_description] = {}
+      self[:media_descriptions] = []
+      protocol_version = 0
     end
 
-    # Adds a new field to the SDP object based on the field type and field
-    # value (if given).
-    # 
-    # @param [Symbol] field_type
-    # @param [] field_value
-    def add_field(field_type, field_value=nil)
-      field = create_field_object(field_type)
+    # Set the Session description section's version field value.
+    def protocol_version=(version)
+      self[:session_description][:version] = create_field_object :version
+      self[:session_description][:version].value = version
 
-      @logger.debug "field: #{field}"
-      @logger.debug "field.ruby_type: #{field.ruby_type}"
-
-      self << field
-
-      @logger.debug self
-      @logger.debug "field_value: #{field_value}"
-      @logger.debug "self.last: #{self.last}"
-
-      if field_value
-        self.last.value = field_value
-      end
+      self[:session_description][:version].value
+      add_field(:session_description, :version, version)
     end
 
-    # Allows for retrieving values by using sdp[:version] instead of calling
-    # the accessor.  If there are more than 1 fields registered with the same
-    # time, then an Array of those types and their index in the overall SDP
-    # description are given.
-    # 
-    # @param [] field_type
-    # @return [] The value(s) for the given field types.
-    def [](field_type)
-      fields = find_fields(field_type)
+    # @return [Fixnum]
+    def protocol_version
+      self[:session_description][:version].value
+    end
 
-      if fields.first.class == Array
-        values = []
-        fields.each do |f|
-          values << f.first.value
-        end
-        return values
-      else
-        return fields.first.value
-      end
+    def username=(new_username)
+      add_field(:session_description, :origin, new_username, :username)
+    end
+
+    def username
+      self[:session_description][:origin].value[:username]
+    end
+
+    def session_id=(new_session_id)
+      add_field(:session_description, :origin, new_session_id, :session_id)
+    end
+
+    def session_id
+      self[:session_description][:origin].value[:session_id]
+    end
+
+    def session_version=(new_session_version)
+      add_field(:session_description, :origin, new_session_version, :session_version)
+    end
+
+    def session_version
+      self[:session_description][:origin].value[:session_version]
+    end
+
+    def network_type=(new_network_type)
+      add_field(:session_description, :origin, new_network_type, :net_type)
+    end
+
+    def network_type
+      self[:session_description][:origin].value[:net_type]
+    end
+
+    def address_type=(new_address_type)
+      add_field(:session_description, :origin, new_address_type, :address_type)
+    end
+
+    def address_type
+      self[:session_description][:origin].value[:address_type]
+    end
+
+    def unicast_address=(new_unicast_address)
+      add_field(:session_description, :origin, new_unicast_address, :unicast_address)
+    end
+
+    def unicast_address
+      self[:session_description][:origin].value[:unicast_address]
+    end
+
+    def session_name=(new_session_name)
+      add_field(:session_description, :session_name, new_session_name)
+    end
+
+    def session_name
+      self[:session_description][:session_name].value
+    end
+
+    def session_information=(new_session_information)
+      add_field(:session_description, :session_information, new_session_information)
+    end
+
+    def session_information
+      self[:session_description][:session_information].value
+    end
+
+    def uri=(new_uri)
+      add_field(:session_description, :uri, new_uri)
+    end
+
+    def uri
+      self[:session_description][:uri].value
+    end
+
+    def email_address=(new_email_address)
+      add_field(:session_description, :email_address, new_email_address)
+    end
+
+    def email_address
+      self[:session_description][:email_address].value
+    end
+
+    # Add a new Media description section.
+    def media=(new_media_description)
+      media_description_field = create_field_object :media_description
+      media_description_field.value = new_media_description
+      self[:media_descriptions] << media_description_field
+
+      self[:media_descriptions].last.value
+    end
+
+    # @return [Array]
+    def media
+      self[:media_descriptions].collect { |m| m.value }
     end
 
     # Turns the current SDP::Description object into the SDP description,
@@ -83,9 +149,14 @@ class SDP
       sdp_string << add_to_string(:attribute)
       sdp_string << add_to_string(:media_description)
 =end
-      sdp_string = ""
-      self.each do |field|
-        sdp_string << field.to_sdp_s
+      sdp_string = self[:session_description][:version].to_sdp_s
+      sdp_string << self[:session_description][:origin].to_sdp_s
+      sdp_string << self[:session_description][:session_name].to_sdp_s
+      sdp_string << self[:session_description][:session_information].to_sdp_s
+      sdp_string << self[:session_description][:uri].to_sdp_s
+      sdp_string << self[:session_description][:email_address].to_sdp_s
+      self[:media_descriptions].each do |m|
+        sdp_string << m.to_sdp_s
       end
 
       sdp_string
@@ -113,12 +184,27 @@ class SDP
           raise
         else
           retried = true
-          require "sdp/description_fields/#{field_type.to_s}_field"
+          require File.dirname(__FILE__) + "/description_fields/#{field_type.to_s}_field"
           retry
         end
       end
 
       field
+    end
+
+    def add_field(description_hash, field_type, value, value_key=nil)
+      unless self[description_hash].has_key? field_type
+        self[description_hash][field_type] = create_field_object field_type
+      end
+
+      if value_key.nil?
+        self[description_hash][field_type].value = value
+      else
+        self[description_hash][field_type].value[value_key] = value
+      end
+
+      self[description_hash][field_type].value
+      
     end
 
     # Converts a DescriptionField child to a String that is used in an SDP

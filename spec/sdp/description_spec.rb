@@ -68,6 +68,21 @@ describe SDP::Description do
       @sdp[:origin].should == new_values
     end
 
+    it ":origin, individual values" do
+      new_values = {
+        :username         => "jdoe",
+        :session_id       => 2890844526,
+        :session_version  => 2890842807,
+        :net_type         => "IN",
+        :address_type     => :IP4,
+        :unicast_address  => "10.47.16.5"
+      }
+
+      @sdp.add_field(:origin, new_values)
+      @sdp[:origin][:username].should == new_values[:username]
+      @sdp[:origin][:session_id].should == new_values[:session_id]
+    end
+
     it ":phone_number" do
       @sdp.add_field(:phone_number, "+1 555 123 4567")
       @sdp[:phone_number].should == "+1 555 123 4567"

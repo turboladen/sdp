@@ -63,17 +63,17 @@ You can use this gem to marshall data
   sdp[:session_description][:version].to_s    # => "v=0\r\n"
   sdp[:session_description][:version] = 1     # => <#SDP::DescriptionFields::VersionField value=1>
   
-  sdp[:media_description][0][:media_description]  # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video"}>
-  sdp[:media_description][0][:media_description] = { :port => 9999 }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video", :port=>9999}>
-  sdp[:media_description][0][:media_description] = { :media => "text" }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"text", :port=>9999}>
-  sdp[:media_description][0][:media_description] = { :media => "audio",
+  sdp[:media_descriptions[0][:media_description]  # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video"}>
+  sdp[:media_descriptions][0][:media_description] = { :port => 9999 }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video", :port=>9999}>
+  sdp[:media_descriptions][0][:media_description] = { :media => "text" }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"text", :port=>9999}>
+  sdp[:media_descriptions][0][:media_description] = { :media => "audio",
     :port => 49154 }                          # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"audio", :port=>49154}>
-  sdp[:media_description][0].index            # => 2
-  sdp[:media_description][0][:attribute]      # => <#SDP::DescriptionFields::AttributeField value={:attribute=>"recvonly"}>
+  sdp[:media_descriptions][0].index            # => 2
+  sdp[:media_descriptions][0][:attribute]      # => <#SDP::DescriptionFields::AttributeField value={:attribute=>"recvonly"}>
   
   # Delete fields from the list:
   sdp[:session_description].delete_field "o=elvis"
-  sdp[:media_description][0].index            # => 1  
+  sdp[:media_descriptions][0].index            # => 1  
 
 
 === Parsing an SDP description
@@ -86,10 +86,10 @@ You can use this gem to marshall data
                               #  { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
                               #   :attributes=>[{"rtpmap" => "99 h263-1998/90000"}}]
   session.username            # => "elvis"
-  session.id                  # => 2890844526
-  session.version             # => 2890842807
-  session.network_type        # => :internet
-  session.address_type        # => :IPv4
+  session.session_id          # => 2890844526
+  session.session_version     # => 2890842807
+  session.network_type        # => :IN
+  session.address_type        # => :IP4
   session.unicast_address     # => "10.47.16.5"
   session.name                # => "SDP Seminar"
   session.information         # => "A Seminar on the session description protocol"

@@ -12,13 +12,18 @@ Then /^the <value> for <field> is accessible via the SDP object$/ do |table|
   # table is a Cucumber::Ast::Table
   table.hashes.each do |sdp_field|
     puts sdp_field
-    @sdp[:sdp_field["field"]
-  end
-end
 
-require 'strscan'
-def field_to_hash_key field
-  #string = StringScanner.new(field)
-  words = field.scan(/\w+/)
-    
+    type = sdp_field["field"].to_sym
+    value = sdp_field["value"]
+
+puts type
+    if sdp_field["parameter"].empty?
+      @sdp[type].should == value
+    else
+      sub_type = sdp_field["parameter"].to_sym
+      pp @sdp[type]
+      pp @sdp[:origin]
+      @sdp.fetch(type).fetch(sub_type).should == value
+    end
+  end
 end

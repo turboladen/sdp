@@ -37,6 +37,20 @@ class SDP::DescriptionField
           @value[k] = new_value[k]
         end
       end
+=begin
+    elsif new_value.class == String
+      @value = new_value and return unless new_value =~ /\s/
+#      new_values = parse_values(new_value)
+puts "new_value: #{new_value}"
+#puts "new_values: #{new_values}"
+#puts "size: #{new_values.size}"
+@value = new_value
+#      if new_values.length == 1
+#        @value = new_values.first 
+#      else
+#        map_values(new_values)
+#      end
+=end
     else
       @value = new_value
     end

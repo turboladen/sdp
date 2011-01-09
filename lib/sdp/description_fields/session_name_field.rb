@@ -12,5 +12,11 @@ class SDP::DescriptionFields
         @value = value
       end
     end
+
+    # If a values string was passed in, the parent class broken those up
+    # to an Array.  This maps those values to the value Hash.
+    def map_values
+      @value = @parsed_values
+    end
   end
 end
