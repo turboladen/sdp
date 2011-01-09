@@ -41,19 +41,19 @@ class SDP
       self[:session_description][:origin].value[:username]
     end
 
-    def session_id=(new_session_id)
+    def id=(new_session_id)
       add_field(:session_description, :origin, new_session_id, :session_id)
     end
 
-    def session_id
+    def id
       self[:session_description][:origin].value[:session_id]
     end
 
-    def session_version=(new_session_version)
+    def version=(new_session_version)
       add_field(:session_description, :origin, new_session_version, :session_version)
     end
 
-    def session_version
+    def version
       self[:session_description][:origin].value[:session_version]
     end
 

@@ -8,8 +8,8 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @session = SDP::Description.new
   @session.protocol_version = 0
   @session.username = "jdoe"
-  @session.session_id = 2890844526
-  @session.session_version = 2890842807
+  @session.id = 2890844526
+  @session.version = 2890842807
   @session.network_type = :IN
   @session.address_type = :IP4
   @session.unicast_address = "10.47.16.5"

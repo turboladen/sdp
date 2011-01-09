@@ -86,8 +86,8 @@ You can use this gem to marshall data
                               #  { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
                               #   :attributes=>[{"rtpmap" => "99 h263-1998/90000"}}]
   session.username            # => "elvis"
-  session.session_id          # => 2890844526
-  session.session_version     # => 2890842807
+  session.id                  # => 2890844526
+  session.version             # => 2890842807
   session.network_type        # => :IN
   session.address_type        # => :IP4
   session.unicast_address     # => "10.47.16.5"
