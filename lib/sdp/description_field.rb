@@ -1,4 +1,5 @@
 require 'sdp'
+require 'socket'
 
 # Describes an SDP description field.  Field types are defined by
 # the RFC 4566 document and can only be from that list.  The class

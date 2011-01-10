@@ -24,6 +24,7 @@ You can use this gem to marshall data
   require 'sdp/description'
   
   # Use block style...
+  # TODO!  (not implemented yet)
   sdp = SDP::Description.new do
     protocol_version => 0
     media_description => { :media => "video" }
@@ -33,47 +34,32 @@ You can use this gem to marshall data
   
   # ...or non-block style...
   sdp = SDP::Description.new
-  sdp.inspect   # => <#SDP::Description session_description=[<#SDP::DescriptionFields::VersionField value=0>]>
+  sdp.inspect   # => {:session_description=>{:version=>#<SDP::DescriptionFields::VersionField:0x00000101039190 @sdp_type="v", @ruby_type=:version, @required=true, @value=0>}, :media_descriptions=>[]}
   sdp.to_s      # => "v=0\r\n"
-  sdp[:session_description].add_field { :origin => { :username => "elvis" } }
-  sdp[:media_description][0].add_field { :media_description => { :media => "video" } }
-  sdp[:media_description][0].add_field { :attribute => { :attribute => "recvonly" } }
-  sdp[:media_description][1].add_field { :media_description => { :media => "audio" } }
+  sdp.username = "elvis"
+  sdp.media_descriptions = { :media => "video", :attributes => { :attribute => "recvonly" } }
+  sdp.media_descriptions = { :media => "audio", :attributes => { :attribute => "rtpmap", :value => "99 h263-1998/90000" } }
   
-  # Add by passing in the SDP field string
-  sdp[:media_description][1].add_field "a=rtpmap:99 h263-1998/90000"
-
   # Fields are ordered as they are entered, where Session Description comes first, then
   # subsequent Media Description sections:
-  sdp.inspect     # => <#SDP::Description
-                  # [<#SDP::DescriptionFields::VersionField value=0>,
-                  #  <#SDP::DescriptionFields::OriginField value={:username=>"elvis"}>,
-                  #  <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video"}>,
-                  #  <#SDP::DescriptionFields::AttributeField value={:attribute=>"recvonly"}>,
-                  #  <#SDP::DescriptionFields::MediaDescriptionField value={:media => "audio"}>,
-                  #  <#SDP::DescriptionFields::AttributeField value={:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}>]
+  sdp.inspect     # => {:session_description=>{:version=>#<SDP::DescriptionFields::VersionField:0x00000101463688 @sdp_type="v",@ruby_type=:version, @required=true, @value=0>,
+                  #     :origin=>#<SDP::DescriptionFields::OriginField:0x00000101235560 @sdp_type="o", @ruby_type=:origin, @required=true, @value={:username=>"elvis", :session_id=>1294637556, :session_version=>1294637556, :net_type=>:IN, :address_type=>:IP4, :unicast_address=>"192.168.10.14"}>},
+                  #     :media_descriptions=>[#<SDP::DescriptionFields::MediaDescriptionField:0x00000101058140 @sdp_type="m", @ruby_type=:media_description, @required=true, @value={:media=>"video", :port=>"", :protocol=>"", :format=>""}>,
+                  #     #<SDP::DescriptionFields::AttributeField:0x0000010109a518 @sdp_type="a", @ruby_type=:attribute, @required=false, @value={:attribute=>"recvonly", :value=>""}>,
+                  #     #<SDP::DescriptionFields::MediaDescriptionField:0x0000010098ea48 @sdp_type="m", @ruby_type=:media_description, @required=true, @value={:media=>"audio", :port=>"", :protocol=>"", :format=>""}>,
+                  #     #<SDP::DescriptionFields::AttributeField:0x0000010098ef18 @sdp_type="a", @ruby_type=:attribute, @required=false, @value={:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}>]}
   sdp.to_s        # => "v=0\r\n
-                  #     o=elvis\r\n
+                  #     o=elvis 1294637556 1294637556 IN IP4 192.168.10.14\r\n
                   #     m=video\r\n
                   #     a=recvonly\r\n
                   #     m=audio\r\n"
                   #     a=rtpmap:99 h263-1998/90000\r\n"
-  sdp[:session_description][:version]         # => <#SDP::DescriptionFields::VersionField value=0>
-  sdp[:session_description][:version].index   # => 0
+  sdp[:session_description][:version]         # => #<SDP::DescriptionFields::VersionField:0x00000101463688 @sdp_type="v", @ruby_type=:version, @required=true, @value=0>
   sdp[:session_description][:version].to_s    # => "v=0\r\n"
-  sdp[:session_description][:version] = 1     # => <#SDP::DescriptionFields::VersionField value=1>
+  sdp[:media_descriptions][0]  # => #<SDP::DescriptionFields::MediaDescriptionField:0x00000101058140 @sdp_type="m", @ruby_type=:media_description, @required=true, @value={:media=>"video", :port=>"", :protocol=>"", :format=>""}
   
-  sdp[:media_descriptions[0][:media_description]  # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video"}>
-  sdp[:media_descriptions][0][:media_description] = { :port => 9999 }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"video", :port=>9999}>
-  sdp[:media_descriptions][0][:media_description] = { :media => "text" }   # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"text", :port=>9999}>
-  sdp[:media_descriptions][0][:media_description] = { :media => "audio",
-    :port => 49154 }                          # => <#SDP::DescriptionFields::MediaDescriptionField value={:media=>"audio", :port=>49154}>
-  sdp[:media_descriptions][0].index            # => 2
-  sdp[:media_descriptions][0][:attribute]      # => <#SDP::DescriptionFields::AttributeField value={:attribute=>"recvonly"}>
-  
-  # Delete fields from the list:
-  sdp[:session_description].delete_field "o=elvis"
-  sdp[:media_descriptions][0].index            # => 1  
+  # Delete fields from the session description Hash, just like any other Hash:
+  sdp[:session_description].delete :origin
 
 
 === Parsing an SDP description
@@ -83,7 +69,7 @@ You can use this gem to marshall data
   session.class               # => SDP::Description
   session.protocol_version    # => 0
   session.media_descriptions  # => [{ :media=>"audio", :port=>49170, :protocol=>"RTP/AVP", :format=>0 },
-                              #  { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
+                              #     { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
                               #   :attributes=>[{"rtpmap" => "99 h263-1998/90000"}}]
   session.username            # => "elvis"
   session.id                  # => 2890844526
