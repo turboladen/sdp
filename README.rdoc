@@ -98,7 +98,7 @@ You can use this gem to marshall data
   session.connection_address  # => "224.2.17.12/127"
   session.start_time          # => 2873397496
   session.stop_type           # => 2873404696
-  session.attributes          # => { :attribute => "recvonly" }
+  session.attributes          # => [{ :attribute => "recvonly" }]
   
   # Put it back to a string...
   session.to_s        # => "v=0\r\n
