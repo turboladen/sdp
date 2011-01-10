@@ -1,5 +1,3 @@
-require 'logger'
-
 class SDP
 
   # Represents an SDP description as defined in RFC 4566.  This class allows
