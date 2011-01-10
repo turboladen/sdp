@@ -20,9 +20,8 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @session.connection_address = "224.2.17.12/127"
   @session.start_time = 2873397496
   @session.stop_time = 2873404696
-  #@session.session_attributes << "recvonly"
+  @session.attributes = { :attribute => "recvonly" }
 =begin
-  @sdp.add_field(:attribute, { :attribute => "recvonly" })
   @sdp.add_field(:media_description, {
     :media => "audio",
     :port => 49170,

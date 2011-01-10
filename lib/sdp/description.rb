@@ -140,6 +140,22 @@ class SDP
       self[:session_description][:timing].value[:stop_time]
     end
 
+    def attributes=(new_attribute)
+      unless self[:session_description].has_key? :attributes
+        self[:session_description][:attributes] = []
+      end
+
+      attribute_field = create_field_object :attribute
+      attribute_field.value = new_attribute
+      self[:session_description][:attributes] << attribute_field
+
+      self[:session_description][:attributes].last.value
+    end
+
+    def attributes
+      self[:session_description][:attributes].value
+    end
+
     # Add a new Media description section.
     def media=(new_media_description)
       media_description_field = create_field_object :media_description
@@ -153,6 +169,7 @@ class SDP
     def media
       self[:media_descriptions].collect { |m| m.value }
     end
+
 
     # Turns the current SDP::Description object into the SDP description,
     # ready to be used.
@@ -184,8 +201,13 @@ class SDP
       sdp_string << self[:session_description][:email_address].to_sdp_s
       sdp_string << self[:session_description][:connection_data].to_sdp_s
       sdp_string << self[:session_description][:timing].to_sdp_s
-      self[:media_descriptions].each do |m|
-        sdp_string << m.to_sdp_s
+
+      self[:session_description][:attributes].each do |attribute|
+        sdp_string << attribute.to_sdp_s
+      end
+
+      self[:media_descriptions].each do |media_description|
+        sdp_string << media_description.to_sdp_s
       end
 
       sdp_string

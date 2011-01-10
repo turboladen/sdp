@@ -30,7 +30,7 @@ class SDP::DescriptionFields
     # 
     # @return [String] A String in the form: "v=0\r\n".
     def to_sdp_s
-      if @value[:value].nil?
+      if @value[:value].nil? || @value[:value].empty?
         values = "#{@value[:attribute]}"
       else
         values = "#{@value[:attribute]}:#{@value[:value]}"
