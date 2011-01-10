@@ -34,7 +34,7 @@ Then /^the resulting file should look like the intended description$/ do
 end
 
 Given /^I create an SDP object with no parameters$/ do
-  @sdp = SDP::Description.new
+  @session = SDP::Description.new
 end
 
 When /^I convert it to a String$/ do
@@ -43,8 +43,4 @@ end
 
 Then /^it should have :version set to (\d+)$/ do |value|
   @sdp_string.should match /v=#{value}/
-end
-
-Then /^it should have all :origin fields set$/ do
-  @sdp_string.should match(/o=\w+ \d+ \d+ IN IP4 \w+/)
 end

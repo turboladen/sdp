@@ -16,16 +16,12 @@ class SDP
     def initialize
       self[:session_description] = {}
       self[:media_descriptions] = []
-      protocol_version = 0
+      self.send :protocol_version=, 0
     end
 
     # Set the Session description section's version field value.
-    def protocol_version=(version)
-      self[:session_description][:version] = create_field_object :version
-      self[:session_description][:version].value = version
-
-      self[:session_description][:version].value
-      add_field(:session_description, :version, version)
+    def protocol_version=(new_version)
+      add_field(:session_description, :version, new_version)
     end
 
     # @return [Fixnum]
@@ -186,18 +182,20 @@ class SDP
     #
     # @return [String] The SDP description.
     def to_s
-      sdp_string = self[:session_description][:version].to_sdp_s
-      sdp_string << self[:session_description][:origin].to_sdp_s
-      sdp_string << self[:session_description][:session_name].to_sdp_s
-      sdp_string << self[:session_description][:session_information].to_sdp_s
-      sdp_string << self[:session_description][:uri].to_sdp_s
-      sdp_string << self[:session_description][:email_address].to_sdp_s
-      sdp_string << self[:session_description][:connection_data].to_sdp_s
-      sdp_string << self[:session_description][:timing].to_sdp_s
+      sdp_string = ""
+
+      sdp_string << self[:session_description][:version].to_sdp_s
+      sdp_string << self[:session_description][:origin].to_sdp_s if self[:session_description][:origin]
+      sdp_string << self[:session_description][:session_name].to_sdp_s if self[:session_description][:session_name]
+      sdp_string << self[:session_description][:session_information].to_sdp_s if self[:session_description][:session_information]
+      sdp_string << self[:session_description][:uri].to_sdp_s if self[:session_description][:uri]
+      sdp_string << self[:session_description][:email_address].to_sdp_s if self[:session_description][:email_address]
+      sdp_string << self[:session_description][:connection_data].to_sdp_s if self[:session_description][:connection_data]
+      sdp_string << self[:session_description][:timing].to_sdp_s if self[:session_description][:timing]
 
       self[:session_description][:attributes].each do |attribute|
         sdp_string << attribute.to_sdp_s
-      end
+      end if self[:session_description][:attributes]
 
       self[:media_descriptions].each do |media_description|
         sdp_string << media_description.to_sdp_s
@@ -251,34 +249,5 @@ class SDP
       
     end
 
-    # Finds a field by type and value.  Needed in order to properly add
-    # to the output string as well as assign new values to the field.
-    # 
-    # @param [Symbol] field_type
-    # @param [] field_value
-    # @return [Array] The object and its position in self's Array.
-    def find_fields(field_type, field_value=nil)
-      @logger.debug "field type: #{field_type}"
-
-      fields = self.find_all do |f|
-        @logger.debug "f: #{f}"
-        @logger.debug "f.ruby_type: #{f.ruby_type}"
-        f.ruby_type == field_type
-      end
-
-      @logger.debug "fields: #{fields}"
-
-      if fields.length == 1
-        return [fields.first, self.index(fields.first)]
-      else
-        all_fields = []
-
-        fields.each do |field|
-          all_fields << [field, self.index(field)]
-        end
-
-        return all_fields
-      end
-    end
   end
 end
