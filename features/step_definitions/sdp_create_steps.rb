@@ -21,28 +21,12 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @session.start_time = 2873397496
   @session.stop_time = 2873404696
   @session.attributes = { :attribute => "recvonly" }
-=begin
-  @sdp.add_field(:media_description, {
-    :media => "audio",
-    :port => 49170,
-    :protocol => "RTP/AVP",
-    :format => "0"
-  })
-  @sdp.add_field(:media_description, {
-    :media => "video",
-    :port => 51372,
-    :protocol => "RTP/AVP",
-    :format => "99"
-  })
-  #@sdp.media_description = { :media => "video", ... }
-  #@sdp.media_description = { :media => "audio", ... }
-  #@sdp.assoc   # => { :media => "video", ... }
-  #@sdp.media_description[1].media   # => { :media => "video", ... }
-  @sdp.add_field(:attribute, {
-    :attribute => "rtpmap",
-    :value => "99 h263-1998/90000"
-  })
-=end
+  @session.media_descriptions = 
+    { :media => "audio", :port => 49170, :protocol => "RTP/AVP", :format => 0 }
+  @session.media_descriptions = 
+    { :media => "video", :port => 51372, :protocol => "RTP/AVP", :format => 99,
+      :attributes => { :attribute => "rtpmap", :value => "99 h263-1998/90000" }
+    }
 end
 
 Then /^the resulting file should look like the intended description$/ do

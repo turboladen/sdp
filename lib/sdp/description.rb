@@ -157,16 +157,26 @@ class SDP
     end
 
     # Add a new Media description section.
-    def media=(new_media_description)
+    def media_descriptions=(new_media_description)
+      has_attributes = false
+
+      if new_media_description.has_key? :attributes
+        has_attributes = true
+        attributes_field = create_field_object :attribute
+        attributes_values = new_media_description.delete :attributes
+        attributes_field.value = attributes_values
+      end
+
       media_description_field = create_field_object :media_description
       media_description_field.value = new_media_description
       self[:media_descriptions] << media_description_field
+      self[:media_descriptions] << attributes_field if has_attributes
 
-      self[:media_descriptions].last.value
+      self[:media_descriptions].collect { |m| m.value }
     end
 
     # @return [Array]
-    def media
+    def media_descriptions
       self[:media_descriptions].collect { |m| m.value }
     end
 
@@ -176,23 +186,6 @@ class SDP
     #
     # @return [String] The SDP description.
     def to_s
-=begin
-      sdp_string = add_to_string(:version)
-      sdp_string << add_to_string(:origin)
-      sdp_string << add_to_string(:session_name)
-      sdp_string << add_to_string(:session_information)
-      sdp_string << add_to_string(:uri)
-      sdp_string << add_to_string(:email_address)
-      sdp_string << add_to_string(:phone_number)
-      sdp_string << add_to_string(:connection_data)
-      sdp_string << add_to_string(:bandwidth)
-      sdp_string << add_to_string(:timing)
-      sdp_string << add_to_string(:repeat_times)
-      sdp_string << add_to_string(:time_zones)
-      sdp_string << add_to_string(:encryption_keys)
-      sdp_string << add_to_string(:attribute)
-      sdp_string << add_to_string(:media_description)
-=end
       sdp_string = self[:session_description][:version].to_sdp_s
       sdp_string << self[:session_description][:origin].to_sdp_s
       sdp_string << self[:session_description][:session_name].to_sdp_s
@@ -256,24 +249,6 @@ class SDP
 
       self[description_hash][field_type].value
       
-    end
-
-    # Converts a DescriptionField child to a String that is used in an SDP
-    # description.
-    # 
-    # @param [Symbol] field_type
-    # @return [String] The line used in an SDP description.
-    def add_to_string field_type
-      field = find_field(field_type)
-
-      string = if field.first.nil?
-        @logger.debug "field is nill"
-        ""
-      elsif field.first.valid?
-        field.first.to_sdp_s
-      else
-        ""
-      end
     end
 
     # Finds a field by type and value.  Needed in order to properly add
