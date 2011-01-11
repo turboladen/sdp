@@ -109,6 +109,14 @@ class SDP
       self[:session_description][:email_address].value
     end
 
+    def phone_number=(new_phone_number)
+      add_field(:session_description, :phone_number, new_phone_number)
+    end
+
+    def phone_number
+      self[:session_description][:phone_number].value
+    end
+
     def connection_address=(new_connection_address)
       add_field(:session_description, :connection_data,
         new_connection_address, :connection_address)
@@ -116,6 +124,22 @@ class SDP
 
     def connection_address
       self[:session_description][:connection_data].value[:connection_address]
+    end
+
+    def bandwidth_type=(new_bandwidth_type)
+      add_field(:session_description, :bandwidth, new_bandwidth_type, :bandwidth_type)
+    end
+
+    def bandwidth_type
+      self[:session_description][:bandwidth].value[:bandwidth_type]
+    end
+
+    def bandwidth=(new_bandwidth)
+      add_field(:session_description, :bandwidth, new_bandwidth, :bandwidth)
+    end
+
+    def bandwidth
+      self[:session_description][:bandwidth].value[:bandwidth]
     end
 
     def start_time=(new_start_time)
@@ -134,6 +158,65 @@ class SDP
       self[:session_description][:timing].value[:stop_time]
     end
 
+    def repeat_interval=(new_repeat_interval)
+      add_field(:session_description, :repeat_times,
+        new_repeat_interval, :repeat_interval)
+    end
+
+    def repeat_interval
+      self[:session_description][:repeat_times].value[:repeat_interval]
+    end
+
+    def active_duration=(new_active_duration)
+      add_field(:session_description, :repeat_times, new_active_duration, :active_duration)
+    end
+
+    def active_duration
+      self[:session_description][:repeat_times].value[:active_duration]
+    end
+
+    def offsets_from_start_time=(new_offsets_from_start_time)
+      add_field(:session_description, :repeat_times, new_offsets_from_start_time, :offsets_from_start_time)
+    end
+
+    def offsets_from_start_time
+      self[:session_description][:repeat_times].value[:offsets_from_start_time]
+    end
+
+    def time_zone_adjustment=(new_adjustment_time)
+      add_field(:session_description, :time_zones, new_adjustment_time, :adjustment_time)
+    end
+
+    def time_zone_adjustment
+      self[:session_description][:time_zones].value[:adjustment_time]
+    end
+
+    def time_zone_offset=(new_offset)
+      add_field(:session_description, :time_zones, new_offset, :offset)
+    end
+
+    def time_zone_offset
+      self[:session_description][:time_zones].value[:offset]
+    end
+
+    def encryption_method=(new_encryption_method)
+      add_field(:session_description, :encryption_keys,
+        new_encryption_method, :method)
+    end
+
+    def encryption_method
+      self[:session_description][:encryption_keys].value[:method]
+    end
+
+    def encryption_key=(new_encryption_key)
+      add_field(:session_description, :encryption_keys,
+        new_encryption_key, :encryption_key)
+    end
+
+    def encryption_key
+      self[:session_description][:encryption_keys].value[:encryption_key]
+    end
+
     def attributes=(new_attribute)
       unless self[:session_description].has_key? :attributes
         self[:session_description][:attributes] = []
@@ -143,11 +226,12 @@ class SDP
       attribute_field.value = new_attribute
       self[:session_description][:attributes] << attribute_field
 
-      self[:session_description][:attributes].last.value
+      self[:session_description][:attributes]
     end
 
+    # @return []
     def attributes
-      self[:session_description][:attributes].value
+      self[:session_description][:attributes].collect { |a| a.value }
     end
 
     # Add a new Media description section.
