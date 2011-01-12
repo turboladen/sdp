@@ -6,6 +6,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    citrus (2.3.2)
     diff-lcs (1.1.2)
     git (1.2.5)
     infinity_test (1.0.2)
@@ -36,6 +37,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.0.0)
+  citrus
   infinity_test
   jeweler (~> 1.5.0)
   ore-core (~> 0.1.0)

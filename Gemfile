@@ -1,6 +1,7 @@
 source :rubygems
 
 gemspec
+gem 'citrus'
 
 group :development do
   gem 'rake',     '~> 0.8.7'
