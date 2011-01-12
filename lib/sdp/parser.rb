@@ -1,4 +1,5 @@
 require 'sdp/description'
+require 'citrus'
 
 class SDP
   module Parser
@@ -7,68 +8,85 @@ class SDP
     end
 
     module ClassMethods
-      SDP_TYPE = {
-        :version => /^v=(.*)/,
-        :origin => /^o=(.*)/,
-        :session_name => /^s=(.*)/,
-        :session_information => /^i=(.*)/,
-        :uri => /^u=(.*)/,
+      Citrus.load 'lib/sdp/description_grammar.rb'
+
+      SESSION_DESCRIPTION = {
+        :protocol_version => /^v=(\S+)/,
+        :username => /^o=(\S+)/,
+        :id => /^o=\S+\s(\S*)/,
+        :version => /^o=\S+\s\S+\s(\S*)/,
+        :network_type => /^o=\S+\s\S+\s\S+\s(\S*)/,
+        :address_type => /^o=\S+\s\S+\s\S+\s\S+\s(\S*)/,
+        :unicast_address => /^o=\S+\s\S+\s\S+\s\S+\s\S+\s(\S*)/,
+        :name => /^s=(.*)/,
+        :information => /^i=(.*)/,
+        :uri => /^u=(\S*)/,
         :email_address => /^e=(.*)/,
         :phone_number => /^p=(.*)/,
-        :connection_data => /^c=(.*)/,
-        :bandwidth => /^b=(.*)/,          # Multi-type
-        :timing => /^t=(.*)/,             # Multi-type
-        :repeat_times => /^r=(.*)/,       # Multi-type
-        :time_zones => /^z=(.*)/,         # Multi-type
-        :encryption_keys => /^k=(.*)/,    # Multi-type
-        :attribute => /^a=(.*)/
+        :connection_address => /^c=\S+\s\S+\s(\S+)/,
+        :bandwidth_type => /^b=(\w*)/,
+        :bandwidth => /^b=\w*\:(\S*)/,
+        :start_time => /^t=(\S*)/,
+        :stop_time => /^t=\S*\s(\S*)/,
+        :repeat_interval => /^r=(\S*)/,
+        :active_duration => /^r=\S*\s(\S*)/,
+        :offsets_from_start_time => /^r=\S*\s\S*\s(.*)/,
+        :time_zone_adjustment => /^z=(\S*)/,
+        :time_zone_offset => /^z=\S*\s(\S*)/,
+        :encryption_method => /^k=(\w*)/,
+        :encryption_key => /^k=\w*\:(\S*)/,
+        :attributes => /^a=(\w+):?(.*)?/
       }
 
       def parse sdp_text
-        sdp = SDP::Description.new
+				s = SDPDescription.parse sdp_text
+        session_section = s.matches[0]
+        media_section = s.matches[1]
 
-        SDP_TYPE.each_pair do |sdp_type, regex|
-          sdp_text =~ regex
+        session = SDP::Description.new
 
+        session = parse_session_section_text(session, session_section.to_s)
+        #session = parse_media_section_text(session, media_section)
+
+        # Do all session attributes
 =begin
-          if sdp_type == :origin
-            sdp[sdp_type] = parse_origin $1
-          elsif sdp_type == :connection_data
-            sdp[sdp_type] = parse_connection_data $1
+        new_attributes = []
+        attributes_array.inject({}) do |result, element|
+          if element.size = 1
+            result = { :attribute => element.first }
           else
-            sdp[sdp_type] = $1
+            result = { :attribute => element.first, :value => element.last }
           end
+          new_attributes << result
+          result
+        end
+        new_attributes.each { |a| session.attributes = a }
 =end
+
+        session
+      end
+
+      # Do all standard session description fields
+      def parse_session_section_text(session, session_section_text)
+        SESSION_DESCRIPTION.each_pair do |sdp_type, regex|
+          session_section_text =~ regex
+
           value = $1.strip unless $1.nil?
-          sdp.add_field(sdp_type, value)
+
+          if sdp_type == :attributes
+            attribute = value
+            attribute_value = $2.strip unless $2.nil?
+            value = {}
+            value[:attribute] = attribute
+            value[:value] = attribute_value
+          end
+          session.send("#{sdp_type}=", value)
         end
 
-        sdp
+        session
       end
 
-      def parse_origin origin_line
-        origin = {}
-        origin_params = origin_line.split(" ")
-        origin[:username]         = origin_params[0]
-        origin[:session_id]       = origin_params[1]
-        origin[:session_version]  = origin_params[2].to_i # Should be NTP timestamp
-        origin[:net_type]         = origin_params[3]
-        origin[:address_type]     = origin_params[4].to_sym
-        origin[:unicast_address]  = origin_params[5]
-
-        origin
-      end
-
-      # c= can show up multiple times...
-      # If :connection_address has a trailing /127 (ex), 127 = ttl; only IP4 though.
-      def parse_connection_data connection_data_line
-        connection_data = {}
-        connection_data_params = connection_data_line.split(" ")
-        connection_data[:net_type]            = connection_data_params[0]
-        connection_data[:address_type]        = connection_data_params[1].to_sym
-        connection_data[:connection_address]  = connection_data_params[2]
-
-        connection_data
+      def parse_media_section_text(session, media_section_text)
       end
     end
   end

@@ -272,8 +272,13 @@ class SDP
       sdp_string << self[:session_description][:session_information].to_sdp_s if self[:session_description][:session_information]
       sdp_string << self[:session_description][:uri].to_sdp_s if self[:session_description][:uri]
       sdp_string << self[:session_description][:email_address].to_sdp_s if self[:session_description][:email_address]
+      sdp_string << self[:session_description][:phone_number].to_sdp_s if self[:session_description][:phone_number]
       sdp_string << self[:session_description][:connection_data].to_sdp_s if self[:session_description][:connection_data]
+      sdp_string << self[:session_description][:bandwidth].to_sdp_s if self[:session_description][:bandwidth]
       sdp_string << self[:session_description][:timing].to_sdp_s if self[:session_description][:timing]
+      sdp_string << self[:session_description][:repeat_times].to_sdp_s if self[:session_description][:repeat_times]
+      sdp_string << self[:session_description][:time_zones].to_sdp_s if self[:session_description][:time_zones]
+      sdp_string << self[:session_description][:encryption_keys].to_sdp_s if self[:session_description][:encryption_keys]
 
       self[:session_description][:attributes].each do |attribute|
         sdp_string << attribute.to_sdp_s

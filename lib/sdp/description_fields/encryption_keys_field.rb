@@ -30,8 +30,10 @@ class SDP::DescriptionFields
     # 
     # @return [String] A String in the form: "v=0\r\n".
     def to_sdp_s
-      unless @value[:method].empty? || @value[:encryption_key].nil?
+      unless @value[:method].empty? || @value[:encryption_key].empty?
         values = "#{@value[:method]}:#{@value[:encryption_key]}"
+      else
+        values = "#{@value[:method]}"
       end
 
       return "#{@sdp_type}=#{values}\r\n"
