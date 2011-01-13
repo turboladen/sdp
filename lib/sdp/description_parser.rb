@@ -28,6 +28,18 @@ class SDPDescription < Parslet::Parser
   rule(:timing) do
     str('t=') >> field_value.as(:start_time) >> space >> field_value.as(:stop_time) >> eol
   end
+
+  rule(:repeat_times) do
+    str('r=') >> field_value.as(:repeat_interval) >> space >> field_value.as(:active_duration) >>
+    space >> field_value_string.as(:offsets_from_start_time) >> eol
+  end
+
+  rule(:time_zone_group) do
+    field_value.as(:adjustment_time) >> space >> field_value.as(:offset)
+  end
+  rule(:time_zones) do
+    str('z=') >> (time_zone_group >> (space >> time_zone_group).repeat).as(:time_zones) >> eol
+  end
   
   # Generics
   rule(:space)          { match('[ ]').repeat(1) }
@@ -40,13 +52,16 @@ class SDPDescription < Parslet::Parser
     version >> origin >> session_name >> 
     (session_information.maybe >> uri.maybe >> email_address.maybe >> phone_number.maybe >>
     connection_data.maybe >> bandwidth.maybe) >>
-    timing.maybe
+    timing.maybe >> repeat_times.maybe >> time_zones.maybe
   end
 
   root :description
 end
 
 s = SDPDescription.new
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h 2898848070 0\n"
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h\n"
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\n"
