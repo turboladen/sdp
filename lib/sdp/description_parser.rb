@@ -25,6 +25,10 @@ class SDPDescription < Parslet::Parser
     field_value.as(:bandwidth) >> eol
   end
 
+  rule(:timing) do
+    str('t=') >> field_value.as(:start_time) >> space >> field_value.as(:stop_time) >> eol
+  end
+  
   # Generics
   rule(:space)          { match('[ ]').repeat(1) }
   rule(:eol)            { match('[\n]') }
@@ -35,20 +39,22 @@ class SDPDescription < Parslet::Parser
   rule(:description) do
     version >> origin >> session_name >> 
     (session_information.maybe >> uri.maybe >> email_address.maybe >> phone_number.maybe >>
-    connection_data.maybe >> bandwidth.maybe)
+    connection_data.maybe >> bandwidth.maybe) >>
+    timing.maybe
   end
 
   root :description
 end
 
 s = SDPDescription.new
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\n"
-p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\n"
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\nt=11111 22222\n"
 
 =begin
 string = <<-STR
