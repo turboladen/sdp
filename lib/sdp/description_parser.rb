@@ -1,23 +1,6 @@
 require 'parslet'
 
 class SDPDescription < Parslet::Parser
-=begin
-  rule(:field)    { match('[\w]').as(:field_type) }
-  rule(:equals)   { match("=") }
-  rule(:field_value) { match(/\S/).repeat.as(:value) }
-
-  rule(:eol)      { crlf }
-  rule(:crlf)     { match('[\n]') }
-
-  rule(:space)  { match('[ ]').repeat(1) }
-  rule(:space?) { space.maybe }
-
-  rule(:field_value_section)  { field_value >> (space >> field_value).repeat }
-  rule(:field_line)  { field >> equals >> field_value_section.as(:values) }
-  rule(:description) { (field_line >> eol).repeat(1) }
-
-  root :description
-=end
   rule(:version)        { str('v=') >> field_value.as(:protocol_version) >> eol }
 
   rule(:origin) do
