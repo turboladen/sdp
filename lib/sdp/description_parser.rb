@@ -1,7 +1,8 @@
 require 'parslet'
 
 class SDPDescription < Parslet::Parser
-  rule(:version)        { str('v=') >> field_value.as(:protocol_version) >> eol }
+  # All of the fields
+  rule(:version) { str('v=') >> field_value.as(:protocol_version) >> eol }
 
   rule(:origin) do
     str('o=') >> field_value.as(:username) >> space >> field_value.as(:session_id) >> space >>
@@ -14,9 +15,14 @@ class SDPDescription < Parslet::Parser
   rule(:uri)            { str('u=') >> field_value.as(:uri) >> eol }
   rule(:email_address)  { str('e=') >> field_value_string.as(:email_address) >> eol }
   rule(:phone_number)   { str('p=') >> field_value_string.as(:phone_number) >> eol }
-  rule(:connection_address) do
+  rule(:connection_data) do
     str('c=') >> field_value >> space >> field_value >> space >>
     field_value.as(:connection_address) >> eol
+  end
+
+  rule(:bandwidth) do
+    str('b=') >> match('[\w]').repeat(2).as(:bandwidth_type) >> str(':') >>
+    field_value.as(:bandwidth) >> eol
   end
 
   # Generics
@@ -25,15 +31,18 @@ class SDPDescription < Parslet::Parser
   rule(:field_value)    { match('\S').repeat }
   rule(:field_value_string) { match('[^\n]').repeat }
 
+  # The SDP description
   rule(:description) do
     version >> origin >> session_name >> 
-    (session_information.maybe >> uri.maybe >> email_address.maybe >> phone_number.maybe >> connection_address.maybe)
+    (session_information.maybe >> uri.maybe >> email_address.maybe >> phone_number.maybe >>
+    connection_data.maybe >> bandwidth.maybe)
   end
 
   root :description
 end
 
 s = SDPDescription.new
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\n"
