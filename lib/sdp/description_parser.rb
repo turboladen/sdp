@@ -41,6 +41,11 @@ class SDPDescription < Parslet::Parser
     str('z=') >> (time_zone_group >> (space >> time_zone_group).repeat).as(:time_zones) >> eol
   end
   
+  rule(:encryption_keys) do
+    str('k=') >> match('[\w]').repeat.as(:encryption_method) >> (str(':') >>
+      field_value.as(:encryption_key)).maybe >> eol
+  end
+  
   # Generics
   rule(:space)          { match('[ ]').repeat(1) }
   rule(:eol)            { match('[\n]') }
@@ -52,13 +57,15 @@ class SDPDescription < Parslet::Parser
     version >> origin >> session_name >> 
     (session_information.maybe >> uri.maybe >> email_address.maybe >> phone_number.maybe >>
     connection_data.maybe >> bandwidth.maybe) >>
-    timing.maybe >> repeat_times.maybe >> time_zones.maybe
+    timing.maybe >> repeat_times.maybe >> time_zones.maybe >> encryption_keys.maybe
   end
 
   root :description
 end
 
 s = SDPDescription.new
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h 2898848070 0\n\k=prompt\n"
+p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h 2898848070 0\n\k=clear:password\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h 2898848070 0\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\n"
