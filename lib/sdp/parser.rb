@@ -9,10 +9,9 @@ class SDP
 
     module ClassMethods
       def parse sdp_text
-				sdp_hash = SDPDescription.new.parse sdp_text
-#require 'ap'; ap sdp_hash
-
         session = SDP::Description.new
+				sdp_hash = SDPDescription.new.parse sdp_text
+
         session.protocol_version = sdp_hash[0][:protocol_version]
         session.username = sdp_hash[0][:username]
         session.id = sdp_hash[0][:session_id]
@@ -39,33 +38,7 @@ class SDP
           session.attributes = attribute_pair
         end
 
-
         session
-      end
-
-      # Do all standard session description fields
-      def parse_session_section_text(session, session_section_text)
-        SESSION_DESCRIPTION.each_pair do |sdp_type, regex|
-          session_section_text =~ regex
-
-          value = $1.strip unless $1.nil?
-
-          if sdp_type == :attributes
-            attribute = value
-            attribute_value = $2.strip unless $2.nil?
-            value = {}
-            value[:attribute] = attribute
-            value[:value] = attribute_value
-          end
-          session.send("#{sdp_type}=", value)
-        end
-
-        session_section_text =~ /^a=/
-
-        session
-      end
-
-      def parse_media_section_text(session, media_section_text)
       end
     end
   end
