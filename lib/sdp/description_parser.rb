@@ -58,7 +58,7 @@ class SDPDescription < Parslet::Parser
 
   # Generics
   rule(:space)          { match('[ ]').repeat(1) }
-  rule(:eol)            { match('[\n]') }
+  rule(:eol)            { match('[\r]').maybe >> match('[\n]') }
   rule(:field_value)    { match('\S').repeat }
   rule(:field_value_string) { match('[^\n]').repeat }
 
