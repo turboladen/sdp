@@ -60,7 +60,7 @@ class SDPDescription < Parslet::Parser
   rule(:space)          { match('[ ]').repeat(1) }
   rule(:eol)            { match('[\r]').maybe >> match('[\n]') }
   rule(:field_value)    { match('\S').repeat }
-  rule(:field_value_string) { match('[^\n]').repeat }
+  rule(:field_value_string) { match('[^\r\n]').repeat }
 
   # The SDP description
   rule(:session_section) do
