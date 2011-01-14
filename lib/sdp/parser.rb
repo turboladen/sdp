@@ -11,34 +11,35 @@ class SDP
       def parse sdp_text
         session = SDP::Description.new
 				sdp_hash = SDPDescription.new.parse sdp_text
+        session_section = sdp_hash[:session_section]
 
-        session.protocol_version = sdp_hash[0][:protocol_version]
-        session.username = sdp_hash[0][:username]
-        session.id = sdp_hash[0][:session_id]
-        session.version = sdp_hash[0][:session_version]
-        session.network_type = sdp_hash[0][:network_type]
-        session.address_type = sdp_hash[0][:address_type]
-        session.unicast_address = sdp_hash[0][:unicast_address]
-        session.name = sdp_hash[0][:session_name]
-        session.information = sdp_hash[0][:session_information]
-        session.uri = sdp_hash[0][:uri]
-        session.email_address = sdp_hash[0][:email_address]
-        session.phone_number = sdp_hash[0][:phone_number]
-        session.bandwidth_type = sdp_hash[0][:bandwidth_type]
-        session.bandwidth = sdp_hash[0][:bandwidth]
-        session.connection_address = sdp_hash[0][:connection_address]
-        session.start_time = sdp_hash[0][:start_time]
-        session.stop_time = sdp_hash[0][:stop_time]
-        session.repeat_interval = sdp_hash[0][:repeat_interval]
-        session.active_duration = sdp_hash[0][:active_duration]
-        session.offsets_from_start_time = sdp_hash[0][:offsets_from_start_time]
+        session.protocol_version = session_section[:protocol_version]
+        session.username = session_section[:username]
+        session.id = session_section[:session_id]
+        session.version = session_section[:session_version]
+        session.network_type = session_section[:network_type]
+        session.address_type = session_section[:address_type]
+        session.unicast_address = session_section[:unicast_address]
+        session.name = session_section[:session_name]
+        session.information = session_section[:session_information]
+        session.uri = session_section[:uri]
+        session.email_address = session_section[:email_address]
+        session.phone_number = session_section[:phone_number]
+        session.bandwidth_type = session_section[:bandwidth_type]
+        session.bandwidth = session_section[:bandwidth]
+        session.connection_address = session_section[:connection_address]
+        session.start_time = session_section[:start_time]
+        session.stop_time = session_section[:stop_time]
+        session.repeat_interval = session_section[:repeat_interval]
+        session.active_duration = session_section[:active_duration]
+        session.offsets_from_start_time = session_section[:offsets_from_start_time]
 
-        if sdp_hash[0][:time_zones]
-          session.time_zone_adjustment = sdp_hash[0][:time_zones][:time_zone_adjustment]
-          session.time_zone_offset = sdp_hash[0][:time_zones][:time_zone_offset]
+        if session_section[:time_zones]
+          session.time_zone_adjustment = session_section[:time_zones][:time_zone_adjustment]
+          session.time_zone_offset = session_section[:time_zones][:time_zone_offset]
         end
 
-        sdp_hash[0][:attributes].each do |attribute_pair|
+        session_section[:attributes].each do |attribute_pair|
           session.attributes = attribute_pair
         end
 
