@@ -43,8 +43,7 @@ class SDP
           session.attributes = attribute_pair
         end
 
-        sdp_hash.shift
-        sdp_hash.each do |media_description|
+        sdp_hash[:media_sections].each do |media_description|
           session.media_descriptions == media_description
         end
 
