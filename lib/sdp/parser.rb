@@ -32,10 +32,19 @@ class SDP
         session.repeat_interval = sdp_hash[0][:repeat_interval]
         session.active_duration = sdp_hash[0][:active_duration]
         session.offsets_from_start_time = sdp_hash[0][:offsets_from_start_time]
-        session.time_zone_adjustment = sdp_hash[0][:time_zones][:time_zone_adjustment]
-        session.time_zone_offset = sdp_hash[0][:time_zones][:time_zone_offset]
+
+        if sdp_hash[0][:time_zones]
+          session.time_zone_adjustment = sdp_hash[0][:time_zones][:time_zone_adjustment]
+          session.time_zone_offset = sdp_hash[0][:time_zones][:time_zone_offset]
+        end
+
         sdp_hash[0][:attributes].each do |attribute_pair|
           session.attributes = attribute_pair
+        end
+
+        sdp_hash.shift
+        sdp_hash.each do |media_description|
+          session.media_descriptions == media_description
         end
 
         session

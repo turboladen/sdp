@@ -238,7 +238,7 @@ class SDP
     def media_descriptions=(new_media_description)
       has_attributes = false
 
-      if new_media_description.has_key? :attributes
+      if new_media_description.has_key? :attributes && !new_media_description[:attributes].nil?
         has_attributes = true
         attributes_field = create_field_object :attribute
         attributes_values = new_media_description.delete :attributes
