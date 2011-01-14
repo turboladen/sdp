@@ -35,7 +35,7 @@ class SDPDescription < Parslet::Parser
   end
 
   rule(:time_zone_group) do
-    field_value.as(:adjustment_time) >> space >> field_value.as(:offset)
+    field_value.as(:time_zone_adjustment) >> space >> field_value.as(:time_zone_offset)
   end
   rule(:time_zones) do
     str('z=') >> (time_zone_group >> (space >> time_zone_group).repeat).as(:time_zones) >> eol
@@ -48,7 +48,7 @@ class SDPDescription < Parslet::Parser
 
   rule(:attribute) do
     str('a=') >> match('[\w]').repeat.as(:attribute) >> (str(':') >>
-      field_value_string.as(:attribute_value)).maybe >> eol
+      field_value_string.as(:value)).maybe >> eol
   end
   
   rule(:media_description) do
@@ -79,6 +79,7 @@ class SDPDescription < Parslet::Parser
   root :description
 end
 
+=begin
 s = SDPDescription.new
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h 2898848070 0\n\k=prompt\na=recvonly\na=bobo:the clown\nm=video 49170/2 RTP/AVP 31\n"
 p s.parse "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nb=CT:1000\nt=11111 22222\nr=7d 1h 0 25h\nz=2882844526 -1h 2898848070 0\n\k=prompt\na=recvonly\na=bobo:the clown\n"
@@ -113,3 +114,4 @@ STR
 
 require 'ap'
 ap s.parse string
+=end

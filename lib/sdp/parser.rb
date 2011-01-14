@@ -1,5 +1,5 @@
 require 'sdp/description'
-require 'citrus'
+require 'sdp/description_parser'
 
 class SDP
   module Parser
@@ -8,60 +8,37 @@ class SDP
     end
 
     module ClassMethods
-      Citrus.load 'lib/sdp/description_grammar.rb'
-
-      SESSION_DESCRIPTION = {
-        :protocol_version => /^v=(\S+)/,
-        :username => /^o=(\S+)/,
-        :id => /^o=\S+\s(\S*)/,
-        :version => /^o=\S+\s\S+\s(\S*)/,
-        :network_type => /^o=\S+\s\S+\s\S+\s(\S*)/,
-        :address_type => /^o=\S+\s\S+\s\S+\s\S+\s(\S*)/,
-        :unicast_address => /^o=\S+\s\S+\s\S+\s\S+\s\S+\s(\S*)/,
-        :name => /^s=(.*)/,
-        :information => /^i=(.*)/,
-        :uri => /^u=(\S*)/,
-        :email_address => /^e=(.*)/,
-        :phone_number => /^p=(.*)/,
-        :connection_address => /^c=\S+\s\S+\s(\S+)/,
-        :bandwidth_type => /^b=(\w*)/,
-        :bandwidth => /^b=\w*\:(\S*)/,
-        :start_time => /^t=(\S*)/,
-        :stop_time => /^t=\S*\s(\S*)/,
-        :repeat_interval => /^r=(\S*)/,
-        :active_duration => /^r=\S*\s(\S*)/,
-        :offsets_from_start_time => /^r=\S*\s\S*\s(.*)/,
-        :time_zone_adjustment => /^z=(\S*)/,
-        :time_zone_offset => /^z=\S*\s(\S*)/,
-        :encryption_method => /^k=(\w*)/,
-        :encryption_key => /^k=\w*\:(\S*)/,
-        :attributes => /^a=(\w+):?(.*)?/
-      }
-
       def parse sdp_text
-				s = SDPDescription.parse sdp_text
-        session_section = s.matches[0]
-        media_section = s.matches[1]
+				sdp_hash = SDPDescription.new.parse sdp_text
+#require 'ap'; ap sdp_hash
 
         session = SDP::Description.new
-
-        session = parse_session_section_text(session, session_section.to_s)
-        #session = parse_media_section_text(session, media_section)
-
-        # Do all session attributes
-=begin
-        new_attributes = []
-        attributes_array.inject({}) do |result, element|
-          if element.size = 1
-            result = { :attribute => element.first }
-          else
-            result = { :attribute => element.first, :value => element.last }
-          end
-          new_attributes << result
-          result
+        session.protocol_version = sdp_hash[0][:protocol_version]
+        session.username = sdp_hash[0][:username]
+        session.id = sdp_hash[0][:session_id]
+        session.version = sdp_hash[0][:session_version]
+        session.network_type = sdp_hash[0][:network_type]
+        session.address_type = sdp_hash[0][:address_type]
+        session.unicast_address = sdp_hash[0][:unicast_address]
+        session.name = sdp_hash[0][:session_name]
+        session.information = sdp_hash[0][:session_information]
+        session.uri = sdp_hash[0][:uri]
+        session.email_address = sdp_hash[0][:email_address]
+        session.phone_number = sdp_hash[0][:phone_number]
+        session.bandwidth_type = sdp_hash[0][:bandwidth_type]
+        session.bandwidth = sdp_hash[0][:bandwidth]
+        session.connection_address = sdp_hash[0][:connection_address]
+        session.start_time = sdp_hash[0][:start_time]
+        session.stop_time = sdp_hash[0][:stop_time]
+        session.repeat_interval = sdp_hash[0][:repeat_interval]
+        session.active_duration = sdp_hash[0][:active_duration]
+        session.offsets_from_start_time = sdp_hash[0][:offsets_from_start_time]
+        session.time_zone_adjustment = sdp_hash[0][:time_zones][:time_zone_adjustment]
+        session.time_zone_offset = sdp_hash[0][:time_zones][:time_zone_offset]
+        sdp_hash[0][:attributes].each do |attribute_pair|
+          session.attributes = attribute_pair
         end
-        new_attributes.each { |a| session.attributes = a }
-=end
+
 
         session
       end
@@ -82,6 +59,8 @@ class SDP
           end
           session.send("#{sdp_type}=", value)
         end
+
+        session_section_text =~ /^a=/
 
         session
       end

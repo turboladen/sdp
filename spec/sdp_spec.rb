@@ -157,8 +157,9 @@ describe SDP do
     end
 
     context "session attributes" do
-      it "has an attribute with value 'recvonly'" do
+      it "has an attribute of type 'recvonly' with an empty value" do
         @parsed_sdp.attributes[0][:attribute].should == 'recvonly'
+        @parsed_sdp.attributes[0][:value].should == ''
       end
 
       it "has a second attribute 'type' with value 'test'" do
