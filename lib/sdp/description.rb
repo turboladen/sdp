@@ -88,7 +88,7 @@ class SDP
         self.replace session_as_hash
       end
 
-      self.send :protocol_version=, 0
+      self.send :protocol_version=, SDP::PROTOCOL_VERSION
     end
 
     def get_binding
