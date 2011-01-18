@@ -1,17 +1,18 @@
+require 'sdp'
 require 'parslet'
 
-class SDPDescription < Parslet::Parser
+class SDP::DescriptionParser < Parslet::Parser
   # All of the fields
   rule(:version) { str('v=') >> field_value.as(:protocol_version) >> eol }
 
   rule(:origin) do
-    str('o=') >> field_value.as(:username) >> space >> field_value.as(:session_id) >> space >>
-    field_value.as(:session_version) >> space >> field_value.as(:network_type) >> space >>
+    str('o=') >> field_value.as(:username) >> space >> field_value.as(:id) >> space >>
+    field_value.as(:version) >> space >> field_value.as(:network_type) >> space >>
     field_value.as(:address_type) >> space >> field_value.as(:unicast_address) >> eol
   end
 
-  rule(:session_name)        { str('s=') >> field_value_string.as(:session_name) >> eol }
-  rule(:session_information) { str('i=') >> field_value_string.as(:session_information) >> eol }
+  rule(:session_name)        { str('s=') >> field_value_string.as(:name) >> eol }
+  rule(:session_information) { str('i=') >> field_value_string.as(:information) >> eol }
   rule(:uri)            { str('u=') >> field_value.as(:uri) >> eol }
   rule(:email_address)  { str('e=') >> field_value_string.as(:email_address) >> eol }
   rule(:phone_number)   { str('p=') >> field_value_string.as(:phone_number) >> eol }

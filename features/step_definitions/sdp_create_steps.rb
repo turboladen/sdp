@@ -1,7 +1,7 @@
 require 'sdp/description'
 
 Given /^I know what the SDP file should look like$/ do
-  @example_sdp_file = File.open(File.dirname(__FILE__) + "/../support/sdp_file.txt", 'r')
+  @example_sdp_file = File.read(File.dirname(__FILE__) + "/../support/sdp_file.txt")
 end
 
 When /^I build the Ruby object with the appropriate fields$/ do
@@ -20,17 +20,17 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @session.connection_address = "224.2.17.12/127"
   @session.start_time = 2873397496
   @session.stop_time = 2873404696
-  @session.attributes = { :attribute => "recvonly" }
-  @session.media_descriptions = 
+  @session.attributes << { :attribute => "recvonly" }
+  @session.media_sections << 
     { :media => "audio", :port => 49170, :protocol => "RTP/AVP", :format => 0 }
-  @session.media_descriptions = 
+  @session.media_sections << 
     { :media => "video", :port => 51372, :protocol => "RTP/AVP", :format => 99,
-      :attributes => { :attribute => "rtpmap", :value => "99 h263-1998/90000" }
+      :attributes => [{ :attribute => "rtpmap", :value => "99 h263-1998/90000" }]
     }
 end
 
 Then /^the resulting file should look like the intended description$/ do
-  @session.to_s.should == @example_sdp_file.read
+  @session.to_s.should == @example_sdp_file
 end
 
 Given /^I create an SDP object with no parameters$/ do

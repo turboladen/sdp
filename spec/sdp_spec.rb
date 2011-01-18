@@ -33,8 +33,8 @@ describe SDP do
     end
 
     it "has a version number of 0" do
-      @parsed_sdp.protocol_version.should == "0"
-      @parsed_sdp.protocol_version.class.should == String
+      @parsed_sdp.protocol_version.should == 0
+      @parsed_sdp.protocol_version.class.should == Fixnum
     end
 
     context "origin" do
@@ -130,13 +130,13 @@ describe SDP do
     end
 
     it "has a time zone adjustment of '2882844526'" do
-      @parsed_sdp.time_zone_adjustment.should == '2882844526'
-      @parsed_sdp.time_zone_adjustment.class.should == String
+      @parsed_sdp.time_zones[:time_zone_adjustment].should == '2882844526'
+      @parsed_sdp.time_zones[:time_zone_adjustment].class.should == String
     end
 
     it "has a time zone offset of '-1h'" do
-      @parsed_sdp.time_zone_offset.should == '-1h'
-      @parsed_sdp.time_zone_offset.class.should == String
+      @parsed_sdp.time_zones[:time_zone_offset].should == '-1h'
+      @parsed_sdp.time_zones[:time_zone_offset].class.should == String
     end
 
     context "connection data" do
@@ -159,7 +159,7 @@ describe SDP do
     context "session attributes" do
       it "has an attribute of type 'recvonly' with an empty value" do
         @parsed_sdp.attributes[0][:attribute].should == 'recvonly'
-        @parsed_sdp.attributes[0][:value].should == ''
+        @parsed_sdp.attributes[0][:value].should == nil
       end
 
       it "has a second attribute 'type' with value 'test'" do

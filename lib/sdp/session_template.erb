@@ -1,0 +1,38 @@
+<%# -*- coding: UTF-8 -*- %>
+v=<%= protocol_version %>
+o=<%= username %> <%= id %> <%= version %> <%= network_type %> <%= address_type %> <%= unicast_address %>
+s=<%= name %>
+<% if information %>
+i=<%= information %>
+<% end %>
+<% if uri %>
+u=<%= uri %>
+<% end %>
+<% if email_address %>
+e=<%= email_address %>
+<% end %>
+<% if phone_number %>
+p=<%= phone_number %>
+<% end %>
+c=<%= network_type %> <%= address_type %> <%= connection_address %>
+<% if bandwidth %>
+b=<%= bandwidth_type %>:<%= bandwidth %>
+<% end %>
+t=<%= start_time %> <%= stop_time %>
+<% if repeat_interval %>
+r=<%= repeat_interval %> <%= active_duration %> <%= offsets_from_start_time %>
+<% end %>
+<% unless time_zones.empty? %>
+z=<% time_zones.each do |time_zone| %><%= time_zone[:time_zone_adjustment] %> <%= time_zone[:time_zone_offset] %><% end %>
+<% end %>
+<% if encryption_method %>
+k=<%= encryption_method %><% if encryption_key %>:<%= encryption_key %><% end %>
+<% end %>
+<% if attributes %>
+a=<% attributes.each do |a| %><%= a[:attribute] %><% if a[:value] %>:<%= a[:value] %><% end %><% end %>
+<% end %>
+<% media_sections.each do |media_section| %>
+m=<%= media_section[:media] %> <%= media_section[:port]%> <%= media_section[:protocol]%> <%= media_section[:format]%>
+<% if media_section[:attributes] %>
+<% media_section[:attributes].each do |attribute| %>
+a=<%= attribute[:attribute] %><% if attribute[:value] %>:<%= attribute[:value] %><% end %><% end %><% end %><% end %>

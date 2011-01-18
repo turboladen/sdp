@@ -1,7 +1,7 @@
 source :rubygems
 
 gemspec
-gem 'citrus'
+gem 'parslet'
 
 group :development do
   gem 'rake',     '~> 0.8.7'

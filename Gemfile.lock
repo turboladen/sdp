@@ -6,7 +6,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    citrus (2.3.2)
+    blankslate (2.1.2.3)
     diff-lcs (1.1.2)
     git (1.2.5)
     infinity_test (1.0.2)
@@ -20,6 +20,8 @@ GEM
     ore-core (0.1.0)
     ore-tasks (0.3.0)
       ore-core (~> 0.1.0)
+    parslet (1.0.0)
+      blankslate (~> 2.1.2.3)
     rake (0.8.7)
     rspec (2.3.0)
       rspec-core (~> 2.3.0)
@@ -37,11 +39,11 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.0.0)
-  citrus
   infinity_test
   jeweler (~> 1.5.0)
   ore-core (~> 0.1.0)
   ore-tasks (~> 0.3.0)
+  parslet
   rake (~> 0.8.7)
   rspec (~> 2.3.0)
   sdp!

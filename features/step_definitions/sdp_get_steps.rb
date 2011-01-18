@@ -9,12 +9,15 @@ end
 Then /^the <value> for <field> is accessible via the SDP object$/ do |table|
   # table is a Cucumber::Ast::Table
   table.hashes.each do |sdp_field|
-    puts sdp_field
-
     field_type = sdp_field["field"].to_sym
     value = sdp_field["value"]
 
     actual_value = @sdp.send(field_type)
-    actual_value.should == value
+
+    if field_type == :attributes
+      actual_value.first[:attribute].should == value
+    else
+      actual_value.to_s.should == value
+    end
   end
 end

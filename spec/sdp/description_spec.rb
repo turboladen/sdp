@@ -14,7 +14,7 @@ describe SDP::Description do
     it "attribute" do
       new_values = { :attribute => 'rtpmap',
         :value => "99 h263-1998/90000" }
-      @sdp.attributes = new_values
+      @sdp.attributes << new_values
       @sdp.attributes.first.should == new_values
     end
 
@@ -58,13 +58,13 @@ describe SDP::Description do
       @sdp.encryption_key.should == 'password'
     end
   
-    it ":media_description" do
+    it ":media_sections" do
       new_values = { :media => 'audio',
         :port => 12345,
         :protocol => 'RTP/AVP',
         :format => 99 }
-      @sdp.media_descriptions = new_values
-      @sdp.media_descriptions.first.should == new_values
+      @sdp.media_sections << new_values
+      @sdp.media_sections.first.should == new_values
     end
 
     it "username" do
@@ -117,18 +117,25 @@ describe SDP::Description do
       @sdp.name.should == "This is a session"
     end
   
-    it "time_zone_adjustment" do
-      new_values = { :adjustment_time => 99112299,
-        :offset => 99 }
-      @sdp.time_zone_adjustment = 12345
-      @sdp.time_zone_adjustment.should == 12345
+    context ":time_zones" do
+      it "one time zone" do
+        new_values = { :time_zone_adjustment => 111111,
+          :time_zone_offset => 99 }
+        @sdp.time_zones << new_values
+        @sdp.time_zones.should == [new_values]
+      end
+
+      it "two time_zones" do
+        new_values1 = { :time_zone_adjustment => 111111,
+          :time_zone_offset => 99 }
+        new_values2 = { :time_zone_adjustment => 222222,
+          :time_zone_offset => 88 }
+        @sdp.time_zones << new_values1
+        @sdp.time_zones << new_values2
+        @sdp.time_zones.should == [new_values1, new_values2]
+      end
     end
 
-    it "time_zone_offset" do
-      @sdp.time_zone_offset = 10
-      @sdp.time_zone_offset.should == 10
-    end
-  
     it "start_time" do
       @sdp.start_time = 99112299
       @sdp.start_time.should == 99112299
@@ -152,31 +159,31 @@ describe SDP::Description do
 
   context "can add and retrieve > 1 field of same type" do
     it ":attribute" do
-      @sdp.attributes = { :attribute => 'recvonly', :value => "" }
-      @sdp.attributes = { :attribute => 'rtpmap', :value => '99 h263-1998/90000' }
+      @sdp.attributes << { :attribute => 'recvonly', :value => "" }
+      @sdp.attributes << { :attribute => 'rtpmap', :value => '99 h263-1998/90000' }
 
       @sdp.attributes.class.should == Array
       @sdp.attributes[0].should == { :attribute => 'recvonly', :value => "" }
       @sdp.attributes[1].should == { :attribute => 'rtpmap', :value => '99 h263-1998/90000' }
     end
 
-    it ":media_description" do
+    it ":media_sections" do
       new_values = []
       new_values << { :media => 'audio',
         :port => 12345,
         :protocol => 'RTP/AVP',
         :format => 99 }
-      @sdp.media_descriptions = new_values[0]
+      @sdp.media_sections << new_values[0]
 
       new_values << { :media => 'video',
         :port => 5678,
         :protocol => 'RTP/AVP',
         :format => 33 }
-      @sdp.media_descriptions = new_values[1]
+      @sdp.media_sections << new_values[1]
 
-      @sdp.media_descriptions.class.should == Array
-      @sdp.media_descriptions[0].should == new_values[0]
-      @sdp.media_descriptions[1].should == new_values[1]
+      @sdp.media_sections.class.should == Array
+      @sdp.media_sections[0].should == new_values[0]
+      @sdp.media_sections[1].should == new_values[1]
     end
   end
 end
