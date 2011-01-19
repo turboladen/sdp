@@ -28,7 +28,7 @@ z=<% time_zones.each do |time_zone| %><%= time_zone[:time_zone_adjustment] %> <%
 <% if encryption_method %>
 k=<%= encryption_method %><% if encryption_key %>:<%= encryption_key %><% end %>
 <% end %>
-<% if attributes %>
+<% unless attributes.empty? %>
 a=<% attributes.each do |a| %><%= a[:attribute] %><% if a[:value] %>:<%= a[:value] %><% end %><% end %>
 <% end %>
 <% media_sections.each do |media_section| %>
