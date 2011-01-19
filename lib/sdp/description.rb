@@ -142,7 +142,7 @@ class SDP
 
       bad_keys = []
       value.each_key do |key|
-        bad_keys << key unless FIELDS.include?(key)
+        bad_keys << key unless (FIELDS.include?(key) || key == :session_section)
       end
       
       unless bad_keys.empty?
