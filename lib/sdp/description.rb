@@ -140,13 +140,13 @@ class SDP
         raise SDP::RuntimeError, message
       end
 
-      find_result = false
+      bad_keys = []
       value.each_key do |key|
-        find_result = FIELDS.find { |f| f == key }
+        bad_keys << key unless FIELDS.include?(key)
       end
       
-      unless find_result
-        message = "Invalid key value passed in on initialize."
+      unless bad_keys.empty?
+        message = "Invalid key value passed in on initialize: #{bad_keys}"
         raise SDP::RuntimeError, message        
       end
     end
