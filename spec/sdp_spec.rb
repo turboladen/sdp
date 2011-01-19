@@ -169,13 +169,13 @@ describe SDP do
     end
   end
 
-  context "SDP_VERSION" do
-    it "has an SDP_VERSION constant defined" do
-      SDP.const_defined?('SDP_VERSION').should be_true
+  context "PROTOCOL_VERSION" do
+    it "has an PROTOCOL_VERSION constant defined" do
+      SDP.const_defined?('PROTOCOL_VERSION').should be_true
     end
 
     it "is set to 0" do
-      SDP::SDP_VERSION.should == 0
+      SDP::PROTOCOL_VERSION.should == 0
     end
   end
 end
