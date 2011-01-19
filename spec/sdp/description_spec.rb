@@ -233,7 +233,10 @@ describe SDP::Description do
 
     it "handles a Hash with irrelvant keys" do
       session_values = { :bobo => "thing" }
-      @sdp = SDP::Description.new session_values
+
+      lambda do
+        SDP::Description.new session_values
+      end.should raise_error SDP::RuntimeError
     end
   end
 end

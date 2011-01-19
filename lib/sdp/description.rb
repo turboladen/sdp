@@ -58,31 +58,37 @@ class SDP
       end
     end
 
-    field :protocol_version
-    field :username
-    field :id
-    field :version
-    field :network_type
-    field :address_type
-    field :unicast_address
-    field :name
-    field :information
-    field :uri
-    field :email_address
-    field :phone_number
-    field :connection_address
-    field :bandwidth_type
-    field :bandwidth
-    field :start_time
-    field :stop_time
-    field :repeat_interval
-    field :active_duration
-    field :offsets_from_start_time
-    field :time_zones
-    field :encryption_method
-    field :encryption_key
-    field :attributes
-    field :media_sections
+    FIELDS = [
+      :protocol_version,
+      :username,
+      :id,
+      :version,
+      :network_type,
+      :address_type,
+      :unicast_address,
+      :name,
+      :information,
+      :uri,
+      :email_address,
+      :phone_number,
+      :connection_address,
+      :bandwidth_type,
+      :bandwidth,
+      :start_time,
+      :stop_time,
+      :repeat_interval,
+      :active_duration,
+      :offsets_from_start_time,
+      :time_zones,
+      :encryption_method,
+      :encryption_key,
+      :attributes,
+      :media_sections
+      ]
+    
+    FIELDS.each do |f|
+      field f
+    end
 
     # @param [Hash] session_as_hash Pass this in to use these values instead
     # of building your own from scratch.
@@ -134,8 +140,15 @@ class SDP
         raise SDP::RuntimeError, message
       end
 
+      find_result = false
+      value.each_key do |key|
+        find_result = FIELDS.find { |f| f == key }
+      end
       
-      true
+      unless find_result
+        message = "Invalid key value passed in on initialize."
+        raise SDP::RuntimeError, message        
+      end
     end
   end
 end
