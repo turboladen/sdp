@@ -123,6 +123,10 @@ class SDP
       sdp.result(get_binding)
     end
 
+    # Checks to see if the fields set in the current object will yeild an SDP
+    # description that meets the RFC 4566 spec.
+    #
+    # @return [Boolean] true if the object will meet spec; false if not.
     def valid?
       return false unless protocol_version && username && id && version && network_type &&
         address_type && unicast_address && name && start_time && stop_time &&
