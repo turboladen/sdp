@@ -6,7 +6,7 @@ describe SDP::Description do
     @sdp = SDP::Description.new
   end
 
-  it "initializes with the protoco_version value set" do
+  it "initializes with the protocol_version value set" do
     @sdp.protocol_version.should == SDP::PROTOCOL_VERSION
   end
 
