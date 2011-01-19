@@ -112,7 +112,6 @@ class SDP
       self.send :protocol_version=, SDP::PROTOCOL_VERSION
     end
 
-
     # Turns the current SDP::Description object into the SDP description,
     # ready to be used.
     #
@@ -122,6 +121,14 @@ class SDP
 
       sdp = ERB.new(template, 0, "%<>")
       sdp.result(get_binding)
+    end
+
+    def valid?
+      return false unless protocol_version && username && id && version && network_type &&
+        address_type && unicast_address && name && start_time && stop_time &&
+        !media_sections.empty?
+
+      true
     end
 
     #--------------------------------------------------------------------------

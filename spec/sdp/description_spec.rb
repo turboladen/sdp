@@ -227,6 +227,84 @@ describe SDP::Description do
     end
   end
 
+  context "#valid?" do
+    before :each do
+      @sdp = SDP::Description.new
+
+      @sdp.protocol_version = 0
+      @sdp.username = "jdoe"
+      @sdp.id = 12345
+      @sdp.version = 12345
+      @sdp.network_type = :IN
+      @sdp.address_type = :IP4
+      @sdp.unicast_address = "127.0.0.1"
+      @sdp.name = "This is a test"
+      @sdp.start_time = 12345678
+      @sdp.stop_time = 12345680
+      @sdp.media_sections << { :media => "audio", :port => 123,
+        :protocol => "RTP/AVP", :format => 99 }
+    end
+
+    it "is valid when all required fields have values" do
+      @sdp.valid?.should be_true
+    end
+
+    it "is NOT valid when protocol_version isn't set" do
+      @sdp.protocol_version = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when username isn't set" do
+      @sdp.username = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when id isn't set" do
+      @sdp.id = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when version isn't set" do
+      @sdp.version = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when network_type isn't set" do
+      @sdp.network_type = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when address_type isn't set" do
+      @sdp.address_type = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when unicast_address isn't set" do
+      @sdp.unicast_address = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when name isn't set" do
+      @sdp.name = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when start_time isn't set" do
+      @sdp.start_time = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when stop_time isn't set" do
+      @sdp.stop_time = nil
+      @sdp.valid?.should be_false
+    end
+
+    it "is NOT valid when media_sections is empty" do
+      @sdp[:media_sections] = []
+      @sdp.valid?.should be_false
+    end
+  end
+
   context "bad initialize values" do
     it "ensures a Hash is passed in" do
       lambda do
