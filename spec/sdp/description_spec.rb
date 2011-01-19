@@ -219,8 +219,11 @@ describe SDP::Description do
   end
 
   context "#to_s" do
-    it "blah" do
-      puts @sdp.to_s
+    it "contains required session section values" do
+      @sdp.to_s.should match /v=0/
+      @sdp.to_s.should match /o=/
+      @sdp.to_s.should match /s=/
+      @sdp.to_s.should match /t=/
     end
   end
 
