@@ -79,6 +79,8 @@ class SDP
     field :attributes
     field :media_sections
 
+    # @param [Hash] session_as_hash Pass this in to use these values instead
+    # of building your own from scratch.
     def initialize(session_as_hash=nil)
       if session_as_hash.nil?
         self[:session_section] = {}
@@ -86,15 +88,19 @@ class SDP
         self[:session_section][:attributes] = []
         self[:media_sections] = []
       else
-        self.replace session_as_hash
+        begin
+          unless validate_init_value(session_as_hash)
+            self.replace session_as_hash 
+          end
+        rescue SDP::RuntimeError => ex
+          puts ex.message
+          raise
+        end
       end
 
       self.send :protocol_version=, SDP::PROTOCOL_VERSION
     end
 
-    def get_binding
-      binding
-    end
 
     # Turns the current SDP::Description object into the SDP description,
     # ready to be used.
@@ -105,6 +111,25 @@ class SDP
 
       sdp = ERB.new(template, 0, "%<>")
       sdp.result(get_binding)
+    end
+
+    #--------------------------------------------------------------------------
+    # PRIVATES!
+    private
+        
+    # @return [Binding] Values for this object for ERB to use.
+    def get_binding
+      binding
+    end
+
+    # @raise [SDP::RuntimeError] If not given a Hash.
+    def validate_init_value value
+      unless value.class == Hash
+        message = "Must pass a Hash in on initialize.  You passed in a #{value.class}."
+        raise SDP::RuntimeError, message
+      end
+
+      true
     end
   end
 end

@@ -223,4 +223,17 @@ describe SDP::Description do
       puts @sdp.to_s
     end
   end
+
+  context "bad initialize values" do
+    it "ensures a Hash is passed in" do
+      lambda do
+        SDP::Description.new 1
+      end.should raise_error SDP::RuntimeError
+    end
+
+    it "handles a Hash with irrelvant keys" do
+      session_values = { :bobo => "thing" }
+      @sdp = SDP::Description.new session_values
+    end
+  end
 end
