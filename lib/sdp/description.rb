@@ -15,6 +15,11 @@ class SDP
   # to the object, so be sure to add them according to spec!
   class Description < Hash
     class << self
+      
+      # Class macro to access the different fields that make up the 
+      # description.
+      # 
+      # @param [Symbol] field_type
       def field(field_type)
         case field_type
         when :time_zones
@@ -129,6 +134,7 @@ class SDP
         raise SDP::RuntimeError, message
       end
 
+      
       true
     end
   end
