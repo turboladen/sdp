@@ -1,6 +1,7 @@
 require 'erb'
 
 class SDP
+  PROTOCOL_VERSION = 0
 
   # Represents an SDP description as defined in RFC 4566.  This class allows
   # for creating an object so you can, in turn, create a String that
