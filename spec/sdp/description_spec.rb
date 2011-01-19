@@ -171,7 +171,7 @@ describe SDP::Description do
       end
     end
   
-    context ":media_sections" do
+    context "media_sections" do
       it "can add a basic media section" do
         new_values = { :media => 'audio',
           :port => 12345,
@@ -215,6 +215,12 @@ describe SDP::Description do
         @sdp.media_sections[0].should == new_values[0]
         @sdp.media_sections[1].should == new_values[1]
       end
+    end
+  end
+
+  context "#to_s" do
+    it "blah" do
+      puts @sdp.to_s
     end
   end
 end
