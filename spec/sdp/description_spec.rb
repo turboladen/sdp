@@ -71,6 +71,11 @@ describe SDP::Description do
       @sdp.email_address.should == 'me@me.com'
     end
 
+    it "email_address in alternate form" do
+      @sdp.email_address = "Jane Doe <j.doe@example.com>"
+      @sdp.email_address.should == "Jane Doe <j.doe@example.com>"
+    end
+
     it "phone_number" do
       @sdp.phone_number = "+1 555 123 4567"
       @sdp.phone_number.should == "+1 555 123 4567"

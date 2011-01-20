@@ -81,7 +81,7 @@ class SDP::Parser < Parslet::Parser
   end
 
   rule(:media_section) do
-    media_description >> attribute.repeat(0).as(:attributes)
+    media_description >> attribute.repeat.as(:attributes)
   end
 
   rule(:description) do

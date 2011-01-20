@@ -78,6 +78,12 @@ describe SDP::Parser do
         lambda { @parser.parse sdp }.should_not raise_error
       end
     end
+
+    it "altername email address" do
+      sdp = "e=Jane Doe <j.doe@example.com>\r\n"
+      sdp_hash = @parser.parse sdp
+      sdp_hash[:session_section][:email_address].should == "Jane Doe <j.doe@example.com>"
+    end
   end
   
   context "parses EOLs" do
