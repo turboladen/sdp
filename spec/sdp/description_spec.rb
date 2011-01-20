@@ -51,6 +51,11 @@ describe SDP::Description do
       @sdp.name.should == "This is a session"
     end
 
+    it "name can be a ' '" do
+      @sdp.name = " "
+      @sdp.name.should == " "
+    end
+
     it "information" do
       @sdp.information = "This is a session"
       @sdp.information.should == "This is a session"
@@ -287,6 +292,11 @@ describe SDP::Description do
     it "is NOT valid when name isn't set" do
       @sdp.name = nil
       @sdp.valid?.should be_false
+    end
+
+    it "is valid when name is ' '" do
+      @sdp.name = ' '
+      @sdp.valid?.should be_true
     end
 
     it "is NOT valid when start_time isn't set" do
