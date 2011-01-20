@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'sdp/description'
+require 'base64'
 
 describe SDP::Description do
   before :each do
@@ -150,14 +151,35 @@ describe SDP::Description do
       end
     end
   
-    it "encryption_method" do
-      @sdp.encryption_method = 'clear'
-      @sdp.encryption_method.should == 'clear'
-    end
+    context "encryption keys" do
+      it "clear" do
+        @sdp.encryption_method = 'clear'
+        @sdp.encryption_method.should == 'clear'
+        @sdp.encryption_key = 'password'
+        @sdp.encryption_key.should == 'password'
+      end
   
-    it "encryption_key" do
-      @sdp.encryption_key = 'password'
-      @sdp.encryption_key.should == 'password'
+      it "base64" do
+        @sdp.encryption_method = 'base64'
+        @sdp.encryption_method.should == 'base64'
+        enc = Base64.encode64('password')
+        @sdp.encryption_key = enc
+        @sdp.encryption_key.should == enc
+      end
+  
+      it "uri" do
+        @sdp.encryption_method = 'uri'
+        @sdp.encryption_method.should == 'uri'
+        uri = "http://aserver.com/thing.pdf"
+        @sdp.encryption_key = uri
+        @sdp.encryption_key.should == uri
+      end
+  
+      it "prompt" do
+        @sdp.encryption_method = 'prompt'
+        @sdp.encryption_method.should == 'prompt'
+        @sdp.encryption_key.should be_nil
+      end
     end
 
     context "attributes" do

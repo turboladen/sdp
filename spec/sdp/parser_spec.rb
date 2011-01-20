@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'sdp/parser'
+require 'base64'
 
 describe SDP::Parser do
   before :each do
@@ -112,6 +113,38 @@ describe SDP::Parser do
       sdp_hash[:session_section][:time_zones].first[:offset].should == "-1h"
       sdp_hash[:session_section][:time_zones].last[:adjustment_time].should == "2898848070"
       sdp_hash[:session_section][:time_zones].last[:offset].should == "0"
+    end
+
+    context "encryption keys" do
+      it "clear" do
+        sdp = "k=clear:password\r\n"
+        sdp_hash = @parser.parse sdp
+        sdp_hash[:session_section][:encryption_method].should == "clear"
+        sdp_hash[:session_section][:encryption_key].should == "password"
+      end
+      
+      it "base64" do
+        password = Base64.encode64('password')
+        sdp = "k=base64:#{password}\r\n"
+        sdp_hash = @parser.parse sdp
+        sdp_hash[:session_section][:encryption_method].should == "base64"
+        sdp_hash[:session_section][:encryption_key].should == password
+      end
+      
+      it "uri" do
+        uri = "http://aserver.com/thing.pdf"
+        sdp = "k=uri:#{uri}\r\n"
+        sdp_hash = @parser.parse sdp
+        sdp_hash[:session_section][:encryption_method].should == "uri"
+        sdp_hash[:session_section][:encryption_key].should == uri
+      end
+      
+      it "prompt" do
+        sdp = "k=prompt\r\n"
+        sdp_hash = @parser.parse sdp
+        sdp_hash[:session_section][:encryption_method].should == "prompt"
+        sdp_hash[:session_section][:encryption_key].should be_nil
+      end
     end
   end
   
