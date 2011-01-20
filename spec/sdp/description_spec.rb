@@ -82,8 +82,13 @@ describe SDP::Description do
     end
 
     it "connection_address" do
-      @sdp.address_type = 'localhost'
-      @sdp.address_type.should == 'localhost'
+      @sdp.connection_address = 'localhost'
+      @sdp.connection_address.should == 'localhost'
+    end
+
+    it "connection_address using TTL" do
+      @sdp.connection_address = "224.2.36.42/127"
+      @sdp.connection_address.should == "224.2.36.42/127"
     end
 
     it "bandwidth_type" do
