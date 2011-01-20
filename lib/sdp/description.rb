@@ -101,6 +101,7 @@ class SDP
         end
       end
 
+      super
       self.send :protocol_version=, SDP::PROTOCOL_VERSION
     end
 
