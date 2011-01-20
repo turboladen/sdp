@@ -133,17 +133,17 @@ describe SDP::Description do
   
     context "time_zones" do
       it "one time zone" do
-        new_values = { :time_zone_adjustment => 111111,
-          :time_zone_offset => 99 }
+        new_values = { :adjustment_time => 111111,
+          :offset => 99 }
         @sdp.time_zones << new_values
         @sdp.time_zones.should == [new_values]
       end
 
       it "two time_zones" do
-        new_values1 = { :time_zone_adjustment => 111111,
-          :time_zone_offset => 99 }
-        new_values2 = { :time_zone_adjustment => 222222,
-          :time_zone_offset => 88 }
+        new_values1 = { :adjustment_time => 111111,
+          :offset => 99 }
+        new_values2 = { :adjustment_time => 222222,
+          :offset => 88 }
         @sdp.time_zones << new_values1
         @sdp.time_zones << new_values2
         @sdp.time_zones.should == [new_values1, new_values2]

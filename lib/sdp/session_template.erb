@@ -23,7 +23,7 @@ t=<%= start_time %> <%= stop_time %>
 r=<%= repeat_interval %> <%= active_duration %> <%= offsets_from_start_time %>
 <% end %>
 <% unless time_zones.empty? %>
-z=<% time_zones.each do |time_zone| %><%= time_zone[:time_zone_adjustment] %> <%= time_zone[:time_zone_offset] %><% end %>
+z=<% time_zones.each do |time_zone| %><%= time_zone[:adjustment_time] %> <%= time_zone[:offset] %><% end %>
 <% end %>
 <% if encryption_method %>
 k=<%= encryption_method %><% if encryption_key %>:<%= encryption_key %><% end %>

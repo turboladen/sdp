@@ -104,6 +104,15 @@ describe SDP::Parser do
       sdp_hash[:session_section][:active_duration].should == "3600"
       sdp_hash[:session_section][:offsets_from_start_time].should == "0 90000"
     end
+
+    it "time zones" do
+      sdp = "z=2882844526 -1h 2898848070 0\r\n"
+      sdp_hash = @parser.parse sdp
+      sdp_hash[:session_section][:time_zones].first[:adjustment_time].should == "2882844526"
+      sdp_hash[:session_section][:time_zones].first[:offset].should == "-1h"
+      sdp_hash[:session_section][:time_zones].last[:adjustment_time].should == "2898848070"
+      sdp_hash[:session_section][:time_zones].last[:offset].should == "0"
+    end
   end
   
   context "parses EOLs" do

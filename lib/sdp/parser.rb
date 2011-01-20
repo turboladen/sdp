@@ -44,7 +44,7 @@ class SDP::Parser < Parslet::Parser
   end
 
   rule(:time_zone_group) do
-    field_value.as(:time_zone_adjustment) >> space >> field_value.as(:time_zone_offset)
+    field_value.as(:adjustment_time) >> space >> field_value.as(:offset)
   end
   rule(:time_zones) do
     str('z=') >> (time_zone_group >> (space >> time_zone_group).repeat).as(:time_zones) >> eol

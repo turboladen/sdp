@@ -130,13 +130,13 @@ describe SDP do
     end
 
     it "has a time zone adjustment of '2882844526'" do
-      @parsed_sdp.time_zones[:time_zone_adjustment].should == '2882844526'
-      @parsed_sdp.time_zones[:time_zone_adjustment].class.should == String
+      @parsed_sdp.time_zones[:adjustment_time].should == '2882844526'
+      @parsed_sdp.time_zones[:adjustment_time].class.should == String
     end
 
     it "has a time zone offset of '-1h'" do
-      @parsed_sdp.time_zones[:time_zone_offset].should == '-1h'
-      @parsed_sdp.time_zones[:time_zone_offset].class.should == String
+      @parsed_sdp.time_zones[:offset].should == '-1h'
+      @parsed_sdp.time_zones[:offset].class.should == String
     end
 
     context "connection data" do
