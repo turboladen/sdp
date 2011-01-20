@@ -10,12 +10,28 @@ SDP is used by a number of protocols for describing multimedia sessions; protoco
 include SIP (Session Initiation Protocol), SAP (Session Announcement Protocol),
 and RTSP (Real Time Streaming Protocol).
 
-You can use this gem to marshall data 
+This gem has two purposes:
+1. To use as a client to parse SDP descriptions into useful objects
+2. To allow for creating an SDP description from scratch
+
+Since SDP descriptions contain a lot of useful data pieces, but due to the
+design of SDP descriptions, not only is it tough to know what's what when
+you visually look at that description, but it's tough to extract out the piece of
+data that you need to work with (ex. session ID).  The SDP.#parse method takes
+a description and parses it in to a Hash-like SDP::Description object, which has
+accessor methods (that mimic the RFC 4566 document) for easily getting and setting
+values.
+
+Similarly, since it's difficult to remember all the ins and outs of building
+an SDP description string that meets the requirements of RFC 4566, the
+SDP::Description class has a #to_s method that takes the fields that you've
+populated (from using the accessors) and turns those in to a string that's suitable
+to use for an SDP description.
 
 == Features
 
-# Create new SDP string/file/whatever
-# Parse an SDP string/file/whatever to Ruby
+* Parse an SDP description from String to Ruby object
+* Create new SDP description
 
 == Examples
 
@@ -23,59 +39,65 @@ You can use this gem to marshall data
 
   require 'sdp/description'
   
-  # Use block style...
-  # TODO!  (not implemented yet)
-  sdp = SDP::Description.new do
-    protocol_version => 0
-    media_description => { :media => "video" }
-    session_description.add_field :media_description => { :media => "audio" }
-    session_description.add_field "a=rtpmap:99 h263-1998/90000"
-  end
-  
-  # ...or non-block style...
   sdp = SDP::Description.new
-  sdp.inspect   # => {:session_description=>{:version=>#<SDP::DescriptionFields::VersionField:0x00000101039190 @sdp_type="v", @ruby_type=:version, @required=true, @value=0>}, :media_descriptions=>[]}
-  sdp.to_s      # => "v=0\r\n"
+  sdp.inspect       # => {:session_section=>{
+                    #       :time_zones=>[], :attributes=>[], :protocol_version=>0
+                    #      },
+                    #     :media_sections=>[]
+                    #    } 
+  sdp.to_s          # => "v=0\no=     \ns=\nc=  \nt= \n\n" 
   sdp.username = "elvis"
-  sdp.media_descriptions = { :media => "video", :attributes => { :attribute => "recvonly" } }
-  sdp.media_descriptions = { :media => "audio", :attributes => { :attribute => "rtpmap", :value => "99 h263-1998/90000" } }
+  sdp.media_sections << { :media => "video", :port => 9000, :format => 0, :protocol => "RTP/AVP", :attributes => [{ :attribute => "recvonly" }] }
+  sdp.media_sections << { :media => "audio", :port => 9100, :format => 33, :protocol => "RTP/AVP", :attributes => [{ :attribute => "rtpmap", :value => "99 h263-1998/90000" }] }
   
-  # Fields are ordered as they are entered, where Session Description comes first, then
-  # subsequent Media Description sections:
-  sdp.inspect     # => {:session_description=>{:version=>#<SDP::DescriptionFields::VersionField:0x00000101463688 @sdp_type="v",@ruby_type=:version, @required=true, @value=0>,
-                  #     :origin=>#<SDP::DescriptionFields::OriginField:0x00000101235560 @sdp_type="o", @ruby_type=:origin, @required=true, @value={:username=>"elvis", :session_id=>1294637556, :session_version=>1294637556, :net_type=>:IN, :address_type=>:IP4, :unicast_address=>"192.168.10.14"}>},
-                  #     :media_descriptions=>[#<SDP::DescriptionFields::MediaDescriptionField:0x00000101058140 @sdp_type="m", @ruby_type=:media_description, @required=true, @value={:media=>"video", :port=>"", :protocol=>"", :format=>""}>,
-                  #     #<SDP::DescriptionFields::AttributeField:0x0000010109a518 @sdp_type="a", @ruby_type=:attribute, @required=false, @value={:attribute=>"recvonly", :value=>""}>,
-                  #     #<SDP::DescriptionFields::MediaDescriptionField:0x0000010098ea48 @sdp_type="m", @ruby_type=:media_description, @required=true, @value={:media=>"audio", :port=>"", :protocol=>"", :format=>""}>,
-                  #     #<SDP::DescriptionFields::AttributeField:0x0000010098ef18 @sdp_type="a", @ruby_type=:attribute, @required=false, @value={:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}>]}
-  sdp.to_s        # => "v=0\r\n
-                  #     o=elvis 1294637556 1294637556 IN IP4 192.168.10.14\r\n
-                  #     m=video\r\n
-                  #     a=recvonly\r\n
-                  #     m=audio\r\n"
-                  #     a=rtpmap:99 h263-1998/90000\r\n"
-  sdp[:session_description][:version]         # => #<SDP::DescriptionFields::VersionField:0x00000101463688 @sdp_type="v", @ruby_type=:version, @required=true, @value=0>
-  sdp[:session_description][:version].to_s    # => "v=0\r\n"
-  sdp[:media_descriptions][0]  # => #<SDP::DescriptionFields::MediaDescriptionField:0x00000101058140 @sdp_type="m", @ruby_type=:media_description, @required=true, @value={:media=>"video", :port=>"", :protocol=>"", :format=>""}
+  # Fields are stored in a Hash, where the session information goes in :session_section,
+  # and each media section goes in an Array at :media_sections:
+  sdp.inspect     # => {:session_section=>{:time_zones=>[], :attributes=>[], :protocol_version=>0, :username=>"elvis"}, :media_sections=>[{:media=>"video", :port=>9000, :format=>0, :protocol=>"RTP/AVP", :attributes=>[{:attribute=>"recvonly"}]}, {:media=>"audio", :port=>9100, :format=>33, :protocol=>"RTP/AVP", :attributes=>[{:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}]}]} 
+  sdp.valid?      # => false (Require fields haven't yet been given)
+  sdp.id = 1
+  sdp.version = 123
+  sdp.network_type = :IN
+  sdp.address_type = :IP4
+  sdp.name = " "
+  sdp.start_time = 1
+  sdp.stop_time = 10
+  sdp.unicast_address = "127.0.0.1"
+  sdp.valid?      # => true
   
-  # Delete fields from the session description Hash, just like any other Hash:
-  sdp[:session_description].delete :origin
-
 
 === Parsing an SDP description
 
+  sdp_string = <<-EOF
+  v=0
+  o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5
+  s=SDP Seminar
+  i=A Seminar on the session description protocol
+  u=http://www.example.com/seminars/sdp.pdf
+  e=j.doe@example.com (Jane Doe)
+  p=+1 617 555-6011
+  c=IN IP4 224.2.17.12/127
+  b=CT:1000
+  t=2873397496 2873404696
+  r=604800 3600 0 90000
+  z=2882844526 -1h
+  k=clear:password
+  a=recvonly
+  a=type:test
+  m=audio 49170 RTP/AVP 0
+  m=video 51372 RTP/AVP 99
+  a=rtpmap:99 h263-1998/90000
+  EOF
+  
   session = SDP.parse sdp_string
   
   session.class               # => SDP::Description
   session.protocol_version    # => 0
-  session.media_descriptions  # => [{ :media=>"audio", :port=>49170, :protocol=>"RTP/AVP", :format=>0 },
-                              #     { :media="video", :port=>51372, :protocol=>"RTP/AVP", :format=>99,
-                              #   :attributes=>[{"rtpmap" => "99 h263-1998/90000"}}]
-  session.username            # => "elvis"
-  session.id                  # => 2890844526
-  session.version             # => 2890842807
-  session.network_type        # => :IN
-  session.address_type        # => :IP4
+  session.media_sections      # => [{:media=>"audio", :port=>"49170", :protocol=>"RTP/AVP", :format=>"0", :attributes=>""}, {:media=>"video", :port=>"51372", :protocol=>"RTP/AVP", :format=>"99", :attributes=>[{:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}]}] 
+  session.username            # => "jdoe"
+  session.id                  # => "2890844526"
+  session.version             # => "2890842807"
+  session.network_type        # => "IN"
+  session.address_type        # => "IP4"
   session.unicast_address     # => "10.47.16.5"
   session.name                # => "SDP Seminar"
   session.information         # => "A Seminar on the session description protocol"
@@ -84,17 +106,17 @@ You can use this gem to marshall data
   session.connection_address  # => "224.2.17.12/127"
   session.start_time          # => 2873397496
   session.stop_type           # => 2873404696
-  session.attributes          # => [{ :attribute => "recvonly" }]
+  session.attributes          # => [{:attribute=>"recvonly"}, {:attribute=>"type", :value=>"test"}] 
   
   # Put it back to a string...
   session.to_s        # => "v=0\r\n
                       #     o=elvis 2890844526 2890842807 IN IP4 10.47.16.5\r\n
-                      #     s=SDP Seminar
-                      #     i=A Seminar on the session description protocol
-                      #     u=http://www.example.com/seminars/sdp.pdf
-                      #     e=j.doe@example.com (Jane Doe)
-                      #     c=IN IP4 224.2.17.12/127
-                      #     t=2873397496 2873404696
+                      #     s=SDP Seminar\r\n
+                      #     i=A Seminar on the session description protocol\r\n
+                      #     u=http://www.example.com/seminars/sdp.pdf\r\n
+                      #     e=j.doe@example.com (Jane Doe)\r\n
+                      #     c=IN IP4 224.2.17.12/127\r\n
+                      #     t=2873397496 2873404696\r\n
                       #     a=recvonly\r\n
                       #     m=audio 49170 RTP/AVP 0\r\n
                       #     m=video\r\n"
