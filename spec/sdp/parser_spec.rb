@@ -96,6 +96,14 @@ describe SDP::Parser do
       sdp_hash = @parser.parse sdp
       sdp_hash[:session_section][:connection_address].should == "FF15::101/3"
     end
+
+    it "repeat times in seconds" do
+      sdp = "r=604800 3600 0 90000\r\n"
+      sdp_hash = @parser.parse sdp
+      sdp_hash[:session_section][:repeat_interval].should == "604800"
+      sdp_hash[:session_section][:active_duration].should == "3600"
+      sdp_hash[:session_section][:offsets_from_start_time].should == "0 90000"
+    end
   end
   
   context "parses EOLs" do
