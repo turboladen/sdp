@@ -22,21 +22,13 @@ class SDP
       # @param [Symbol] field_type
       def field(field_type)
         case field_type
-        when :time_zones
-          define_method :time_zones do
-            self[:session_section][:time_zones]
+        when :time_zones || :attributes
+          define_method field_type do
+            self[:session_section][field_type]
           end
 
           define_method "#{field_type}<<" do |value|
-            self[:session_section][:time_zones] << value
-          end
-        when :attributes
-          define_method :attributes do
-            self[:session_section][:attributes]
-          end
-
-          define_method "#{field_type}<<" do |value|
-            self[:session_section][:attributes] << value
+            self[:session_section][field_type] << value
           end
         when :media_sections
           define_method :media_sections do
@@ -123,7 +115,7 @@ class SDP
       sdp.result(get_binding)
     end
 
-    # Checks to see if the fields set in the current object will yeild an SDP
+    # Checks to see if the fields set in the current object will yield an SDP
     # description that meets the RFC 4566 spec.
     #
     # @return [Boolean] true if the object will meet spec; false if not.
