@@ -91,6 +91,11 @@ describe SDP::Description do
       @sdp.connection_address.should == "224.2.36.42/127"
     end
 
+    it "connection_address using IPv6 address and count" do
+      @sdp.connection_address = "FF15::101/3"
+      @sdp.connection_address.should == "FF15::101/3"
+    end
+
     it "bandwidth_type" do
       @sdp.bandwidth = :CT
       @sdp.bandwidth.should == :CT

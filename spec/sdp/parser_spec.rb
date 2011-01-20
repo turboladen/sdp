@@ -90,6 +90,12 @@ describe SDP::Parser do
       sdp_hash = @parser.parse sdp
       sdp_hash[:session_section][:connection_address].should == "224.2.36.42/127"
     end
+
+    it "connection data that uses IPv6 and address count" do
+      sdp = "c=IN IP6 FF15::101/3\r\n"
+      sdp_hash = @parser.parse sdp
+      sdp_hash[:session_section][:connection_address].should == "FF15::101/3"
+    end
   end
   
   context "parses EOLs" do
