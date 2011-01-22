@@ -12,4 +12,5 @@ group :development do
   gem 'yard', '~> 0.6.0'
   gem 'infinity_test'
   gem 'metric_fu'
+  gem 'code_statistics', '~> 0.2.13'
 end

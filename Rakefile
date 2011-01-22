@@ -34,3 +34,6 @@ task :default => :spec
 
 require 'yard'
 YARD::Rake::YardocTask.new  
+
+# Load all extra rake tasks
+Dir["#{File.dirname(__FILE__)}/tasks/*.rake"].each { |ext| load ext }
