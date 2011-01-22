@@ -25,7 +25,7 @@ class SDP::Parser < Parslet::Parser
 
   rule(:session_name) { str('s=') >> field_value_string.as(:name) >> eol }
 
-  rule(:session_information) do
+  rule(:information) do
     str('i=') >> field_value_string.as(:information) >> eol
   end
 
@@ -40,7 +40,9 @@ class SDP::Parser < Parslet::Parser
   end
 
   rule(:connection_data) do
-    str('c=') >> field_value >> space >> field_value >> space >>
+    str('c=') >>
+      field_value.as(:connection_network_type) >> space >>
+      field_value.as(:connection_address_type) >> space >>
       field_value.as(:connection_address) >> eol
   end
 
@@ -97,14 +99,15 @@ class SDP::Parser < Parslet::Parser
   # The SDP description
   rule(:session_section) do
     version.maybe >> origin.maybe >> session_name.maybe >>
-      session_information.maybe >> uri.maybe >> email_address.maybe >>
+      information.maybe >> uri.maybe >> email_address.maybe >>
       phone_number.maybe >> connection_data.maybe >> bandwidth.maybe >>
       timing.maybe >> repeat_times.maybe >> time_zones.maybe >>
       encryption_keys.maybe >> attributes.maybe
   end
 
   rule(:media_section) do
-    media_description >> attributes.maybe
+    media_description >> information.maybe >> connection_data.maybe >>
+      bandwidth.maybe >> encryption_keys.maybe >> attributes.maybe
   end
 
   rule(:description) do
