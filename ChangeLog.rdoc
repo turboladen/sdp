@@ -1,4 +1,7 @@
-=== 0.1.0 / 2011-01-01
+=== 0.1.0 / 2011-01-21
 
 * Initial release:
-
+  * Parses SDP text to SDP::Description objects
+  * Create SDP::Description objects from scratch
+* Not yet implemented:
+  * Parsing of media sections that contain fields other than "attribute"
