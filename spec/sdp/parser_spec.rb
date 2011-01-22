@@ -147,6 +147,15 @@ describe SDP::Parser do
         sdp_hash[:session_section][:encryption_key].should be_nil
       end
     end
+
+    context "attributes" do
+      it "attribute" do
+        sdp = "a=x-qt-text-cmt:Orban Opticodec-PC\r\n"
+        sdp_hash = @parser.parse sdp
+        sdp_hash[:session_section][:attributes].first[:attribute].should ==
+          "x-qt-text-cmt"
+      end
+    end
   end
   
   context "parses EOLs" do

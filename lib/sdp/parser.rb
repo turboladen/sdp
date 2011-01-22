@@ -75,7 +75,7 @@ class SDP::Parser < Parslet::Parser
   end
 
   rule(:attribute) do
-    str('a=') >> match('[\w]').repeat(1).as(:attribute) >>
+    str('a=') >> match('[^:\r\n]').repeat(1).as(:attribute) >>
       (str(':') >> field_value_string.as(:value)).maybe >> eol
   end
 
