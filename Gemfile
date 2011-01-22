@@ -1,7 +1,7 @@
 source :rubygems
 
 gemspec
-gem 'parslet'
+gem 'parslet', '~> 1.0.0'
 
 group :development do
   gem 'rake',     '~> 0.8.7'
@@ -11,4 +11,5 @@ group :development do
   gem 'rspec', '~> 2.3.0'
   gem 'yard', '~> 0.6.0'
   gem 'infinity_test'
+  gem 'metric_fu'
 end
