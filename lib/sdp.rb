@@ -14,7 +14,7 @@ class SDP
   # @return [SDP::Description] The object that represents the description
   # that was parsed.
   def self.parse sdp_text
-		sdp_hash = SDP::Parser.new.parse sdp_text
+    sdp_hash = SDP::Parser.new.parse sdp_text
     SDP::Description.new(sdp_hash)
   end
 end
