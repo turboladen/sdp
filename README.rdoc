@@ -63,6 +63,7 @@ to use for an SDP description.
   sdp.stop_time = 10
   sdp.unicast_address = "127.0.0.1"
   sdp.valid?      # => true
+  sdp.to_s        # => "v=0\no=elvis 1 123 IN IP4 127.0.0.1\ns= \nc=IN IP4 \nt=1 10\nm=video 9000 RTP/AVP 0\na=recvonlym=audio 9100 RTP/AVP 33\na=rtpmap:99 h263-1998/90000\n"
   
 
 === Parsing an SDP description
