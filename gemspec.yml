@@ -1,11 +1,14 @@
 name: sdp
-summary: "TODO: Summary"
-description: "TODO: Description"
+summary: "Parse and create SDP (Session Description Protocol) text based on RFC4566."
+description: "This gem allows for parsing SDP (Session Description Protocol) information in to a Ruby object, making it easy to read and work with that data.  It also allows for easily creating SDP objects that can be converted to text using #to_s."
 license: MIT
 authors: sloveless
 email: steve.loveless@gmail.com
 homepage: http://rubygems.org/gems/sdp
 has_yard: true
+
+dependencies:
+  parslet: ~> 1.0.0
 
 development_dependencies:
   bundler: ~> 1.0.0
