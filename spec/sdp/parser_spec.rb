@@ -124,7 +124,8 @@ describe SDP::Parser do
       end
       
       it "base64" do
-        password = Base64.encode64('password')
+        # #encode64 adds newlines every 60 chars; remove them--they're unnecessary
+        password = Base64.encode64('password').gsub("\n", '')
         sdp = "k=base64:#{password}\r\n"
         sdp_hash = @parser.parse sdp
         sdp_hash[:session_section][:encryption_method].should == "base64"
