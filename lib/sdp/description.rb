@@ -35,7 +35,7 @@ class SDP
             self[:media_sections]
           end
 
-          define_method "#{field_type}<<" do |value|
+          define_method ":media_sections<<" do |value|
             self[:media_sections] << value
           end
         else
