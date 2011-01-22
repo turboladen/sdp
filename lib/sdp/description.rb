@@ -78,8 +78,8 @@ class SDP
       :media_sections
       ]
     
-    FIELDS.each do |f|
-      field f
+    FIELDS.each do |field_type|
+      field field_type
     end
 
     # @param [Hash] session_as_hash Pass this in to use these values instead
