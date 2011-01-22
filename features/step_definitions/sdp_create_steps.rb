@@ -17,6 +17,8 @@ When /^I build the Ruby object with the appropriate fields$/ do
   @session.information = "A Seminar on the session description protocol"
   @session.uri = "http://www.example.com/seminars/sdp.pdf"
   @session.email_address = "j.doe@example.com (Jane Doe)"
+  @session.connection_network_type = "IN"
+  @session.connection_address_type = "IP4"
   @session.connection_address = "224.2.17.12/127"
   @session.start_time = 2873397496
   @session.stop_time = 2873404696
