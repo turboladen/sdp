@@ -21,30 +21,43 @@ class SDP
       # 
       # @param [Symbol] field_type
       def field(field_type)
-        case field_type
-        when :time_zones || :attributes
-          define_method field_type do
+        define_read_field_method(field_type)
+        define_write_field_method(field_type)
+      end
+
+      # Creates read accessor for the field type.  This simply reads
+      # the correct Hash value and returns that.
+      #
+      # @param [Symbol] field_type
+      # @return [] Returns whatever type the value is that's stored
+      # in the Hash key.
+      def define_read_field_method(field_type)
+        define_method field_type do
+          if field_type == :media_sections
+            self[:media_sections]
+          else
             self[:session_section][field_type]
           end
+        end
+      end
 
-          define_method "#{field_type}<<" do |value|
-            self[:session_section][field_type] << value
-          end
+      # Creates write accessor for the field type.  This simply writes
+      # the correct Hash value and returns that.
+      #
+      # @param [Symbol] field_type
+      def define_write_field_method(field_type)
+        case field_type
         when :media_sections
-          define_method :media_sections do
-            self[:media_sections]
-          end
-
           define_method ":media_sections<<" do |value|
             self[:media_sections] << value
           end
-        else
-          define_method field_type do
-            self[:session_section][field_type.to_sym]
+        when :time_zones || :attributes
+          define_method "#{field_type}<<" do |value|
+            self[:session_section][field_type] << value
           end
-
+        else
           define_method "#{field_type}=" do |value|
-            self[:session_section][field_type.to_sym] = value
+            self[:session_section][field_type] = value
           end
         end
       end
