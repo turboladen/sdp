@@ -94,60 +94,68 @@ describe SDP do
       @parsed_sdp.phone_number.class.should == String
     end
 
-    it "has a bandwidth type of 'CT'" do
-      @parsed_sdp.bandwidth_type.should == "CT"
-      @parsed_sdp.bandwidth_type.class.should == String
+    context "bandwidth" do
+      it "has a bandwidth type of 'CT'" do
+        @parsed_sdp.bandwidth_type.should == "CT"
+        @parsed_sdp.bandwidth_type.class.should == String
+      end
+
+      it "has a bandwidth of '1000'" do
+        @parsed_sdp.bandwidth.should == "1000"
+        @parsed_sdp.bandwidth.class.should == String
+      end
     end
 
-    it "has a bandwidth of '1000'" do
-      @parsed_sdp.bandwidth.should == "1000"
-      @parsed_sdp.bandwidth.class.should == String
+    context "timing" do
+      it "has a start time of '2873397496'" do
+        @parsed_sdp.start_time.should == '2873397496'
+        @parsed_sdp.start_time.class.should == String
+      end
+
+      it "has a stop time of '2873404696'" do
+        @parsed_sdp.stop_time.should == '2873404696'
+        @parsed_sdp.stop_time.class.should == String
+      end
     end
 
-    it "has a start time of '2873397496'" do
-      @parsed_sdp.start_time.should == '2873397496'
-      @parsed_sdp.start_time.class.should == String
+    context "repeat times" do
+      it "has a repeat interval of '604800'" do
+        @parsed_sdp.repeat_interval.should == '604800'
+        @parsed_sdp.repeat_interval.class.should == String
+      end
+
+      it "has an active duration of '3600'" do
+        @parsed_sdp.active_duration.should == '3600'
+        @parsed_sdp.active_duration.class.should == String
+      end
+
+      it "has a offsets from start time of '0 90000'" do
+        @parsed_sdp.offsets_from_start_time.should == '0 90000'
+        @parsed_sdp.offsets_from_start_time.class.should == String
+      end
     end
 
-    it "has a stop time of '2873404696'" do
-      @parsed_sdp.stop_time.should == '2873404696'
-      @parsed_sdp.stop_time.class.should == String
-    end
+    context "time zones" do
+      it "has a time zone adjustment of '2882844526'" do
+        @parsed_sdp.time_zones[:adjustment_time].should == '2882844526'
+        @parsed_sdp.time_zones[:adjustment_time].class.should == String
+      end
 
-    it "has a repeat interval of '604800'" do
-      @parsed_sdp.repeat_interval.should == '604800'
-      @parsed_sdp.repeat_interval.class.should == String
-    end
-
-    it "has an active duration of '3600'" do
-      @parsed_sdp.active_duration.should == '3600'
-      @parsed_sdp.active_duration.class.should == String
-    end
-
-    it "has a offsets from start time of '0 90000'" do
-      @parsed_sdp.offsets_from_start_time.should == '0 90000'
-      @parsed_sdp.offsets_from_start_time.class.should == String
-    end
-
-    it "has a time zone adjustment of '2882844526'" do
-      @parsed_sdp.time_zones[:adjustment_time].should == '2882844526'
-      @parsed_sdp.time_zones[:adjustment_time].class.should == String
-    end
-
-    it "has a time zone offset of '-1h'" do
-      @parsed_sdp.time_zones[:offset].should == '-1h'
-      @parsed_sdp.time_zones[:offset].class.should == String
+      it "has a time zone offset of '-1h'" do
+        @parsed_sdp.time_zones[:offset].should == '-1h'
+        @parsed_sdp.time_zones[:offset].class.should == String
+      end
     end
 
     context "connection data" do
-      it "has a nettype of 'IN'" do
-        @parsed_sdp.network_type.should == "IN"
-        @parsed_sdp.network_type.class.should == String
+      it "has a connection network type of 'IN'" do
+        @parsed_sdp.connection_network_type.should == "IN"
+        @parsed_sdp.connection_network_type.class.should == String
       end
 
       it "has a addrtype of :IP4" do
-        @parsed_sdp.address_type.should == "IP4"
-        @parsed_sdp.address_type.class.should == String
+        @parsed_sdp.connection_address_type.should == "IP4"
+        @parsed_sdp.connection_address_type.class.should == String
       end
 
       it "has a connection address of '224.2.17.12/127'" do

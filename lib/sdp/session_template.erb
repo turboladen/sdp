@@ -14,7 +14,9 @@ e=<%= email_address %>
 <% if phone_number %>
 p=<%= phone_number %>
 <% end %>
-c=<%= network_type %> <%= address_type %> <%= connection_address %>
+<% if connection_network_type %>
+c=<%= connection_network_type %> <%= connection_address_type %> <%= connection_address %>
+<% end %>
 <% if bandwidth %>
 b=<%= bandwidth_type %>:<%= bandwidth %>
 <% end %>
