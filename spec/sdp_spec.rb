@@ -33,8 +33,8 @@ describe SDP do
     end
 
     it "has a version number of 0" do
-      @parsed_sdp.protocol_version.should == 0
-      @parsed_sdp.protocol_version.class.should == Fixnum
+      @parsed_sdp.protocol_version.should == "0"
+      @parsed_sdp.protocol_version.class.should == String
     end
 
     context "origin" do
