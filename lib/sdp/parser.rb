@@ -46,20 +46,23 @@ class SDP::Parser < Parslet::Parser
   rule(:time_zone_group) do
     field_value.as(:adjustment_time) >> space >> field_value.as(:offset)
   end
+
   rule(:time_zones) do
     str('z=') >> (time_zone_group >> (space >> time_zone_group).repeat).as(:time_zones) >> eol
   end
   
   rule(:encryption_keys) do
-    str('k=') >> match('[\w]').repeat.as(:encryption_method) >> (str(':') >>
-      field_value.as(:encryption_key)).maybe >> eol
+    str('k=') >> match('[\w]').repeat.as(:encryption_method) >>
+      (str(':') >> field_value.as(:encryption_key)).maybe >> eol
   end
 
   rule(:attribute) do
-    str('a=') >> match('[\w]').repeat.as(:attribute) >> (str(':') >>
-      field_value_string.as(:value)).maybe >> eol
+    str('a=') >> match('[\w]').repeat(1).as(:attribute) >> 
+      (str(':') >> field_value_string.as(:value)).maybe >> eol
   end
   
+  rule(:attributes) { attribute.repeat(1).as(:attributes) }
+
   rule(:media_description) do
     str('m=') >> field_value.as(:media) >> space >> field_value.as(:port) >>
       space >> field_value.as(:protocol) >> space >> field_value.as(:format) >> eol
@@ -74,18 +77,18 @@ class SDP::Parser < Parslet::Parser
   # The SDP description
   rule(:session_section) do
     version.maybe >> origin.maybe >> session_name.maybe >> 
-      (session_information.maybe >> uri.maybe >> email_address.maybe >> phone_number.maybe >>
-      connection_data.maybe >> bandwidth.maybe) >>
-      timing.maybe >> repeat_times.maybe >> time_zones.maybe >> encryption_keys.maybe >>
-      attribute.repeat.as(:attributes).maybe
+      session_information.maybe >> uri.maybe >> email_address.maybe >>
+      phone_number.maybe >> connection_data.maybe >> bandwidth.maybe >>
+      timing.maybe >> repeat_times.maybe >> time_zones.maybe >>
+      encryption_keys.maybe >> attributes.maybe
   end
 
   rule(:media_section) do
-    media_description >> attribute.repeat.as(:attributes)
+    media_description >> attributes.maybe
   end
 
   rule(:description) do
-    session_section.as(:session_section) >> media_section.repeat.as(:media_sections).maybe
+    session_section.as(:session_section) >> media_section.repeat.as(:media_sections)
   end
   
   root :description
