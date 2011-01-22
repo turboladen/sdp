@@ -90,6 +90,8 @@ class SDP
         self[:session_section][:time_zones] = []
         self[:session_section][:attributes] = []
         self[:media_sections] = []
+
+        self.send :protocol_version=, SDP::PROTOCOL_VERSION
       else
         begin
           unless validate_init_value(session_as_hash)
@@ -102,7 +104,6 @@ class SDP
       end
 
       super
-      self.send :protocol_version=, SDP::PROTOCOL_VERSION
     end
 
     # Turns the current SDP::Description object into the SDP description,
