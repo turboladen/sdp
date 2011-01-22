@@ -1,3 +1,9 @@
+=== 0.1.1 / 2011-01-22
+
+* Bug Fixes:
+  * Fixed attribute parsing so it treats anything but a :, \r, or \n as
+  part of the attribute.
+
 === 0.1.0 / 2011-01-21
 
 * Initial release:
