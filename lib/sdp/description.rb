@@ -76,6 +76,8 @@ class SDP
       :uri,
       :email_address,
       :phone_number,
+      :connection_network_type,
+      :connection_address_type,
       :connection_address,
       :bandwidth_type,
       :bandwidth,

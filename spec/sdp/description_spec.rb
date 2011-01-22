@@ -82,6 +82,16 @@ describe SDP::Description do
       @sdp.phone_number.should == "+1 555 123 4567"
     end
 
+    it "connection_network_type" do
+      @sdp.connection_network_type = 'IN'
+      @sdp.connection_network_type.should == 'IN'
+    end
+
+    it "connection_address_type" do
+      @sdp.connection_address_type = 'IP4'
+      @sdp.connection_address_type.should == 'IP4'
+    end
+
     it "connection_address" do
       @sdp.connection_address = 'localhost'
       @sdp.connection_address.should == 'localhost'
