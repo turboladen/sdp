@@ -1,6 +1,6 @@
 source :rubygems
 
-gemspec
+#gemspec
 gem 'parslet', '~> 1.0.0'
 
 group :development do
