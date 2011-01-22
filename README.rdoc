@@ -105,7 +105,7 @@ to use for an SDP description.
   session.email_address       # => "j.doe@example.com (Jane Doe)"
   session.connection_address  # => "224.2.17.12/127"
   session.start_time          # => 2873397496
-  session.stop_type           # => 2873404696
+  session.stop_time           # => 2873404696
   session.attributes          # => [{:attribute=>"recvonly"}, {:attribute=>"type", :value=>"test"}] 
   
   # Put it back to a string...
