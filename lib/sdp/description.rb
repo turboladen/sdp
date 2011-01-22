@@ -7,7 +7,7 @@ class SDP
   # for creating an object so you can, in turn, create a String that
   # represents an SDP description.  The String, then can be used by
   # other protocols that depend on an SDP description.
-  # 
+  #
   # SDP::Description objects are initialized empty (i.e. no fields are
   # defined), putting the onus on you to add fields in the proper order.
   # After building the description up, call #to_s to render it.  This
@@ -15,10 +15,10 @@ class SDP
   # to the object, so be sure to add them according to spec!
   class Description < Hash
     class << self
-      
-      # Class macro to access the different fields that make up the 
+
+      # Class macro to access the different fields that make up the
       # description.
-      # 
+      #
       # @param [Symbol] field_type
       def field(field_type)
         define_read_field_method(field_type)
@@ -90,7 +90,7 @@ class SDP
       :attributes,
       :media_sections
       ]
-    
+
     FIELDS.each do |field_type|
       field field_type
     end
@@ -108,7 +108,7 @@ class SDP
       else
         begin
           unless validate_init_value(session_as_hash)
-            self.replace session_as_hash 
+            self.replace session_as_hash
           end
         rescue SDP::RuntimeError => ex
           puts ex.message
@@ -135,9 +135,9 @@ class SDP
     #
     # @return [Boolean] true if the object will meet spec; false if not.
     def valid?
-      return false unless protocol_version && username && id && version && network_type &&
-        address_type && unicast_address && name && start_time && stop_time &&
-        !media_sections.empty?
+      return false unless protocol_version && username && id && version &&
+        network_type && address_type && unicast_address && name &&
+        start_time && stop_time && !media_sections.empty?
 
       true
     end
@@ -145,7 +145,7 @@ class SDP
     #--------------------------------------------------------------------------
     # PRIVATES!
     private
-        
+
     # @return [Binding] Values for this object for ERB to use.
     def get_binding
       binding
@@ -162,10 +162,10 @@ class SDP
       value.each_key do |key|
         bad_keys << key unless (FIELDS.include?(key) || key == :session_section)
       end
-      
+
       unless bad_keys.empty?
         message = "Invalid key value passed in on initialize: #{bad_keys}"
-        raise SDP::RuntimeError, message        
+        raise SDP::RuntimeError, message
       end
     end
   end
