@@ -1,2 +1,7 @@
+.bundle/
+.loadpath
+.project
+.yardoc/
 doc/
 pkg/
+tmp/
