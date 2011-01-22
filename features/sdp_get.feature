@@ -19,6 +19,8 @@ Feature: Get SDP file fields and marshall into Ruby data types
       | information       | A Seminar on the session description protocol |
       | uri               | http://www.example.com/seminars/sdp.pdf |
       | email_address     | j.doe@example.com (Jane Doe)            |
+      | connection_network_type | IN          |
+      | connection_address_type | IP4         |
       | connection_address | 224.2.17.12/127  |
       | start_time        | 2873397496        |
       | stop_time         | 2873404696        |
