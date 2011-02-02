@@ -1,7 +1,8 @@
+require 'ore/specification'
+
 source :rubygems
 
-#gemspec
-gem 'parslet', '~> 1.0.0'
+gemspec
 
 group :development do
   gem 'rake',     '~> 0.8.7'
