@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'erb'
 
 class SDP
@@ -129,7 +130,13 @@ class SDP
       template = File.read(File.dirname(__FILE__) + "/session_template.erb")
 
       sdp = ERB.new(template, 0, "%<>")
-      sdp.result(get_binding)
+      sdp_string = sdp.result(get_binding)
+
+      if RUBY_VERSION >= '1.9.2'
+        sdp_string.encode( :crlf_newline => true )
+      else
+        sdp_string.gsub!("\n","\r\n")
+      end
     end
 
     # Checks to see if the fields set in the current object will yield an SDP

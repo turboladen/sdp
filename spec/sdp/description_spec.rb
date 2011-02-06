@@ -277,6 +277,12 @@ describe SDP::Description do
       @sdp.to_s.should match /s=/
       @sdp.to_s.should match /t=/
     end
+
+    it "ends each line with \r\n" do
+      @sdp.to_s.each_line do |l|
+        l.should match /\r\n$/
+      end
+    end
   end
 
   context "#valid?" do
