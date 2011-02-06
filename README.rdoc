@@ -146,4 +146,4 @@ to use for an SDP description.
 
 Copyright (c) 2011 Steve Loveless
 
-See LICENSE.txt for details.
+See LICENSE.rdoc for details.
