@@ -1,1 +1,1 @@
---markup rdoc --title "sdp Documentation" --protected
+--title "rtsp Documentation" --protected --private --readme README.rdoc - LICENSE.rdoc ChangeLog.rdoc
