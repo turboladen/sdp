@@ -2,7 +2,7 @@
 
 begin
   Ore::Specification.new do |gemspec|
-    # custom logic here
+    gemspec.test_files = Dir.glob("spec/**/*.rb")
   end
 rescue NameError
   begin
