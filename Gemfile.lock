@@ -112,7 +112,6 @@ DEPENDENCIES
   metric_fu
   ore-core (~> 0.1.0)
   ore-tasks (~> 0.3.0)
-  parslet (~> 1.0.0)
   rake (~> 0.8.7)
   rspec (~> 2.3.0)
   sdp!
