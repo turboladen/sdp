@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sdp (0.2.0)
+    sdp (0.2.1)
       parslet (~> 1.0.0)
 
 GEM
@@ -62,6 +62,8 @@ GEM
       reek (>= 1.2.6)
       roodi (>= 2.1.0)
     notifiers (1.1.0)
+    ore (0.1.4)
+      thor (~> 0.14.3)
     ore-core (0.1.1)
     ore-tasks (0.3.0)
       ore-core (~> 0.1.0)
@@ -98,6 +100,7 @@ GEM
     ruby_parser (2.0.5)
       sexp_processor (~> 3.0)
     sexp_processor (3.0.5)
+    thor (0.14.6)
     watchr (0.7)
     yard (0.6.4)
 
@@ -110,8 +113,10 @@ DEPENDENCIES
   infinity_test
   jeweler (~> 1.5.0)
   metric_fu
+  ore (~> 0.1.0)
   ore-core (~> 0.1.0)
   ore-tasks (~> 0.3.0)
+  parslet (~> 1.0.0)
   rake (~> 0.8.7)
   rspec (~> 2.3.0)
   sdp!
