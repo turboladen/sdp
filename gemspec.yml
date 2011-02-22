@@ -5,6 +5,7 @@ description:
   This gem allows for parsing SDP (Session Description Protocol) information in
   to a Ruby object, making it easy to read and work with that data.  It also
   allows for easily creating SDP objects that can be converted to text using #to_s.
+
 license: MIT
 authors: sloveless
 email: steve.loveless@gmail.com
