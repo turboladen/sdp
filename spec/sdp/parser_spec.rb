@@ -7,6 +7,12 @@ describe SDP::Parser do
     @parser = SDP::Parser.new
   end
 
+  it "handles descriptions missing time zone field" do
+    lambda do
+      @parser.parse SDP_MISSING_TIME
+    end.should_not raise_error Parslet::ParseFailed
+  end
+
   context "does NOT raise when missing required values" do
     it "version" do
       lambda do

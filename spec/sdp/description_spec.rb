@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../spec_helper'
+require 'sdp'
 require 'sdp/description'
 require 'base64'
 
@@ -282,6 +283,11 @@ describe SDP::Description do
       @sdp.to_s.each_line do |l|
         l.should match /\r\n$/
       end
+    end
+
+    it "handles descriptions with no time zone" do
+      sdp = SDP.parse(SDP_MISSING_TIME)
+      lambda { sdp.to_s }.should_not raise_error
     end
   end
 
