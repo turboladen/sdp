@@ -8,7 +8,7 @@ homepage: http://rubygems.org/gems/sdp
 has_yard: true
 
 dependencies:
-  parslet: ~> 1.0.0
+  parslet: ~> 1.1.0
 
 development_dependencies:
   bundler: ~> 1.0.0
