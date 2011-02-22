@@ -18,4 +18,4 @@ dependencies:
 development_dependencies:
   bundler: ~> 1.0.0
   yard: ~> 0.6.0
-  ore: ~> 0.1.0
+  ore-core: ~> 0.1.0
