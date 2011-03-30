@@ -6,7 +6,7 @@
 * Improvements:
   * Now works with parslet 1.1.1
 
-  === 0.2.1 / 2011-02-06
+=== 0.2.1 / 2011-02-06
 
 * Bug Fixes:
   * #to_s now uses \r\n line endings.
