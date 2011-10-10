@@ -17,14 +17,14 @@ This gem has two purposes:
 Since SDP descriptions contain a lot of useful data pieces, but due to the
 design of SDP descriptions, not only is it tough to know what's what when
 you visually look at that description, but it's tough to extract out the piece of
-data that you need to work with (ex. session ID).  The SDP.#parse method takes
-a description and parses it in to a Hash-like SDP::Description object, which has
+data that you need to work with (ex. session ID).  The +SDP.parse+ method takes
+a description and parses it in to a Hash-like +SDP::Description+ object, which has
 accessor methods (that mimic the RFC 4566 document) for easily getting and setting
 values.
 
 Similarly, since it's difficult to remember all the ins and outs of building
 an SDP description string that meets the requirements of RFC 4566, the
-SDP::Description class has a #to_s method that takes the fields that you've
+SDP::Description class has a +#to_s+ method that takes the fields that you've
 populated (from using the accessors) and turns those in to a string that's suitable
 to use for an SDP description.
 
@@ -134,9 +134,8 @@ to use for an SDP description.
   * parslet, ~> 1.1.0
 * Gems (development):
   * bundler, ~> 1.0.0
-  * ore, ~> 0.1.0
-  * rspec, ~> 2.5.0
-  * yard, ~> 0.6.0
+  * rspec, >= 2.6.0
+  * yard, >= 0.6.0
 
 == Install
 
