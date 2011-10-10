@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<parslet>, ["~> 1.1.0"])
 
   s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+  s.add_development_dependency(%q<cucumber>, ["~> 1.1.0"])
   s.add_development_dependency(%q<rspec>, [">= 2.6.0"])
   s.add_development_dependency(%q<yard>, [">= 0.6.0"])
 end
