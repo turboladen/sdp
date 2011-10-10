@@ -1,3 +1,11 @@
+=== 0.2.3 / 2011-10-09
+
+* Bug Fixes:
+  * Fixed author name in gemspec.
+* Improvements:
+  * Removed dependency on ore; now just use RubyGems & Bundler.
+  * Added `gem test` compatibility.
+
 === 0.2.2 / 2011-02-21
 
 * Bug Fixes:
