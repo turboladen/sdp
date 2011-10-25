@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
     that can be converted to text using}
   s.email = %q{steve.loveless@gmail.com}
   s.extra_rdoc_files = Dir.glob("*.rdoc")
-  s.files = Dir.glob("{features,lib,spec,tasks/**/*") + Dir.glob("*.rdoc") +
+  s.files = Dir.glob("{features,lib,spec,tasks}/**/*") + Dir.glob("*.rdoc") +
     %w(.gemtest .rspec .yardopts Gemfile Rakefile sdp.gemspec)
   s.homepage = %q{http://github.com/turboladen/sdp}
   s.licenses = %w(MIT)
@@ -22,8 +22,11 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency(%q<parslet>, ["~> 1.1.0"])
 
-  s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+  s.add_development_dependency(%q<bundler>, ["> 1.0.0"])
+  s.add_development_dependency(%q<code_statistics>, ["~> 0.2.13"])
   s.add_development_dependency(%q<cucumber>, ["~> 1.1.0"])
+  s.add_development_dependency(%q<metric_fu>, [">= 2.1.0"])
+  s.add_development_dependency(%q<rake>, [">= 0"])
   s.add_development_dependency(%q<rspec>, [">= 2.6.0"])
   s.add_development_dependency(%q<yard>, [">= 0.6.0"])
 end
