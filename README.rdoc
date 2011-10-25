@@ -1,8 +1,8 @@
 = sdp
 
-* {Homepage}[http://rubygems.org/gems/sdp]
+* http://rubygems.org/gems/sdp
 * {Documentation}[http://rubydoc.info/gems/sdp]
-* {Email}[steve.loveless at gmail.com]
+* {Email}[mailto://steve.loveless@gmail.com]
 
 == Description
 
