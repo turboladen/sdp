@@ -28,5 +28,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<metric_fu>, [">= 2.1.0"])
   s.add_development_dependency(%q<rake>, [">= 0"])
   s.add_development_dependency(%q<rspec>, [">= 2.6.0"])
+  s.add_development_dependency(%q<simplecov>, [">= 0.5.0"])
   s.add_development_dependency(%q<yard>, [">= 0.6.0"])
 end
