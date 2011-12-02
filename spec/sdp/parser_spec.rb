@@ -170,25 +170,22 @@ describe SDP::Parser do
     it "all possible fields in 1 section" do
       sdp = "m=audio 0 RTP/AVP 96\r\ni=Test info\r\nc=IN IP4 0.0.0.0\r\nb=AS:40\r\nk=prompt\r\na=rtpmap:96 MP4A-LATM/44100/2\r\na=fmtp:96 cpresent=0;config=400027200000\r\n"
       sdp_hash = @parser.parse sdp
-      sdp_hash[:media_sections].first[:media].should == "audio"
-      sdp_hash[:media_sections].first[:port].should == "0"
-      sdp_hash[:media_sections].first[:protocol].should == "RTP/AVP"
-      sdp_hash[:media_sections].first[:format].should == "96"
-      sdp_hash[:media_sections].first[:information].should == "Test info"
-      sdp_hash[:media_sections].first[:connection_network_type].should == "IN"
-      sdp_hash[:media_sections].first[:connection_address_type].should == "IP4"
-      sdp_hash[:media_sections].first[:connection_address].should == "0.0.0.0"
-      sdp_hash[:media_sections].first[:bandwidth_type].should == "AS"
-      sdp_hash[:media_sections].first[:bandwidth].should == "40"
-      sdp_hash[:media_sections].first[:encryption_method].should == "prompt"
-      sdp_hash[:media_sections].first[:attributes].first[:attribute].should ==
-        "rtpmap"
-      sdp_hash[:media_sections].first[:attributes].first[:value].should ==
-        "96 MP4A-LATM/44100/2"
-      sdp_hash[:media_sections].first[:attributes].last[:attribute].should ==
-        "fmtp"
-      sdp_hash[:media_sections].first[:attributes].last[:value].should ==
-        "96 cpresent=0;config=400027200000"
+      first_media_section = sdp_hash[:media_sections].first
+      first_media_section[:media].should == "audio"
+      first_media_section[:port].should == "0"
+      first_media_section[:protocol].should == "RTP/AVP"
+      first_media_section[:format].should == "96"
+      first_media_section[:information].should == "Test info"
+      first_media_section[:connection_network_type].should == "IN"
+      first_media_section[:connection_address_type].should == "IP4"
+      first_media_section[:connection_address].should == "0.0.0.0"
+      first_media_section[:bandwidth_type].should == "AS"
+      first_media_section[:bandwidth].should == "40"
+      first_media_section[:encryption_method].should == "prompt"
+      first_media_section[:attributes].first[:attribute].should == "rtpmap"
+      first_media_section[:attributes].first[:value].should == "96 MP4A-LATM/44100/2"
+      first_media_section[:attributes].last[:attribute].should == "fmtp"
+      first_media_section[:attributes].last[:value].should == "96 cpresent=0;config=400027200000"
     end
   end
 
