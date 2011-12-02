@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Parse and create SDP (Session Description Protocol) text based on RFC4566.}
   s.test_files = Dir.glob("spec/**/*")
 
-  s.add_runtime_dependency(%q<parslet>, ["~> 1.1.0"])
+  s.add_runtime_dependency(%q<parslet>, [">= 1.1.0"])
 
   s.add_development_dependency(%q<bundler>, ["> 1.0.0"])
   s.add_development_dependency(%q<code_statistics>, ["~> 0.2.13"])
