@@ -10,6 +10,11 @@ require 'parslet'
 # the RFC 4566 implies that this description isn't valid (because that field is
 # required).  Instead ofraising an exception, the parser lets the
 # SDP::Description class deal with this.
+#
+# Also, an object of this class parses key/value pairs, where, as a by-product
+# of using +Parslet+, values end up being +Parslet::Slice+ objects.  It's worth
+# pointing out that while those are not Strings, they mostly behave like
+# Strings.  See the Parslet docs for more info.
 class SDP::Parser < Parslet::Parser
   # All of the fields
   rule(:version) { str('v=') >> field_value.as(:protocol_version) >> eol }
