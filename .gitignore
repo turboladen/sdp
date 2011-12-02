@@ -1,0 +1,12 @@
+.bundle/
+.yardoc/
+
+.loadpath
+.project
+
+coverage/
+doc/
+pkg/
+tmp/
+
+.idea/
