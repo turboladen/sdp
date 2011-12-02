@@ -3,12 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + '/sdp/description')
 require File.expand_path(File.dirname(__FILE__) + '/sdp/parser')
 require File.expand_path(File.dirname(__FILE__) + '/sdp/parse_error')
 
-# The only use for this class is the #parse method, which is in this
+# The only use for this class is the +#parse+ method, which is in this
 # base class solely for convenience.  Other than this method, this
 # base class doesn't really do anything.
 class SDP
 
-  # Creates a parser and parses the given text in to an SDP::Description
+  # Creates a parser and parses the given text in to an +SDP::Description+
   # object.
   #
   # @param [String] sdp_text The text from an SDP description.

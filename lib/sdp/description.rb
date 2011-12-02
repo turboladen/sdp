@@ -5,14 +5,15 @@ require File.expand_path(File.dirname(__FILE__) + '/runtime_error')
 class SDP
   PROTOCOL_VERSION = 0
 
-  # Represents an SDP description as defined in RFC 4566.  This class allows
+  # Represents an SDP description as defined in
+  # {RFC 4566}[http://tools.ietf.org/html/rfc4566].  This class allows
   # for creating an object so you can, in turn, create a String that
   # represents an SDP description.  The String, then can be used by
   # other protocols that depend on an SDP description.
   #
-  # SDP::Description objects are initialized empty (i.e. no fields are
+  # +SDP::Description+ objects are initialized empty (i.e. no fields are
   # defined), putting the onus on you to add fields in the proper order.
-  # After building the description up, call #to_s to render it.  This
+  # After building the description up, call +#to_s+ to render it.  This
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
   class Description < Hash
@@ -32,7 +33,7 @@ class SDP
       #
       # @param [Symbol] field_type
       # @return [] Returns whatever type the value is that's stored
-      # in the Hash key.
+      #   in the Hash key.
       def define_read_field_method(field_type)
         define_method field_type do
           if field_type == :media_sections
@@ -100,7 +101,7 @@ class SDP
     end
 
     # @param [Hash] session_as_hash Pass this in to use these values instead
-    # of building your own from scratch.
+    #   of building your own from scratch.
     def initialize(session_as_hash=nil)
       if session_as_hash.nil?
         self[:session_section] = {}
@@ -123,7 +124,7 @@ class SDP
       super
     end
 
-    # Turns the current SDP::Description object into the SDP description,
+    # Turns the current +SDP::Description+ object into the SDP description,
     # ready to be used.
     #
     # @return [String] The SDP description.
