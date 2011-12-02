@@ -1,3 +1,10 @@
+=== 0.2.6 / 2011-12-02
+
+* Bug Fixes:
+  * gh-19[https://github.com/turboladen/sdp/issues/19]: Created +Hash#keys_to_s+
+    that converts all SDP parse result attributes to be Strings instead of
+    Parslet::Slices.
+
 === 0.2.5 / 2011-12-01
 
 * Improvements:
