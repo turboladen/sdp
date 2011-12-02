@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'erb'
+require File.expand_path(File.dirname(__FILE__) + '/runtime_error')
 
 class SDP
   PROTOCOL_VERSION = 0

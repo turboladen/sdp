@@ -26,6 +26,10 @@ describe SDP do
   it "VERSION is 0.2.5" do
     SDP.const_get('VERSION').should eql '0.2.5'
   end
+
+  it "raises when parsing malformed SDP text" do
+    expect { SDP.parse("pants") }.to raise_error SDP::ParseError
+  end
   
   context "parses SDP text into a Hash" do
     before do
@@ -181,7 +185,7 @@ describe SDP do
     end
   end
 
-  context "PROTOCOL_VERSION" do
+  describe "PROTOCOL_VERSION" do
     it "has an PROTOCOL_VERSION constant defined" do
       SDP.const_defined?('PROTOCOL_VERSION').should be_true
     end

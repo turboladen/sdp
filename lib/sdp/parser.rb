@@ -1,4 +1,4 @@
-require 'sdp'
+require File.expand_path(File.dirname(__FILE__) + '/../sdp')
 require 'parslet'
 
 # Class for parsing SDP description text, ideally when receiving as some sort

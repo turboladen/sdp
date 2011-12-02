@@ -1,5 +1,8 @@
 === 0.2.5 / 2011-12-01
 
+* Improvements:
+  * gh-18[https://github.com/turboladen/sdp/issues/18]: Added SDP::ParseError
+    to convey SDP couldn't parse.
 * Relaxed version enforcement on parslet.
 
 === 0.2.4 / 2011-10-25
