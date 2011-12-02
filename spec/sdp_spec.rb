@@ -23,8 +23,8 @@ a=rtpmap:99 h263-1998/90000
 EOF
 
 describe SDP do
-  it "should have a VERSION constant" do
-    SDP.const_get('VERSION').should_not be_empty
+  it "VERSION is 0.2.5" do
+    SDP.const_get('VERSION').should eql '0.2.5'
   end
   
   context "parses SDP text into a Hash" do
