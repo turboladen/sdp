@@ -42,4 +42,5 @@ a=<%= a[:attribute] %><% if a[:value] %>:<%= a[:value] %><% end %>
 m=<%= media_section[:media] %> <%= media_section[:port]%> <%= media_section[:protocol]%> <%= media_section[:format]%>
 <% if media_section[:attributes] %>
 <% media_section[:attributes].each do |attribute| %>
-a=<%= attribute[:attribute] %><% if attribute[:value] %>:<%= attribute[:value] %><% end %><% end %><% end %><% end %>
+a=<%= attribute[:attribute] %><% if attribute[:value] %>:<%= attribute[:value] %>
+<% end %><% end %><% end %><% end %>
