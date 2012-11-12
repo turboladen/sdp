@@ -23,8 +23,8 @@ a=rtpmap:99 h263-1998/90000
 EOF
 
 describe SDP do
-  it "VERSION is 0.2.6" do
-    SDP.const_get('VERSION').should eql '0.2.6'
+  describe "VERSION" do
+    specify { SDP.const_get('VERSION').should eql '0.2.8' }
   end
 
   it "raises when parsing malformed SDP text" do
