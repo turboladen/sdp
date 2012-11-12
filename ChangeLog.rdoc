@@ -1,3 +1,9 @@
+=== 0.2.7 / 2012-11-12
+
+* Bug Fixes:
+  * gh-21[https://github.com/turboladen/sdp/issues/21]: Attributes in the main
+    section now get put on a separate line.
+
 === 0.2.6 / 2011-12-02
 
 * Bug Fixes:
