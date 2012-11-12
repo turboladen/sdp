@@ -129,16 +129,7 @@ class SDP
     #
     # @return [String] The SDP description.
     def to_s
-      template = File.read(File.dirname(__FILE__) + "/session_template.erb")
-
-      sdp = ERB.new(template, 0, "%<>")
-      sdp_string = sdp.result(get_binding)
-
-      if RUBY_VERSION >= '1.9.2'
-        sdp_string.encode( :crlf_newline => true )
-      else
-        sdp_string.gsub!("\n","\r\n")
-      end
+      session_template
     end
 
     # Checks to see if the fields set in the current object will yield an SDP
@@ -178,6 +169,68 @@ class SDP
         message = "Invalid key value passed in on initialize: #{bad_keys}"
         raise SDP::RuntimeError, message
       end
+    end
+
+    def session_template
+      session = <<-TMP
+v=#{protocol_version}\r
+o=#{username} #{id} #{version} #{network_type} #{address_type} #{unicast_address}\r
+s=#{name}\r
+      TMP
+
+      session << "i=#{information}\r\n"                   if information
+      session << "u=#{uri}\r\n"                           if uri
+      session << "e=#{email_address}\r\n"                 if email_address
+      session << "p=#{phone_number}\r\n"                  if phone_number
+
+      if connection_network_type
+        session << "c=#{connection_network_type} #{connection_address_type} #{connection_address}\r\n"
+      end
+
+      session << "b=#{bandwidth_type}:#{bandwidth}\r\n"   if bandwidth
+      session << "t=#{start_time} #{stop_time}\r\n"
+
+      if repeat_interval
+        session << "r=#{repeat_interval} #{active_duration} #{offsets_from_start_time}\r\n"
+      end
+
+      unless time_zones.nil? || time_zones.empty?
+       session << "z=" << if time_zones.is_a? Array
+          time_zones.map do |tz|
+            "#{tz[:adjustment_time]} #{tz[:offset]}"
+          end.join + "\r\n"
+        else
+          "#{time_zones[:adjustment_time]} #{time_zones[:offset]}"
+        end
+      end
+
+      if encryption_method
+        session << "k=#{encryption_method}"
+        session << ":#{encryption_key}" if encryption_key
+        session << "\r\n"
+      end
+
+      unless attributes.empty?
+        attributes.each do |a|
+          session << "a=#{a[:attribute]}"
+          session << ":#{a[:value]}" if a[:value]
+          session << "\r\n"
+        end
+      end
+
+      media_sections.each do |m|
+        session << "m=#{m[:media]} #{m[:port]} #{m[:protocol]} #{m[:format]}\r\n"
+
+        if m[:attributes]
+          m[:attributes].each do |a|
+            session << "a=#{a[:attribute]}"
+            session << ":#{a[:value]}" if a[:value]
+            session << "\r\n"
+          end
+        end
+      end
+
+      session
     end
   end
 end
