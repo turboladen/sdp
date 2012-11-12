@@ -1,3 +1,9 @@
+=== 0.2.8 / 2012-11-12
+
+* Bug Fixes:
+  * gh-22[https://github.com/turboladen/sdp/issues/22]: Attributes in media
+    sections now get put on a separate line.
+
 === 0.2.7 / 2012-11-12
 
 * Bug Fixes:
