@@ -34,7 +34,9 @@ z=<%= time_zones[:adjustment_time] %> <%= time_zones[:offset] %><% end %>
 k=<%= encryption_method %><% if encryption_key %>:<%= encryption_key %><% end %>
 <% end %>
 <% unless attributes.empty? %>
-a=<% attributes.each do |a| %><%= a[:attribute] %><% if a[:value] %>:<%= a[:value] %><% end %><% end %>
+<% attributes.each do |a| %>
+a=<%= a[:attribute] %><% if a[:value] %>:<%= a[:value] %><% end %>
+<% end %>
 <% end %>
 <% media_sections.each do |media_section| %>
 m=<%= media_section[:media] %> <%= media_section[:port]%> <%= media_section[:protocol]%> <%= media_section[:format]%>
