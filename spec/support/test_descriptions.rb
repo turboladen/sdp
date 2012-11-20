@@ -107,4 +107,31 @@ a=x-qt-text-cmt:Orban Opticodec-PCx-qt-text-nam:Secret Agent from SomaFMx-qt-tex
 m=audio 0 RTP/AVP 96\r
 a=rtpmap:96 MP4A-LATM/44100/2a=fmtp:96 cpresent=0;config=400027200000a=control:trackID=1\r
 }
+
+  BANDWIDTH_BETWEEN_ATTRIBUTES = %{v=0\r
+o=- 1729430249 1729430249 IN IP4 127.0.0.0\r
+s=Wirecast\r
+c=IN IP4 0.0.0.0\r
+t=0 0\r
+a=x-qt-text-nam:ACT Legislative Assembly\r
+a=x-qt-text-cpy:Copyright ACT 2010\r
+a=x-qt-text-aut:ACT Government\r
+a=x-qt-text-inf:http://www.parliament.act.gov.au\r
+a=range:npt=now-\r
+a=control:*\r
+m=audio 0 RTP/AVP 96\r
+a=3GPP-Adaptation-Support:1\r
+a=rtpmap:96 mpeg4-generic/32000/2\r
+a=fmtp:96 profile-level-id=15;mode=AAC-hbr;sizelength=13;indexlength=3;indexdeltalength=3;config=1290\r
+a=control:trackID=1\r
+m=video 0 RTP/AVP 97\r
+a=3GPP-Adaptation-Support:1\r
+a=rtpmap:97 H264/90000\r
+a=fmtp:97 packetization-mode=1;profile-level-id=4D400D;sprop-parameter-sets=J01ADakYKD5gDUGAQa2wrXvfAQ==,KN4JiA==\r
+a=cliprect:0,0,240,320\r
+a=framesize:97 320-240\r
+b=AS:256\r
+a=control:trackID=2\r
+}
 end
+

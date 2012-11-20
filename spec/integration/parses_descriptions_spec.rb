@@ -114,7 +114,8 @@ describe "Parsing and creating descriptions" do
         "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\np=+1 555 123 0987\nc=IN IP4 224.5.234.22/24\nt=11111 22222\n",
         "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\ne=bob@thing.com (Bob!)\nc=IN IP4 224.5.234.22/24\nt=11111 22222\n",
         "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nu=http://bobo.net/thispdf.pdf\nc=IN IP4 224.5.234.22/24\nt=11111 22222\n",
-        "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nc=IN IP4 224.5.234.22/24\nt=11111 22222\n"
+        "v=1\no=steve 1234 5555 IN IP4 123.33.22.123\ns=This is a test session\ni=And here's some info\nc=IN IP4 224.5.234.22/24\nt=11111 22222\n",
+        #BANDWIDTH_BETWEEN_ATTRIBUTES
       ]
     end
 
