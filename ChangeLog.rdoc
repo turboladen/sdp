@@ -1,3 +1,16 @@
+=== x.x.x / 2012-11-19
+
+* Improvements:
+  * Added SDP::Description#errors to find out what fields are missing in the
+    case of an invalid description.
+  * SDP::Descriptions now must require either session connection info or media
+    section connection info.  #valid? and #errors now this into consideration.
+* Bug Fixes:
+  * SDP::Description#valid? now properly returns true even if media_sections is
+    empty.
+  * SDP::Description#valid? now properly checks for connect info in the session
+    section and media sections (if it doesn't exist in the session section).
+
 === 0.2.8 / 2012-11-12
 
 * Bug Fixes:

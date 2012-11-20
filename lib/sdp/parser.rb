@@ -35,7 +35,7 @@ class SDP::Parser < Parslet::Parser
     str('i=') >> field_value_string.as(:information) >> eol
   end
 
-  rule(:uri)  { str('u=') >> field_value.as(:uri) >> eol }
+  rule(:uri) { str('u=') >> field_value.as(:uri) >> eol }
 
   rule(:email_address) do
     str('e=') >> field_value_string.as(:email_address) >> eol
@@ -97,9 +97,9 @@ class SDP::Parser < Parslet::Parser
   end
 
   # Generics
-  rule(:space)          { match('[ ]').repeat(1) }
-  rule(:eol)            { match('[\r]').maybe >> match('[\n]') }
-  rule(:field_value)    { match('\S').repeat }
+  rule(:space) { match('[ ]').repeat(1) }
+  rule(:eol) { match('[\r]').maybe >> match('[\n]') }
+  rule(:field_value) { match('\S').repeat }
   rule(:field_value_string) { match('[^\r\n]').repeat }
 
   # The SDP description

@@ -94,7 +94,7 @@ class SDP
       :encryption_key,
       :attributes,
       :media_sections
-      ]
+    ]
 
     FIELDS.each do |field_type|
       field field_type
@@ -137,16 +137,77 @@ class SDP
     #
     # @return [Boolean] true if the object will meet spec; false if not.
     def valid?
-      return false unless protocol_version && username && id && version &&
-        network_type && address_type && unicast_address && name &&
-        start_time && stop_time && !media_sections.empty?
+      errors.empty?
+    end
 
-      true
+    # Checks to see if any required fields are not set.
+    #
+    # @return [Array] The list of unset fields that need to be set.
+    def errors
+      errors = []
+      required_fields.each do |attrib|
+        errors << attrib unless self.send(attrib)
+      end
+
+      unless has_session_connection_fields? || has_media_connection_fields?
+        connection_errors = []
+
+        connection_fields.each do |attrib|
+          connection_errors << attrib unless self.send(attrib)
+        end
+
+        if connection_errors.empty?
+          media_sections.each_with_index do |ms, i|
+            connection_fields.each do |attrib|
+              unless ms.has_key?(attrib.to_sym)
+                connection_errors << "media_section[#{i}][#{attrib}]"
+              end
+            end
+          end
+        end
+
+        errors += connection_errors
+      end
+
+      errors
     end
 
     #--------------------------------------------------------------------------
     # PRIVATES!
     private
+
+    # Fields required by the RFC.
+    #
+    # @return [Array<String>]
+    def required_fields
+      %w[protocol_version username id version network_type address_type
+        unicast_address name start_time stop_time media_sections]
+    end
+
+    # Fields that make up the connection line.
+    #
+    # @return [Array<String>]
+    def connection_fields
+      %w[connection_network_type connection_address_type connection_address]
+    end
+
+    # Checks to see if it has connection fields set in the session section.
+    #
+    # @return [Boolean]
+    def has_session_connection_fields?
+      !!(connection_network_type && connection_address_type &&
+        connection_address)
+    end
+
+    def has_media_connection_fields?
+      return false if media_sections.empty?
+
+      media_sections.any? do |ms|
+        !!(ms.has_key?(:connection_network_type) &&
+          ms.has_key?(:connection_address_type) &&
+          ms.has_key?(:connection_address))
+      end
+    end
 
     # @return [Binding] Values for this object for ERB to use.
     def get_binding
@@ -156,7 +217,8 @@ class SDP
     # @raise [SDP::RuntimeError] If not given a Hash.
     def validate_init_value value
       unless value.class == Hash
-        message = "Must pass a Hash in on initialize.  You passed in a #{value.class}."
+        message =
+          "Must pass a Hash in on initialize.  You passed in a #{value.class}."
         raise SDP::RuntimeError, message
       end
 
@@ -191,11 +253,12 @@ s=#{name}\r
       session << "t=#{start_time} #{stop_time}\r\n"
 
       if repeat_interval
-        session << "r=#{repeat_interval} #{active_duration} #{offsets_from_start_time}\r\n"
+        session <<
+          "r=#{repeat_interval} #{active_duration} #{offsets_from_start_time}\r\n"
       end
 
       unless time_zones.nil? || time_zones.empty?
-       session << "z=" << if time_zones.is_a? Array
+        session << "z=" << if time_zones.is_a? Array
           time_zones.map do |tz|
             "#{tz[:adjustment_time]} #{tz[:offset]}"
           end.join + "\r\n"
