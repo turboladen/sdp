@@ -2,7 +2,6 @@
 
 * http://rubygems.org/gems/sdp
 * {Documentation}[http://rubydoc.info/gems/sdp]
-* {Email}[mailto://steve.loveless@gmail.com]
 
 {<img src="https://secure.travis-ci.org/turboladen/sdp.png?branch=master" alt="Build Status" />}[http://travis-ci.org/turboladen/sdp]
 
