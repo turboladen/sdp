@@ -1,4 +1,4 @@
-=== x.x.x / 2012-11-19
+=== 0.2.9 / 2012-11-20
 
 * Improvements:
   * Added SDP::Description#errors to find out what fields are missing in the

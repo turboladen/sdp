@@ -24,7 +24,7 @@ EOF
 
 describe SDP do
   describe "VERSION" do
-    specify { SDP.const_get('VERSION').should eql '0.2.8' }
+    specify { SDP.const_get('VERSION').should eql '0.2.9' }
   end
 
   it "raises when parsing malformed SDP text" do
