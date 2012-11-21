@@ -53,8 +53,21 @@ to use for an SDP description.
   
   # Fields are stored in a Hash, where the session information goes in :session_section,
   # and each media section goes in an Array at :media_sections:
-  sdp.inspect     # => {:session_section=>{:time_zones=>[], :attributes=>[], :protocol_version=>0, :username=>"elvis"}, :media_sections=>[{:media=>"video", :port=>9000, :format=>0, :protocol=>"RTP/AVP", :attributes=>[{:attribute=>"recvonly"}]}, {:media=>"audio", :port=>9100, :format=>33, :protocol=>"RTP/AVP", :attributes=>[{:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}]}]} 
-  sdp.valid?      # => false (Require fields haven't yet been given)
+  sdp.inspect     # => {
+                  #     :session_section=>{
+                  #       :time_zones=>[], :attributes=>[], :protocol_version=>0,
+                  #       :username=>"elvis"
+                  #     },
+                  #     :media_sections=>[
+                  #       {
+                  #         :media=>"video", :port=>9000, :format=>0,
+                  #         :protocol=>"RTP/AVP", :attributes=>[{:attribute=>"recvonly"}]
+                  #       }, {
+                  #         :media=>"audio", :port=>9100, :format=>33,
+                  #         :protocol=>"RTP/AVP", :attributes=>[{:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}]
+                  #       }
+                  #     ]
+                  #   }
   sdp.id = 1
   sdp.version = 123
   sdp.network_type = :IN
@@ -62,10 +75,14 @@ to use for an SDP description.
   sdp.name = " "
   sdp.start_time = 1
   sdp.stop_time = 10
+  sdp.valid?      # => false (Require fields haven't yet been given)
+  sdp.errors      # => ["unicast_address", "connection_network_type", "connection_address_type", "connection_address"]
   sdp.unicast_address = "127.0.0.1"
+  sdp.connection_network_type = :IN
+  sdp.connection_address_type = :IP4
+  sdp.connection_address = "127.0.0.1"
   sdp.valid?      # => true
-  sdp.to_s        # => "v=0\no=elvis 1 123 IN IP4 127.0.0.1\ns= \nc=IN IP4 \nt=1 10\nm=video 9000 RTP/AVP 0\na=recvonlym=audio 9100 RTP/AVP 33\na=rtpmap:99 h263-1998/90000\n"
-  
+  sdp.to_s        # => "v=0\r\no=elvis 1 123 IN IP4 127.0.0.1\r\ns= \r\nc=IN IP4 127.0.0.1\r\nt=1 10\r\nm=video 9000 RTP/AVP 0\r\na=recvonly\r\nm=audio 9100 RTP/AVP 33\r\na=rtpmap:99 h263-1998/90000\r\n"
 
 === Parsing an SDP description
 
@@ -93,7 +110,7 @@ to use for an SDP description.
   session = SDP.parse sdp_string
   
   session.class               # => SDP::Description
-  session.protocol_version    # => 0
+  session.protocol_version    # => "0"
   session.media_sections      # => [{:media=>"audio", :port=>"49170", :protocol=>"RTP/AVP", :format=>"0", :attributes=>""}, {:media=>"video", :port=>"51372", :protocol=>"RTP/AVP", :format=>"99", :attributes=>[{:attribute=>"rtpmap", :value=>"99 h263-1998/90000"}]}] 
   session.username            # => "jdoe"
   session.id                  # => "2890844526"
@@ -127,10 +144,12 @@ to use for an SDP description.
 == Requirements
 
 * Rubies (tested, at least):
-  * 1.8.7-p352
-  * 1.9.2-p290
-  * 1.9.3-p0
-  * JRuby 1.6.5
+  * 1.8.7
+  * 1.9.2
+  * 1.9.3
+  * JRuby (1.8 and 1.9 modes)
+  * Rubinius (1.8 and 1.9 modes)
+
 * Gems:
   * parslet, >= 1.1.0
 
@@ -140,6 +159,6 @@ to use for an SDP description.
 
 == Copyright
 
-Copyright (c) 2011 Steve Loveless
+Copyright (c) 2011-2012 Steve Loveless
 
 See LICENSE.rdoc for details.
