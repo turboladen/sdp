@@ -176,6 +176,8 @@ s=#{name}\r
         end
       end
 
+      warn "Called #to_s on an invalid #{self.class}" unless valid?
+
       session
     end
 
