@@ -19,40 +19,47 @@ class SDP
   # to the object, so be sure to add them according to spec!
   class Description < Hash
 
-    attr_accessor :session_description
-    attr_accessor :media_descriptions
-
     # @param [Hash] session_as_hash Pass this in to use these values instead
     #   of building your own from scratch.
     def initialize(session_as_hash=nil)
       super()
 
       if session_as_hash.nil?
-        self[:session_description] = @session_description = SessionDescription.new
-        self[:media_descriptions] = @media_descriptions = []
+        self[:session_description] = SessionDescription.new
+        self[:media_descriptions] = []
       else
-        begin
-          unless validate_init_value(session_as_hash)
-            self[:session_description] = @session_description =
-              SessionDescription.new(session_as_hash[:session_description])
+        self[:session_description] =
+          SessionDescription.new(session_as_hash[:session_description])
 
-            self[:media_descriptions] = @media_descriptions =
-              session_as_hash[:media_descriptions].map do |md|
-                MediaDescription.new(md[:media_description])
-              end
-          end
-        rescue SDP::RuntimeError => ex
-          puts ex.message
-          raise
+        self[:media_descriptions] = session_as_hash[:media_descriptions].map do |md|
+          MediaDescription.new(md[:media_description])
         end
       end
+    end
+
+    # @param [SDP::SessionDescription] sd The new SDP::SessionDescription.
+    # @raise [SDP::RuntimeError] If +sd+ is not an SDP::SessionDescription.
+    def session_description=(sd)
+      raise SDP::RuntimeError unless sd.is_a? SDP::SessionDescription
+
+      self[:session_description] = sd
+    end
+
+    # @return [SDP::SessionDescription]
+    def session_description
+      self[:session_description]
+    end
+
+    # @return [Array<SDP::MediaDescription>]
+    def media_descriptions
+      self[:media_descriptions]
     end
 
     # Seeds the SessionDescription with some basic data.
     #
     # @see SDP::SessionDescription#seed
     def seed
-      @session_description.seed
+      session_description.seed
 
       self
     end
@@ -62,10 +69,10 @@ class SDP
     #
     # @return [String] The SDP description.
     def to_s
-      session = @session_description.to_s
+      session = session_description.to_s
 
-      unless @media_descriptions.empty?
-        @media_descriptions.each do |media_section|
+      unless media_descriptions.empty?
+        media_descriptions.each do |media_section|
           session << media_section.to_s
         end
       end
@@ -125,49 +132,15 @@ class SDP
       errors
 =end
       errors = []
-      errors += @session_description.errors
-      unless @media_descriptions.empty?
-        @media_descriptions.each do |media_description|
+      errors += session_description.errors
+
+      unless media_descriptions.empty?
+        media_descriptions.each do |media_description|
           errors += media_description
         end
       end
 
       errors
-    end
-
-    #--------------------------------------------------------------------------
-    # PRIVATES!
-    private
-
-=begin
-    def has_media_connection_fields?
-      return false if media_sections.empty?
-
-      media_sections.any? do |ms|
-        !!(ms.has_key?(:connection_network_type) &&
-          ms.has_key?(:connection_address_type) &&
-          ms.has_key?(:connection_address))
-      end
-    end
-=end
-
-    # @raise [SDP::RuntimeError] If not given a Hash.
-    def validate_init_value value
-      unless value.class == Hash
-        message =
-          "Must pass a Hash in on initialize.  You passed in a #{value.class}."
-        raise SDP::RuntimeError, message
-      end
-
-      #bad_keys = []
-      #value.each_key do |key|
-      #  bad_keys << key unless (FIELDS.include?(key) || key == :session_section)
-      #end
-
-      #unless bad_keys.empty?
-      #  message = "Invalid key value passed in on initialize: #{bad_keys}"
-      #  raise SDP::RuntimeError, message
-      #end
     end
   end
 end
