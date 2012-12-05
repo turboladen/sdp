@@ -20,7 +20,7 @@ class SDP
       def to_s
         super
 
-        "#{@prefix}=#{@bandwidth_type}:#{@bandwidth}"
+        "#{@prefix}=#{@bandwidth_type}:#{@bandwidth}\r\n"
       end
 
       private
