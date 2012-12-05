@@ -1,4 +1,5 @@
 require_relative '../field_type'
+require_relative '../field_type_group'
 
 
 class SDP
@@ -42,7 +43,7 @@ class SDP
 
       def add_from_ip(ip)
         @network_type = "IN"
-        @address_type = connection_address.match(/\d+\./) ? "IP4" : "IP6"
+        @address_type = ip.match(/\d+\./) ? "IP4" : "IP6"
         @connection_address = ip
       end
 
@@ -90,33 +91,7 @@ class SDP
     #                      ]
     #   c = ConnectionData.new(connection_array)
     #   c.to_s        # => "c=IN IP4 127.0.0.1\r\nc=IN IP6 FF15::101\r\n"
-    class ConnectionData
-      attr_reader :lines
-
-      def initialize(connection_data=nil)
-        @lines = []
-        return unless connection_data
-
-        if connection_data.is_a? String
-          connection_data.each_line { |line| add_line(line) }
-        elsif connection_data.is_a? Array
-          connection_data.each { |line| add_line(line) }
-        end
-      end
-
-      def add_line(connection_address)
-        @lines << ConnectionDataLine.new(connection_address)
-      end
-
-      def to_s
-        @lines.map(&:to_s).join
-      end
-
-      def each
-        @lines.each do |line|
-          yield line if block_given?
-        end
-      end
+    class ConnectionData < SDP::FieldTypeGroup
     end
   end
 end
