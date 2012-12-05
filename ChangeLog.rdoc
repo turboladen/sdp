@@ -1,6 +1,10 @@
 === x.x.x / 2012-12-04
 
 * Improvements:
+  * Refactored out SDP::SessionDescription and SDP::MediaDescription to make it
+    easier to deal with these sections independently.  The initial impetus for
+    this was so that RTSP streams could simply define a MediaDescription that
+    represent it, instead of having to know about the whole Description.
   * SDP.parse now ensures that values are Strings or Integers instead of
     Parslet::Slices.  This effectively results in no longer seeing "@37" type
     text next to keys when inspecting SDP::Description objects.

@@ -35,5 +35,6 @@ describe "Create descriptions" do
   it "can build programmatically" do
     example_file = File.read(File.dirname(__FILE__) + "/../support/sdp_file.txt")
     session.to_s.should == example_file
+    session.should be_valid
   end
 end
