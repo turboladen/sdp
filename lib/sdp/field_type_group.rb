@@ -1,3 +1,6 @@
+require_relative 'runtime_error'
+
+
 class SDP
   class FieldTypeGroup
     attr_reader :lines
@@ -16,7 +19,13 @@ class SDP
     def add_line(line_data)
       group_klass_name = self.class.name.split("::").last
       klass = SDP::FieldTypes.const_get "#{group_klass_name}Line"
-      @lines << klass.new(line_data)
+      line = klass.new(line_data)
+
+      if line_data.match /^#{line.prefix}=/
+        @lines << line
+      else
+        raise SDP::RuntimeError, "#add_line was given data for another field type"
+      end
     end
 
     def to_s

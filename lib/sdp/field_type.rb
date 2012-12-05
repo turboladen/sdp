@@ -1,5 +1,7 @@
 class SDP
   class FieldType
+    attr_reader :prefix
+
     def initialize(init_data)
       if init_data.is_a? Hash
         add_from_hash(init_data)
