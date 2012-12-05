@@ -19,7 +19,6 @@ RSpec::Matchers.define :be_a_valid_description do |expected|
   match do |actual|
     descriptions = [SDP::Description, SDP::SessionDescription, SDP::MediaDescription]
 
-    #@result = if actual.is_a? SDP::Description
     @result = if descriptions.any? { |d| actual.is_a? d }
       actual
     else
