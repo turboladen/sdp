@@ -103,7 +103,7 @@ class SDP::Parser < Parslet::Parser
   rule(:field_value_string) { match('[^\r\n]').repeat }
 
   # The SDP description
-  rule(:session_section) do
+  rule(:session_description) do
     version.maybe >> origin.maybe >> session_name.maybe >>
       information.maybe >> uri.maybe >> email_address.maybe >>
       phone_number.maybe >> connection_data.maybe >> bandwidth.maybe >>
@@ -117,8 +117,8 @@ class SDP::Parser < Parslet::Parser
   end
 
   rule(:description) do
-    session_section.as(:session_section) >>
-      media_section.repeat.as(:media_sections)
+    session_description.as(:session_description) >>
+      media_section.repeat.as(:media_descriptions)
   end
 
   root :description

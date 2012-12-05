@@ -29,11 +29,17 @@ class SDP
 
       if session_as_hash.nil?
         self[:session_description] = @session_description = SessionDescription.new
-        @media_descriptions = []
+        self[:media_descriptions] = @media_descriptions = []
       else
         begin
           unless validate_init_value(session_as_hash)
-            self.replace session_as_hash
+            self[:session_description] = @session_description =
+              SessionDescription.new(session_as_hash[:session_description])
+
+            self[:media_descriptions] = @media_descriptions =
+              session_as_hash[:media_descriptions].map do |md|
+                MediaDescription.new(md[:media_description])
+              end
           end
         rescue SDP::RuntimeError => ex
           puts ex.message
@@ -47,6 +53,8 @@ class SDP
     # @see SDP::SessionDescription#seed
     def seed
       @session_description.seed
+
+      self
     end
 
     # Turns the current +SDP::Description+ object into the SDP description,

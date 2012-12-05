@@ -74,11 +74,15 @@ class SDP
 
     PROTOCOL_VERSION = 0
 
-    def initialize
+    def initialize(hash=nil)
       super()
       self[:time_zones] = []
       self[:attributes] = []
       self.protocol_version = PROTOCOL_VERSION
+
+      if hash
+        hash.each { |k, v| self[k] = v }
+      end
     end
 
     # Seeds with some basic data.  It uses some guess work for this data, so
