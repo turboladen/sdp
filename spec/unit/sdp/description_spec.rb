@@ -277,31 +277,6 @@ describe SDP::Description do
     end
   end
 
-  describe "#has_session_connection_fields?" do
-    context "connection fields in session section" do
-      before do
-        subject.connection_network_type = "IN"
-        subject.connection_address_type = "IP4"
-        subject.connection_address = "0.0.0.0"
-      end
-
-      specify do
-        subject.send(:has_session_connection_fields?).should be_true
-      end
-    end
-
-    context "no connection fields in session section" do
-      before do
-        subject.connection_network_type = nil
-        subject.connection_address_type = nil
-        subject.connection_address = nil
-      end
-
-      specify do
-        subject.send(:has_session_connection_fields?).should be_false
-      end
-    end
-  end
 
   context "bad initialize values" do
     it "ensures a Hash is passed in" do

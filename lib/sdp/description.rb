@@ -1,9 +1,10 @@
 # encoding: utf-8
 require 'erb'
 require File.expand_path(File.dirname(__FILE__) + '/runtime_error')
+require_relative 'session_description'
+require_relative 'media_description'
 
 class SDP
-  PROTOCOL_VERSION = 0
 
   # Represents an SDP description as defined in
   # {RFC 4566}[http://tools.ietf.org/html/rfc4566].  This class allows
@@ -17,99 +18,18 @@ class SDP
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
   class Description < Hash
-    class << self
 
-      # Class macro to access the different fields that make up the
-      # description.
-      #
-      # @param [Symbol] field_type
-      def field(field_type)
-        define_read_field_method(field_type)
-        define_write_field_method(field_type)
-      end
-
-      # Creates read accessor for the field type.  This simply reads
-      # the correct Hash value and returns that.
-      #
-      # @param [Symbol] field_type
-      # @return [] Returns whatever type the value is that's stored
-      #   in the Hash key.
-      def define_read_field_method(field_type)
-        define_method field_type do
-          if field_type == :media_sections
-            self[:media_sections]
-          else
-            self[:session_section][field_type]
-          end
-        end
-      end
-
-      # Creates write accessor for the field type.  This simply writes
-      # the correct Hash value and returns that.
-      #
-      # @param [Symbol] field_type
-      def define_write_field_method(field_type)
-        case field_type
-        when :media_sections
-          define_method ":media_sections<<" do |value|
-            self[:media_sections] << value
-          end
-        when :time_zones || :attributes
-          define_method "#{field_type}<<" do |value|
-            self[:session_section][field_type] << value
-          end
-        else
-          define_method "#{field_type}=" do |value|
-            self[:session_section][field_type] = value
-          end
-        end
-      end
-    end
-
-    FIELDS = [
-      :protocol_version,
-      :username,
-      :id,
-      :version,
-      :network_type,
-      :address_type,
-      :unicast_address,
-      :name,
-      :information,
-      :uri,
-      :email_address,
-      :phone_number,
-      :connection_network_type,
-      :connection_address_type,
-      :connection_address,
-      :bandwidth_type,
-      :bandwidth,
-      :start_time,
-      :stop_time,
-      :repeat_interval,
-      :active_duration,
-      :offsets_from_start_time,
-      :time_zones,
-      :encryption_method,
-      :encryption_key,
-      :attributes,
-      :media_sections
-    ]
-
-    FIELDS.each do |field_type|
-      field field_type
-    end
+    attr_accessor :session_description
+    attr_accessor :media_descriptions
 
     # @param [Hash] session_as_hash Pass this in to use these values instead
     #   of building your own from scratch.
     def initialize(session_as_hash=nil)
-      if session_as_hash.nil?
-        self[:session_section] = {}
-        self[:session_section][:time_zones] = []
-        self[:session_section][:attributes] = []
-        self[:media_sections] = []
+      super()
 
-        self.send :protocol_version=, SDP::PROTOCOL_VERSION
+      if session_as_hash.nil?
+        self[:session_description] = @session_description = SessionDescription.new
+        @media_descriptions = []
       else
         begin
           unless validate_init_value(session_as_hash)
@@ -120,8 +40,13 @@ class SDP
           raise
         end
       end
+    end
 
-      super
+    # Seeds the SessionDescription with some basic data.
+    #
+    # @see SDP::SessionDescription#seed
+    def seed
+      @session_description.seed
     end
 
     # Turns the current +SDP::Description+ object into the SDP description,
@@ -129,7 +54,15 @@ class SDP
     #
     # @return [String] The SDP description.
     def to_s
-      session_template
+      session = @session_description.to_s
+
+      unless @media_descriptions.empty?
+        @media_descriptions.each do |media_section|
+          session << media_section.to_s
+        end
+      end
+
+      session
     end
 
     # Checks to see if the fields set in the current object will yield an SDP
@@ -144,9 +77,21 @@ class SDP
     #
     # @return [Array] The list of unset fields that need to be set.
     def errors
+=begin
       errors = []
       required_fields.each do |attrib|
         errors << attrib unless self.send(attrib)
+      end
+
+      self.each do |section_type, section_values|
+        section_values.each do |k, v|
+          p k
+          p v
+          p '--'
+          if v.nil? || v.to_s.empty?
+            errors << k
+          end
+        end
       end
 
       unless has_session_connection_fields? || has_media_connection_fields?
@@ -170,35 +115,23 @@ class SDP
       end
 
       errors
+=end
+      errors = []
+      errors += @session_description.errors
+      unless @media_descriptions.empty?
+        @media_descriptions.each do |media_description|
+          errors += media_description
+        end
+      end
+
+      errors
     end
 
     #--------------------------------------------------------------------------
     # PRIVATES!
     private
 
-    # Fields required by the RFC.
-    #
-    # @return [Array<String>]
-    def required_fields
-      %w[protocol_version username id version network_type address_type
-        unicast_address name start_time stop_time media_sections]
-    end
-
-    # Fields that make up the connection line.
-    #
-    # @return [Array<String>]
-    def connection_fields
-      %w[connection_network_type connection_address_type connection_address]
-    end
-
-    # Checks to see if it has connection fields set in the session section.
-    #
-    # @return [Boolean]
-    def has_session_connection_fields?
-      !!(connection_network_type && connection_address_type &&
-        connection_address)
-    end
-
+=begin
     def has_media_connection_fields?
       return false if media_sections.empty?
 
@@ -208,11 +141,7 @@ class SDP
           ms.has_key?(:connection_address))
       end
     end
-
-    # @return [Binding] Values for this object for ERB to use.
-    def get_binding
-      binding
-    end
+=end
 
     # @raise [SDP::RuntimeError] If not given a Hash.
     def validate_init_value value
@@ -222,78 +151,15 @@ class SDP
         raise SDP::RuntimeError, message
       end
 
-      bad_keys = []
-      value.each_key do |key|
-        bad_keys << key unless (FIELDS.include?(key) || key == :session_section)
-      end
+      #bad_keys = []
+      #value.each_key do |key|
+      #  bad_keys << key unless (FIELDS.include?(key) || key == :session_section)
+      #end
 
-      unless bad_keys.empty?
-        message = "Invalid key value passed in on initialize: #{bad_keys}"
-        raise SDP::RuntimeError, message
-      end
-    end
-
-    def session_template
-      session = <<-TMP
-v=#{protocol_version}\r
-o=#{username} #{id} #{version} #{network_type} #{address_type} #{unicast_address}\r
-s=#{name}\r
-      TMP
-
-      session << "i=#{information}\r\n"                   if information
-      session << "u=#{uri}\r\n"                           if uri
-      session << "e=#{email_address}\r\n"                 if email_address
-      session << "p=#{phone_number}\r\n"                  if phone_number
-
-      if connection_network_type
-        session << "c=#{connection_network_type} #{connection_address_type} #{connection_address}\r\n"
-      end
-
-      session << "b=#{bandwidth_type}:#{bandwidth}\r\n"   if bandwidth
-      session << "t=#{start_time} #{stop_time}\r\n"
-
-      if repeat_interval
-        session <<
-          "r=#{repeat_interval} #{active_duration} #{offsets_from_start_time}\r\n"
-      end
-
-      unless time_zones.nil? || time_zones.empty?
-        session << "z=" << if time_zones.is_a? Array
-          time_zones.map do |tz|
-            "#{tz[:adjustment_time]} #{tz[:offset]}"
-          end.join + "\r\n"
-        else
-          "#{time_zones[:adjustment_time]} #{time_zones[:offset]}"
-        end
-      end
-
-      if encryption_method
-        session << "k=#{encryption_method}"
-        session << ":#{encryption_key}" if encryption_key
-        session << "\r\n"
-      end
-
-      unless attributes.empty?
-        attributes.each do |a|
-          session << "a=#{a[:attribute]}"
-          session << ":#{a[:value]}" if a[:value]
-          session << "\r\n"
-        end
-      end
-
-      media_sections.each do |m|
-        session << "m=#{m[:media]} #{m[:port]} #{m[:protocol]} #{m[:format]}\r\n"
-
-        if m[:attributes]
-          m[:attributes].each do |a|
-            session << "a=#{a[:attribute]}"
-            session << ":#{a[:value]}" if a[:value]
-            session << "\r\n"
-          end
-        end
-      end
-
-      session
+      #unless bad_keys.empty?
+      #  message = "Invalid key value passed in on initialize: #{bad_keys}"
+      #  raise SDP::RuntimeError, message
+      #end
     end
   end
 end

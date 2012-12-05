@@ -1,2 +1,5 @@
 # Reclass so we can raise our own Exceptions.
-class SDP::RuntimeError < StandardError; end;
+class SDP
+  class RuntimeError < StandardError
+  end
+end

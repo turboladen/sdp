@@ -1,7 +1,7 @@
 require_relative 'sdp/version'
 require_relative 'sdp/description'
 require_relative 'sdp/parser'
-require_relative 'sdp/parser_error'
+require_relative 'sdp/parse_error'
 
 
 # The only use for this class is the +#parse+ method, which is in this
