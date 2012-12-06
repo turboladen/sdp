@@ -3,7 +3,7 @@ require_relative '../field'
 
 class SDP
   module FieldTypes
-    class EncryptionKeys < SDP::Field
+    class EncryptionKey < SDP::Field
       field_value :encryption_method
       field_value :encryption_key, true
       prefix :k
