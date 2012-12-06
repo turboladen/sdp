@@ -99,7 +99,7 @@ class SDP
           "Can't add a #{field.class} as a field"
       end
 
-      method_name = klass_name_to_sym(@fields.last.class)
+      method_name = @fields.last.class.sdp_type
       define_accessors(method_name)
 
       @fields
@@ -233,18 +233,10 @@ class SDP
       nil
     end
 
-    # @param [Class] klass
-    # @return [Symbol]
-    def klass_name_to_sym(klass)
-      klass_name = klass.name.split('::').last
-
-      klass_name.snake_case.to_sym
-    end
-
     def define_accessors(method_name)
       define_singleton_method(method_name) do
         fields = @fields.find_all do |field|
-          klass_name_to_sym(field.class) == method_name
+          field.class.sdp_type == method_name
         end
 
         fields.size > 1 ? fields : fields.last
