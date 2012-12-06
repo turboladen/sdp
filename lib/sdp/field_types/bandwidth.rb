@@ -1,38 +1,30 @@
-require_relative '../field_type'
-require_relative '../field_type_group'
+require_relative '../field'
 
 
 class SDP
   module FieldTypes
-    class BandwidthLine < SDP::FieldType
-      attr_accessor :bandwidth_type
-      attr_accessor :bandwidth
+    class Bandwidth < SDP::Field
+      field_value :bandwidth_type
+      field_value :bandwidth
+      prefix :b
 
       def initialize(init_data=nil)
-        @bandwidth_type = nil
-        @bandwidth = nil
-
-        @prefix = "b"
-
         super(init_data) if init_data
       end
 
       def to_s
         super
 
-        "#{@prefix}=#{@bandwidth_type}:#{@bandwidth}\r\n"
+        "#{prefix}=#{@bandwidth_type}:#{@bandwidth}\r\n"
       end
 
       private
 
       def add_from_string(init_data)
-        /b=(?<t>\S+):(?<b>\S+)/ =~ init_data
-        @bandwidth_type = t
-        @bandwidth = b
+        match = init_data.match(/#{prefix}=(?<type>\S+):(?<bandwidth>\S+)/)
+        @bandwidth_type = match[:type]
+        @bandwidth = match[:bandwidth]
       end
-    end
-
-    class Bandwidth < SDP::FieldTypeGroup
     end
   end
 end

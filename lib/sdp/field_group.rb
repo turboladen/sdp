@@ -1,5 +1,5 @@
 require_relative 'runtime_error'
-Dir['field_types/*.rb'].each { |file| require file }
+Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
 require_relative '../ext/string_snake_case'
 
 
@@ -199,10 +199,6 @@ class SDP
         if hash.keys.first == field_type_hash_key
           return SDP::FieldTypes.const_get field_type
         end
-
-        #if k.field_values == hash.keys
-        #  return k
-        #end
       end
 
       nil

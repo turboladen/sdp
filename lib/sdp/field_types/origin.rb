@@ -1,4 +1,4 @@
-require_relative '../field_type'
+require_relative '../field'
 
 
 class SDP
@@ -32,31 +32,23 @@ class SDP
     #   }
     #   o = Origin.new(origin_hash)
     #   o.to_s            # => "o=john 1 123 IN IP4 my-computer.pants.com\r\n"
-    class Origin < SDP::FieldType
-      attr_accessor :username
-      attr_accessor :session_id
-      attr_accessor :session_version
-      attr_accessor :network_type
-      attr_accessor :address_type
-      attr_accessor :unicast_address
+    class Origin < SDP::Field
+      field_value :username
+      field_value :session_id
+      field_value :session_version
+      field_value :network_type
+      field_value :address_type
+      field_value :unicast_address
+      prefix :o
 
       def initialize(init_data=nil)
-        @username = nil
-        @session_id = nil
-        @session_version = nil
-        @network_type = nil
-        @address_type = nil
-        @unicast_address = nil
-
-        @prefix = "o"
-
         super(init_data) if init_data
       end
 
       def to_s
         super
 
-        "#{@prefix}=#{@username} #{@session_id} #{@session_version} " +
+        "#{prefix}=#{@username} #{@session_id} #{@session_version} " +
           "#{@network_type} #{@address_type} #{@unicast_address}\r\n"
       end
 
@@ -78,13 +70,13 @@ class SDP
       private
 
       def add_from_string(init_data)
-        /o=(?<u>\S+) (?<i>\S+) (?<v>\S+) (?<n>\S+) (?<t>\S+) (?<a>\S+)/ =~ init_data
-        @username = u
-        @session_id = i
-        @session_version = v
-        @network_type = n
-        @address_type = t
-        @unicast_address = a
+        m = init_data.match(/^#{prefix}=(?<u>\S+) (?<i>\S+) (?<v>\S+) (?<n>\S+) (?<t>\S+) (?<a>\S+)/)
+        @username = m[:u]
+        @session_id = m[:i]
+        @session_version = m[:v]
+        @network_type = m[:n]
+        @address_type = m[:t]
+        @unicast_address = m[:a]
       end
     end
   end

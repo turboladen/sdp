@@ -1,26 +1,21 @@
-require_relative '../field_type'
-require_relative '../field_type_group'
+require_relative '../field'
 
 
 class SDP
   module FieldTypes
-    class TimingLine < SDP::FieldType
-      attr_accessor :start_time
-      attr_accessor :stop_time
+    class Timing < SDP::Field
+      field_value :start_time
+      field_value :stop_time
+      prefix :t
 
       def initialize(init_data=nil)
-        @start_time = nil
-        @stop_time = nil
-
-        @prefix = "t"
-
         super(init_data) if init_data
       end
 
       def to_s
         super
 
-        "#{@prefix}=#{@start_time} #{@stop_time}\r\n"
+        "#{prefix}=#{@start_time} #{@stop_time}\r\n"
       end
 
       def seed
@@ -31,15 +26,9 @@ class SDP
       private
 
       def add_from_string(init_data)
-        /t=(?<start>\S+) (?<stop>\S+)/ =~ init_data
-        @start_time = start
-        @stop_time = stop
-      end
-    end
-
-    class Timing < SDP::FieldTypeGroup
-      def seed
-        add_line(start_time: 0, stop_time: 0)
+        match = init_data.match(/#{prefix}=(?<start>\S+) (?<stop>\S+)/)
+        @start_time = Integer(match[:start]) rescue match[:start]
+        @stop_time = Integer(match[:stop]) rescue match[:start]
       end
     end
   end

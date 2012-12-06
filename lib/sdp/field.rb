@@ -11,11 +11,23 @@ end
 class SDP
   class Field
     class << self
-      def field_value(value)
+
+      # Defines a special attr_accessor.  This separates out values (these) that
+      # make up a field from any other instance variables that a Field might
+      # define.
+      #
+      # @param [Symbol] value
+      # @param [Boolean] optional Set to +true+ if the value is optional for
+      #   the field.  This will keep Fields from complaining if this value isn't
+      #   set.
+      def field_value(value, optional=false)
         raise "value must be a Symbol" unless value.is_a? Symbol
 
-        @@field_values ||= []
-        @@field_values << value
+        @field_values ||= []
+        @field_values << value
+
+        @optional_field_values ||= []
+        @optional_field_values << value if optional
 
         define_method value do
           instance_variable_get("@#{value}".to_sym)
@@ -26,41 +38,62 @@ class SDP
         end
       end
 
+      # The list of all field values defined for the Field.
+      #
+      # @return [Array<Symbol>] All of the field values defined for the Field.
       def field_values
-        @@field_values
+        @field_values ||= []
       end
 
-      def prefix(char=nil)
-        return @@prefix if char.nil?
-        raise "Can't change prefix after it has been set" if defined? @@prefix
+      # The list of all optional field values defined for the Field.
+      #
+      # @return [Array<Symbol>] All of the optional field values defined for the
+      #   Field.
+      def optional_field_values
+        @optional_field_values ||= []
+      end
 
-        @@prefix = char
+      # The letter that represents the field line in a description (i.e. "v"
+      # represents Protocol Version).
+      #
+      # @param [String] char The character that represents the field.
+      # @return [String] The character.
+      def prefix(char=nil)
+        return @prefix if char.nil?
+        raise "Can't change prefix after it has been set" if defined? @prefix
+
+        @prefix = char
       end
     end
 
 
+    # @param [Hash,String] init_data
     def initialize(init_data)
       if init_data.is_a? Hash
         add_from_hash(init_data)
-      else
+      elsif init_data.is_a? String
         add_from_string(init_data)
       end
     end
 
     def to_s
-      nil_values = @@field_values.any? do |v|
-        instance_variable_get(v.to_ivar).nil?
+      nil_values = self.class.field_values.any? do |v|
+        instance_variable_get(v.to_ivar).nil? &&
+          !self.class.optional_field_values.include?(v)
       end
 
       if nil_values
-        warn "Calling #to_s on #{self.class} with empty field value(s)"
+        warn "Calling #to_s on a #{self.class} with empty field value(s)"
       end
 
-      if @@prefix.nil?
-        warn "Calling #to_s on #{self.class} without a prefix defined"
+      if self.class.prefix.nil?
+        warn "Calling #to_s on a #{self.class} without a prefix defined"
       end
     end
 
+    # Converts the field to a Hash.
+    #
+    # @return [Hash] Self as a Hash.
     def to_hash
       values_hash = field_values.inject({}) do |result, value|
         result[value] = instance_variable_get(value.to_ivar)
@@ -74,17 +107,18 @@ class SDP
       { key => values_hash }
     end
 
+    # Hook method defined for children to redefine if desired.
     def seed
       # Implement in children.
       warn "#seed called on #{self.class} but is not implemented"
     end
 
     def field_values
-      @@field_values ||= []
+      self.class.field_values ||= []
     end
 
     def prefix
-      @@prefix
+      self.class.prefix
     end
 
     # This custom redefinition of #inspect is needed because of the #to_s
