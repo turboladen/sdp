@@ -8,7 +8,7 @@ class SDP
     class MediaDescription < SDP::FieldGroup
 
       # The FieldTypes that can belong in a session description.
-      allowed_field_types :media_description,
+      allowed_field_types :media,
         :session_information,
         :connection_data,
         :bandwidth,
@@ -16,7 +16,7 @@ class SDP
         :attribute
 
       # The FieldTypes that *must* belong in a session description.
-      required_field_types :media_description
+      required_field_types :media
 
       allowed_group_types
       required_group_types
@@ -24,7 +24,7 @@ class SDP
       def initialize
         super()
 
-        add_field(SDP::FieldTypes::MediaDescription.new)
+        add_field(SDP::FieldTypes::Media.new)
       end
     end
   end
