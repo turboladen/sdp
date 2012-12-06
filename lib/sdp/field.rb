@@ -77,18 +77,26 @@ class SDP
     end
 
     def to_s
-      nil_values = self.class.field_values.any? do |v|
-        instance_variable_get(v.to_ivar).nil? &&
-          !self.class.optional_field_values.include?(v)
-      end
+      missing_values = required_values - set_values
 
-      if nil_values
-        warn "Calling #to_s on a #{self.class} with empty field value(s)"
+      unless missing_values.empty?
+        warn "#to_s called on a #{self.class} without required values added: " +
+          "#{missing_values}"
       end
 
       if self.class.prefix.nil?
         warn "Calling #to_s on a #{self.class} without a prefix defined"
       end
+    end
+
+    def set_values
+      self.class.field_values.find_all do |value|
+        instance_variable_get(value.to_ivar)
+      end
+    end
+
+    def required_values
+      self.class.field_values - self.class.optional_field_values
     end
 
     # Converts the field to a Hash.
