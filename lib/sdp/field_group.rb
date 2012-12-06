@@ -82,6 +82,7 @@ class SDP
     # can be added by passing in a String, a Hash, or the SDP::Field.
     #
     # @param [String,Hash,SDP::Field] field
+    # @return [Array<SDP::Field>] The updated +fields+ list.
     def add_field(field)
       if field.is_a? String
         klass = klass_from_prefix(field[0])
@@ -97,6 +98,11 @@ class SDP
         raise SDP::RuntimeError,
           "Can't add a #{field.class} as a field"
       end
+
+      method_name = klass_name_to_sym(@fields.last.class)
+      define_accessors(method_name)
+
+      @fields
     end
 
     # Adds a new group of SDP description field and value combo.  The field
@@ -225,6 +231,32 @@ class SDP
       end
 
       nil
+    end
+
+    # @param [Class] klass
+    # @return [Symbol]
+    def klass_name_to_sym(klass)
+      klass_name = klass.name.split('::').last
+
+      klass_name.snake_case.to_sym
+    end
+
+    def define_accessors(method_name)
+      define_singleton_method(method_name) do
+        fields = @fields.find_all do |field|
+          klass_name_to_sym(field.class) == method_name
+        end
+
+        fields.size > 1 ? fields : fields.last
+      end
+
+      define_singleton_method("#{method_name}=") do |new_value|
+        fields = @fields.find_all do |field|
+          klass_name_to_sym(field.class) == method_name
+        end
+
+        fields.size > 1 ? fields : fields.last
+      end
     end
   end
 end
