@@ -1,4 +1,4 @@
-require_relative '../ext/string_snake_case'
+require_relative '../ext/string_case_conversions'
 
 
 class Symbol

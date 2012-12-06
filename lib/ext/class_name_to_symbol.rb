@@ -1,4 +1,4 @@
-require_relative 'string_snake_case'
+require_relative 'string_case_conversions'
 
 
 class Class
