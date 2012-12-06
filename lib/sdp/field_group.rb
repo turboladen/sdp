@@ -170,6 +170,29 @@ class SDP
       me
     end
 
+    def seed
+      @fields.each(&:seed)
+      @groups.each(&:seed)
+
+      self
+    end
+
+    def to_hash
+      fields_hash = @fields.inject({}) do |result, field|
+        result.merge!(field.to_hash)
+
+        result
+      end
+
+      groups_hash = @groups.inject({}) do |result, group|
+        result.merge!(group.to_hash)
+
+        result
+      end
+
+      fields_hash.merge(groups_hash)
+    end
+
     private
 
     # Finds the Field class that matches the +prefix+.
