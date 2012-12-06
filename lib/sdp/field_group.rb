@@ -210,6 +210,7 @@ class SDP
     end
 
     # @yield [SDP::Field, SDP::FieldGroup]
+    def each_field
       lines = @fields
 
       lines << @groups.map do |group|
