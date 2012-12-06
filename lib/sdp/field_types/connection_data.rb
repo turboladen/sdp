@@ -40,7 +40,7 @@ class SDP
     #                      ]
     #   c = ConnectionData.new(connection_array)
     #   c.to_s        # => "c=IN IP4 127.0.0.1\r\nc=IN IP6 FF15::101\r\n"
-    class ConnectionDataLine < SDP::Field
+    class ConnectionData < SDP::Field
       field_value :network_type
       field_value :address_type
       field_value :connection_address
