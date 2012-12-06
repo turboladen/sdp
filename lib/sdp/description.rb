@@ -38,49 +38,6 @@ class SDP
     end
 
 =begin
-    # @param [SDP::SessionDescription] sd The new SDP::SessionDescription.
-    # @raise [SDP::RuntimeError] If +sd+ is not an SDP::SessionDescription.
-    def session_description=(sd)
-      raise SDP::RuntimeError unless sd.is_a? SDP::SessionDescription
-
-      self[:session_description] = sd
-    end
-
-    # @return [SDP::SessionDescription]
-    def session_description
-      self[:session_description]
-    end
-
-    # @return [Array<SDP::MediaDescription>]
-    def media_descriptions
-      self[:media_descriptions]
-    end
-
-    # Seeds the SessionDescription with some basic data.
-    #
-    # @see SDP::SessionDescription#seed
-    def seed
-      session_description.seed
-
-      self
-    end
-
-    # Turns the current +SDP::Description+ object into the SDP description,
-    # ready to be used.
-    #
-    # @return [String] The SDP description.
-    def to_s
-      session = session_description.to_s
-
-      unless media_descriptions.empty?
-        media_descriptions.each do |media_section|
-          session << media_section.to_s
-        end
-      end
-
-      session
-    end
-
     # Checks to see if the fields set in the current object will yield an SDP
     # description that meets the RFC 4566 spec.
     #
@@ -93,7 +50,6 @@ class SDP
     #
     # @return [Array] The list of unset fields that need to be set.
     def errors
-=begin
 
       errors = []
       required_fields.each do |attrib|

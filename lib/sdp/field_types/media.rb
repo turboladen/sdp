@@ -11,7 +11,7 @@ class SDP
       prefix :m
 
       # Types of media that RFC 4566 says are currently supported.
-      MEDIA_TYPES = %w[audio video text application message]
+      MEDIA_TYPES = %w[audio video text application message control data]
 
       # Protocol types that RFC 4566 says are currently supported.
       PROTOCOL_TYPES = %w[udp RTP/AVP RTP/SAVP]
