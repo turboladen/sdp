@@ -1,6 +1,8 @@
 require_relative 'runtime_error'
-Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
 require_relative '../ext/string_snake_case'
+require_relative '../ext/class_name_to_symbol'
+
+Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
 
 
 class SDP
@@ -70,6 +72,49 @@ class SDP
   #   session_section.add_field("t=2873397496 2873404696")
   #   session_section.add_field("a=recvonly")
   class FieldGroup
+    class << self
+      def allowed_field_types(*types)
+        @allowed_field_types ||= []
+        return @allowed_field_types if types.empty?
+
+        check_field_types(types)
+        @allowed_field_types = types
+      end
+
+      def required_field_types(*types)
+        @required_field_types ||= []
+        return @required_field_types if types.empty?
+
+        check_field_types(types)
+        @required_field_types = types
+      end
+
+      def allowed_group_types(*types)
+        @allowed_group_types ||= []
+        return @allowed_group_types if types.empty?
+
+        check_field_types(types)
+        @allowed_group_types = types
+      end
+
+      def required_group_types(*types)
+        @required_group_types ||= []
+        return @required_group_types if types.empty?
+
+        check_field_types(types)
+        @required_group_types = types
+      end
+
+      private
+
+      def check_field_types(types)
+        if types.any? { |type| !type.is_a? Symbol }
+          raise "Field types must be Symbols"
+        end
+      end
+    end
+
+
     attr_reader :fields
     attr_reader :groups
 
@@ -84,21 +129,25 @@ class SDP
     # @param [String,Hash,SDP::Field] field
     # @return [Array<SDP::Field>] The updated +fields+ list.
     def add_field(field)
-      if field.is_a? String
+      field_object = if field.is_a? String
         klass = klass_from_prefix(field[0])
-        new_field = klass.new(field)
-        @fields << new_field
+        klass.new(field)
       elsif field.is_a? Hash
         klass = klass_from_hash(field)
-        new_field = klass.new(field)
-        @fields << new_field
+        klass.new(field)
       elsif field.kind_of? SDP::Field
-        @fields << field
+        field
       else
         raise SDP::RuntimeError,
           "Can't add a #{field.class} as a field"
       end
 
+      unless self.class.allowed_field_types.include? field_object.class.sdp_type
+        raise SDP::RuntimeError,
+          "#{field_object.class} fields can't be added to #{self.class}s"
+      end
+
+      @fields << field_object
       method_name = @fields.last.class.sdp_type
       define_accessors(method_name)
 
@@ -113,14 +162,15 @@ class SDP
       if group.is_a? String
         group.each_line do |line|
           klass = klass_from_prefix(line[0])
-          new_group = klass.new(line)
-          @groups << new_group
+          check_group_type(klass)
+          @groups << klass.new(line)
         end
       elsif group.is_a? Hash
         klass = klass_from_hash(group)
-        new_group = klass.new(group)
-        @groups << new_group
+        check_group_type(klass)
+        @groups << klass.new(group)
       elsif group.kind_of? SDP::FieldGroup
+        check_group_type(group.class)
         @groups << group
       else
         raise SDP::RuntimeError,
@@ -130,10 +180,22 @@ class SDP
 
     # @todo Sorting lines based on spec order
     def to_s
+      missing_fields = self.class.required_field_types - added_field_types
+
+      unless missing_fields.empty?
+        warn "#to_s called on a #{self.class} without required fields added: #{missing_fields}"
+      end
+
       s = @fields.map(&:to_s).join
       s << @groups.map(&:to_s).join
 
       s
+    end
+
+    def added_field_types
+      @fields.map do |field|
+        field.class.sdp_type
+      end
     end
 
     # @yield [SDP::Field, SDP::FieldGroup]
@@ -241,14 +303,14 @@ class SDP
 
         fields.size > 1 ? fields : fields.last
       end
+    end
 
-      define_singleton_method("#{method_name}=") do |new_value|
-        fields = @fields.find_all do |field|
-          klass_name_to_sym(field.class) == method_name
-        end
-
-        fields.size > 1 ? fields : fields.last
+    def check_group_type(klass)
+      unless self.class.allowed_group_types.include? klass.sdp_type
+        raise SDP::RuntimeError,
+          "#{klass} groups can't be added to #{self.class}s"
       end
     end
+
   end
 end
