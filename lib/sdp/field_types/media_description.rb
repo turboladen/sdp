@@ -43,14 +43,14 @@ class SDP
       end
 
       def check_protocol_type
-        unless PROTOCOL_TYPES.include? @transport_protocol
+        unless PROTOCOL_TYPES.include? @transport_protocol.to_s
           warn "Transport protocol '#{@transport_protocol}' is not " +
             "in the known list: #{PROTOCOL_TYPES}"
         end
       end
 
       def check_media_type
-        unless MEDIA_TYPES.include? @media
+        unless MEDIA_TYPES.include? @media.to_s
           warn "Media type '#{@media}' is not in the known list: #{MEDIA_TYPES}"
         end
       end
