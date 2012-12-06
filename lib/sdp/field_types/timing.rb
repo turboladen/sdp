@@ -21,6 +21,8 @@ class SDP
       def seed
         @start_time = 0
         @stop_time = 0
+
+        self
       end
 
       private

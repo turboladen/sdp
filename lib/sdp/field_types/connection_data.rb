@@ -65,6 +65,8 @@ class SDP
         @network_type = "IN"
         @address_type = "IP4"
         @connection_address = local_ip
+
+        self
       end
 
       private

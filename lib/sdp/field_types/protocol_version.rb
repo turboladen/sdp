@@ -18,6 +18,12 @@ class SDP
         "#{prefix}=#{@protocol_version}\r\n"
       end
 
+      def seed
+        @protocol_version = 0
+
+        self
+      end
+
       private
 
       def add_from_string(init_data)
