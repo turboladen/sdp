@@ -1,8 +1,9 @@
-# encoding: utf-8
-require 'erb'
-require File.expand_path(File.dirname(__FILE__) + '/runtime_error')
-require_relative 'session_description'
-require_relative 'media_description'
+require_relative 'field'
+require_relative 'field_group'
+require_relative 'runtime_error'
+
+Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/field_group_types/*.rb"].each { |f| require f }
 
 class SDP
 
@@ -17,26 +18,26 @@ class SDP
   # After building the description up, call +#to_s+ to render it.  This
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
-  class Description < Hash
+  class Description < FieldGroup
+
+    allowed_field_types
+    required_field_types
+    allowed_group_types :session_description,
+      :time_description,
+      :media_description
+
+    required_group_types :session_description
+
 
     # @param [Hash] session_as_hash Pass this in to use these values instead
     #   of building your own from scratch.
     def initialize(session_as_hash=nil)
       super()
 
-      if session_as_hash.nil?
-        self[:session_description] = SessionDescription.new
-        self[:media_descriptions] = []
-      else
-        self[:session_description] =
-          SessionDescription.new(session_as_hash[:session_description])
-
-        self[:media_descriptions] = session_as_hash[:media_descriptions].map do |md|
-          MediaDescription.new(md[:media_description])
-        end
-      end
+      add_group(SDP::FieldGroupTypes::SessionDescription.new)
     end
 
+=begin
     # @param [SDP::SessionDescription] sd The new SDP::SessionDescription.
     # @raise [SDP::RuntimeError] If +sd+ is not an SDP::SessionDescription.
     def session_description=(sd)
@@ -93,6 +94,7 @@ class SDP
     # @return [Array] The list of unset fields that need to be set.
     def errors
 =begin
+
       errors = []
       required_fields.each do |attrib|
         errors << attrib unless self.send(attrib)
@@ -130,7 +132,7 @@ class SDP
       end
 
       errors
-=end
+
       errors = []
       errors += session_description.errors
 
@@ -142,5 +144,6 @@ class SDP
 
       errors
     end
+=end
   end
 end
