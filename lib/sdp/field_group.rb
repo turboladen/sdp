@@ -149,7 +149,7 @@ class SDP
 
       @fields << field_object
       method_name = @fields.last.class.sdp_type
-      define_accessors(method_name)
+      define_field_accessor(method_name)
 
       @fields
     end
@@ -164,18 +164,29 @@ class SDP
           klass = klass_from_prefix(line[0])
           check_group_type(klass)
           @groups << klass.new(line)
+
+          method_name = @groups.last.class.sdp_type
+          define_group_accessor(method_name)
         end
       elsif group.is_a? Hash
         klass = klass_from_hash(group)
         check_group_type(klass)
         @groups << klass.new(group)
+
+        method_name = @groups.last.class.sdp_type
+        define_group_accessor(method_name)
       elsif group.kind_of? SDP::FieldGroup
         check_group_type(group.class)
         @groups << group
+
+        method_name = @groups.last.class.sdp_type
+        define_group_accessor(method_name)
       else
         raise SDP::RuntimeError,
           "Can't add a #{field.class} as a group"
       end
+
+      @groups
     end
 
     # @todo Sorting lines based on spec order
@@ -295,13 +306,23 @@ class SDP
       nil
     end
 
-    def define_accessors(method_name)
+    def define_field_accessor(method_name)
       define_singleton_method(method_name) do
         fields = @fields.find_all do |field|
           field.class.sdp_type == method_name
         end
 
         fields.size > 1 ? fields : fields.last
+      end
+    end
+
+    def define_group_accessor(method_name)
+      define_singleton_method(method_name) do
+        groups = @groups.find_all do |group|
+          group.class.sdp_type == method_name
+        end
+
+        groups.size > 1 ? groups : groups.last
       end
     end
 
