@@ -210,27 +210,17 @@ class SDP
     end
 
     # @yield [SDP::Field, SDP::FieldGroup]
-    def each
-      items = @fields + @groups
+      lines = @fields
 
-      items.each do |item|
+      lines << @groups.map do |group|
+        group.fields + group.groups
+      end
+
+      lines.flatten.each do |item|
         yield item if block_given?
       end
     end
 
-    # @yield [SDP::Field]
-    def each_field
-      @fields.each do |field|
-        yield field if block_given?
-      end
-    end
-
-    # @yield [SDP::FieldGroup]
-    def each_group
-      @groups.each do |group|
-        yield group if block_given?
-      end
-    end
 
     # This custom redefinition of #inspect is needed because of the #to_s
     # definition.
