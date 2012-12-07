@@ -1,5 +1,6 @@
 require_relative 'runtime_error'
-require_relative '../ext/string_snake_case'
+require_relative 'field_group_dsl'
+require_relative '../ext/string_case_conversions'
 require_relative '../ext/class_name_to_symbol'
 
 Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
@@ -72,48 +73,7 @@ class SDP
   #   session_section.add_field("t=2873397496 2873404696")
   #   session_section.add_field("a=recvonly")
   class FieldGroup
-    class << self
-      def allowed_field_types(*types)
-        @allowed_field_types ||= []
-        return @allowed_field_types if types.empty?
-
-        check_field_types(types)
-        @allowed_field_types = types
-      end
-
-      def required_field_types(*types)
-        @required_field_types ||= []
-        return @required_field_types if types.empty?
-
-        check_field_types(types)
-        @required_field_types = types
-      end
-
-      def allowed_group_types(*types)
-        @allowed_group_types ||= []
-        return @allowed_group_types if types.empty?
-
-        check_field_types(types)
-        @allowed_group_types = types
-      end
-
-      def required_group_types(*types)
-        @required_group_types ||= []
-        return @required_group_types if types.empty?
-
-        check_field_types(types)
-        @required_group_types = types
-      end
-
-      private
-
-      def check_field_types(types)
-        if types.any? { |type| !type.is_a? Symbol }
-          raise "Field types must be Symbols"
-        end
-      end
-    end
-
+    include SDP::FieldGroupDSL
 
     attr_reader :fields
     attr_reader :groups
