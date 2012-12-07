@@ -106,7 +106,7 @@ class SDP
           "Can't add a #{field.class} as a field"
       end
 
-      unless settings.allowed_field_types.include? field_object.class.sdp_type
+      unless settings.allowed_field_types.include? field_object.sdp_type
         message = "#{field_object.class} fields can't be added to #{self.class}s"
         message << "\nField object: #{self}\n"
         message << "Field: #{field}"
@@ -119,7 +119,7 @@ class SDP
         raise SDP::RuntimeError, "Can't add #{field_object} to fields!"
       end
 
-      method_name = @fields.last.class.sdp_type
+      method_name = @fields.last.sdp_type
       define_field_accessor(method_name)
 
       @fields
@@ -127,7 +127,7 @@ class SDP
 
     def has_group?(group)
       if group.is_a? Symbol
-        @groups.any? { |g| g.class.sdp_type == group }
+        @groups.any? { |g| g.sdp_type == group }
       elsif group.kind_of? SDP::Field
         @groups.any? { |g| g.class == group.class }
       end
@@ -166,7 +166,7 @@ class SDP
           check_group_type(klass)
           @groups << klass.new(line)
 
-          method_name = @groups.last.class.sdp_type
+          method_name = @groups.last.sdp_type
           define_group_accessor(method_name)
         end
       elsif group.is_a? Hash
@@ -174,7 +174,7 @@ class SDP
         check_group_type(klass)
         @groups << klass.new(group)
 
-        method_name = @groups.last.class.sdp_type
+        method_name = @groups.last.sdp_type
         define_group_accessor(method_name)
       elsif group.is_a? Symbol
         klass_name = klass_from_symbol(group)
@@ -184,7 +184,7 @@ class SDP
         check_group_type(group.class)
         @groups << group
 
-        method_name = @groups.last.class.sdp_type
+        method_name = @groups.last.sdp_type
         define_group_accessor(method_name)
       else
         raise SDP::RuntimeError,
@@ -197,7 +197,7 @@ class SDP
 
     def has_field?(field)
       if field.is_a? Symbol
-        @fields.any? { |f| f.class.sdp_type == field }
+        @fields.any? { |f| f.sdp_type == field }
       elsif field.kind_of? SDP::Field
         @fields.any? { |f| f.class == field.class }
       end
@@ -236,15 +236,25 @@ class SDP
       sorted_list
     end
 
+    # Returns the name of the lowest level class as a snake-case Symbol.
+    #
+    # @example
+    #   SDP::FieldTypes::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
+    #
+    # @return [Symbol]
+    def sdp_type
+      self.class.sdp_type
+    end
+
     def added_field_types
       @fields.map do |field|
-        field.class.sdp_type
+        field.sdp_type
       end
     end
 
     def added_group_types
       @groups.map do |group|
-        group.class.sdp_type
+        group.sdp_type
       end
     end
 
@@ -320,7 +330,7 @@ class SDP
 
         if child_group_errors && !child_group_errors.empty?
           errors[:groups] ||= []
-          errors[:groups] << { group.class.sdp_type => child_group_errors }
+          errors[:groups] << { group.sdp_type => child_group_errors }
         end
       end
 
@@ -376,7 +386,7 @@ class SDP
     def define_field_accessor(method_name)
       define_singleton_method(method_name) do
         fields = @fields.find_all do |field|
-          field.class.sdp_type == method_name
+          field.sdp_type == method_name
         end
 
         fields.size > 1 ? fields : fields.last
@@ -386,7 +396,7 @@ class SDP
     def define_group_accessor(method_name)
       define_singleton_method(method_name) do
         groups = @groups.find_all do |group|
-          group.class.sdp_type == method_name
+          group.sdp_type == method_name
         end
 
         groups.size > 1 ? groups : groups.last

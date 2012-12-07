@@ -1,4 +1,5 @@
 require_relative '../ext/string_case_conversions'
+require_relative 'parse_error'
 
 
 class Symbol
@@ -103,6 +104,16 @@ class SDP
 
     def errors
       required_values - set_values
+    end
+
+    # Returns the name of the lowest level class as a snake-case Symbol.
+    #
+    # @example
+    #   SDP::FieldTypes::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
+    #
+    # @return [Symbol]
+    def sdp_type
+      self.class.sdp_type
     end
 
     # Converts the field to a Hash.
