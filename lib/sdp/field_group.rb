@@ -225,19 +225,27 @@ class SDP
       end
 
       sorted_list = ::Set.new
+      fields = @fields.dup
+      groups = @groups.dup
 
-      settings.line_order.each do |sdp_type_name|
-        klass = klass_from_symbol(sdp_type_name)
+      until fields.empty? && groups.empty?
+        settings.line_order.each do |sdp_type_name|
+          field = fields.find { |field| field.sdp_type == sdp_type_name }
 
-        fields = @fields.dup
-        field = fields.find { |field| field.is_a? klass }
-        sorted_list << field if field
+          if field
+            sorted_list << fields.delete(field)
+            log "Sorted list << Field #{field.sdp_type}"
+          end
 
-        next if field
+          next if field
 
-        groups = @groups.dup
-        group = groups.find { |g| g.is_a? klass }
-        sorted_list << group if group
+          group = groups.find { |g| g.sdp_type == sdp_type_name }
+
+          if group
+            sorted_list << groups.delete(group)
+            log "Sorted list << Group #{group.sdp_type}"
+          end
+        end
       end
 
       log "Sorted list:"
