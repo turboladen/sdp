@@ -1,4 +1,5 @@
 require_relative '../field'
+require_relative '../version'
 
 
 class SDP
@@ -7,6 +8,8 @@ class SDP
       field_value :attribute
       field_value :value, true
       prefix :a
+
+      TOOL_NAME = "RubySDP v#{SDP::VERSION}"
 
       def initialize(init_data=nil)
         super(init_data) if init_data
@@ -20,6 +23,11 @@ class SDP
         s << "\r\n"
 
         s
+      end
+
+      def seed
+        @attribute = 'tool'
+        @value = TOOL_NAME
       end
 
       private
