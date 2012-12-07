@@ -65,14 +65,14 @@ class SDP
     private
 
     def self.diff(one, two)
-      parsed_set = one.to_s.split(" ").to_set
-      original_set = two.split(" ").to_set
+      parsed_set = one.to_s.split("\n").to_set
+      original_set = two.split("\n").to_set
       difference = parsed_set ^ original_set
 
       unless difference.empty?
         message = "**********************************************************\n"
         message << "The parsed description does not match the original.\n"
-        message << "This is probably a parser bug.  Differences:\n"
+        message << "This is probably a parser bug.  Differences in lines:\n"
         difference.each { |d| message << "#{d}\n" }
         message << "**********************************************************\n"
         warn message
