@@ -21,7 +21,6 @@ that can be converted to text using}
   s.summary = %{Parse and create SDP (Session Description Protocol) text based on RFC4566.}
   s.test_files = Dir.glob("spec/**/*")
 
-  s.add_runtime_dependency 'parslet', ">= 1.1.0"
   s.add_runtime_dependency 'log_switch', ">= 0.4.0"
 
   s.add_development_dependency 'bundler', "> 1.0.0"
