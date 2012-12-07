@@ -22,6 +22,8 @@ class SDP
       def add_from_string(init_data)
         match = init_data.match(/#{prefix}=(?<description>[^\r\n]+)/)
         @session_description = match[:description]
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

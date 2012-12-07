@@ -31,6 +31,8 @@ class SDP
         @repeat_interval = Integer(m[:interval]) rescue m[:interval]
         @active_duration = Integer(m[:duration]) rescue m[:duration]
         @offsets_from_start_time = m[:offsets].split(' ')
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

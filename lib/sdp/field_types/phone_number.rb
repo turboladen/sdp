@@ -22,6 +22,8 @@ class SDP
       def add_from_string(init_data)
         match = init_data.match(/#{prefix}=(?<number>[^\r\n]+)/)
         @phone_number = match[:number]
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

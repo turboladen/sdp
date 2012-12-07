@@ -77,6 +77,8 @@ class SDP
         @network_type = m[:n]
         @address_type = m[:t]
         @unicast_address = m[:a]
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

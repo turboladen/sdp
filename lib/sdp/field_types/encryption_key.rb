@@ -37,6 +37,8 @@ class SDP
         if match[:key]
           @encryption_key = match[:key]
         end
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
 
       def check_method

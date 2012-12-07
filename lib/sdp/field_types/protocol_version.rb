@@ -28,6 +28,8 @@ class SDP
       def add_from_string(init_data)
         match = init_data.match(/#{prefix}=(?<version>\S+)/)
         @protocol_version = match[:version].to_i
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

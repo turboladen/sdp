@@ -31,6 +31,8 @@ class SDP
         match = init_data.match(/#{prefix}=(?<start>\S+) (?<stop>\S+)/)
         @start_time = Integer(match[:start]) rescue match[:start]
         @stop_time = Integer(match[:stop]) rescue match[:start]
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

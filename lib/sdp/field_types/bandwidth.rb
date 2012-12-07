@@ -24,6 +24,8 @@ class SDP
         match = init_data.match(/#{prefix}=(?<type>\S+):(?<bandwidth>\S+)/)
         @bandwidth_type = match[:type]
         @bandwidth = match[:bandwidth]
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

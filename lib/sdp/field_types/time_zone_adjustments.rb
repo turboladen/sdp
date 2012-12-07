@@ -27,6 +27,8 @@ class SDP
           key, value = values.shift(2)
           @adjustment_sets << { key => value }
         end
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

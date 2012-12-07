@@ -40,6 +40,8 @@ class SDP
 
         check_media_type
         check_protocol_type
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
 
       def check_protocol_type

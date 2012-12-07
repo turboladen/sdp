@@ -40,6 +40,8 @@ class SDP
         if match[:value]
           @value = match[:value]
         end
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
     end
   end

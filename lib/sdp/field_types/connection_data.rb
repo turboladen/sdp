@@ -83,6 +83,8 @@ class SDP
         @network_type = "IN"
         @address_type = ip.match(/\d+\./) ? "IP4" : "IP6"
         @connection_address = ip
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{ip}'"
       end
 
       def add_from_line(line)
@@ -90,6 +92,8 @@ class SDP
         @network_type = m[:nettype]
         @address_type = m[:addrtype]
         @connection_address = m[:address]
+      rescue NoMethodError
+        raise SDP::ParseError, "Error parsing string '#{line}'"
       end
     end
   end
