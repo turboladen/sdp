@@ -77,11 +77,9 @@ class SDP
     end
 
     def to_s
-      missing_values = required_values - set_values
-
-      unless missing_values.empty?
+      unless valid?
         warn "#to_s called on a #{self.class} without required values added: " +
-          "#{missing_values}"
+          "#{errors}"
       end
 
       if self.class.prefix.nil?
@@ -97,6 +95,14 @@ class SDP
 
     def required_values
       self.class.field_values - self.class.optional_field_values
+    end
+
+    def valid?
+      errors.empty?
+    end
+
+    def errors
+      required_values - set_values
     end
 
     # Converts the field to a Hash.
