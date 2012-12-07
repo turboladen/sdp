@@ -3,7 +3,7 @@ require_relative '../field'
 
 class SDP
   module FieldTypes
-    class URI < SDP::Field
+    class Uri < SDP::Field
       field_value :uri
       prefix :u
 
