@@ -19,87 +19,65 @@ class SDP
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
   class Description < FieldGroup
-
     allowed_field_types
     required_field_types
-    allowed_group_types :session_description,
-      :time_description,
-      :media_description
-
+    allowed_group_types :session_description, :media_description
     required_group_types :session_description
+    line_order :session_description, :media_description
 
+    def self.parse(text)
+      description = new
 
-    # @param [Hash] session_as_hash Pass this in to use these values instead
-    #   of building your own from scratch.
-    def initialize(session_as_hash=nil)
-      super()
+      text.each_line do |line|
+        case line[0]
+        when "v"
+          description.add_group :session_description
+        when "t"
+          description.session_description.add_group :time_description
+          description.session_description.time_description.add_field(line)
+          next
+        when "m"
+          description.add_group :media_description
+        end
 
-      add_group(SDP::FieldGroupTypes::SessionDescription.new)
+        current_group = if !description.groups.empty? &&
+          !description.groups.last.fields.empty? &&
+          description.groups.last.fields.last.prefix == :r
+          description.groups[-2]
+        else
+          description.groups.last
+        end
+
+        current_group.add_field(line)
+      end
+
+      diff(text, description.to_s)
+
+      description
     end
 
-=begin
-    # Checks to see if the fields set in the current object will yield an SDP
-    # description that meets the RFC 4566 spec.
-    #
-    # @return [Boolean] true if the object will meet spec; false if not.
-    def valid?
-      errors.empty?
+    def seed
+      add_group(:session_description) unless has_field?(:session_description)
+
+      super
     end
 
-    # Checks to see if any required fields are not set.
-    #
-    # @return [Array] The list of unset fields that need to be set.
-    def errors
+    private
 
-      errors = []
-      required_fields.each do |attrib|
-        errors << attrib unless self.send(attrib)
+    def self.diff(one, two)
+      parsed_set = one.to_s.split(" ").to_set
+      original_set = two.split(" ").to_set
+      difference = parsed_set ^ original_set
+
+      unless difference.empty?
+        message = "**********************************************************\n"
+        message << "The parsed description does not match the original.\n"
+        message << "This is probably a parser bug.  Differences:\n"
+        difference.each { |d| message << "#{d}\n" }
+        message << "**********************************************************\n"
+        warn message
       end
-
-      self.each do |section_type, section_values|
-        section_values.each do |k, v|
-          p k
-          p v
-          p '--'
-          if v.nil? || v.to_s.empty?
-            errors << k
-          end
-        end
-      end
-
-      unless has_session_connection_fields? || has_media_connection_fields?
-        connection_errors = []
-
-        connection_fields.each do |attrib|
-          connection_errors << attrib unless self.send(attrib)
-        end
-
-        if connection_errors.empty?
-          media_sections.each_with_index do |ms, i|
-            connection_fields.each do |attrib|
-              unless ms.has_key?(attrib.to_sym)
-                connection_errors << "media_section[#{i}][#{attrib}]"
-              end
-            end
-          end
-        end
-
-        errors += connection_errors
-      end
-
-      errors
-
-      errors = []
-      errors += session_description.errors
-
-      unless media_descriptions.empty?
-        media_descriptions.each do |media_description|
-          errors += media_description
-        end
-      end
-
-      errors
     end
-=end
+
   end
 end
