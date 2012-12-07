@@ -1,6 +1,7 @@
 require 'set'
 require_relative 'runtime_error'
 require_relative 'field_group_dsl'
+require_relative 'logger'
 require_relative '../ext/string_case_conversions'
 require_relative '../ext/class_name_to_symbol'
 
@@ -75,6 +76,7 @@ class SDP
   #   session_section.add_field("a=recvonly")
   class FieldGroup
     include SDP::FieldGroupDSL
+    include LogSwitch::Mixin
 
     attr_reader :fields
     attr_reader :groups
@@ -122,6 +124,7 @@ class SDP
       method_name = @fields.last.sdp_type
       define_field_accessor(method_name)
 
+      log "Added field type '#{field_object.sdp_type}' to a '#{sdp_type}' group"
       @fields
     end
 
@@ -168,6 +171,7 @@ class SDP
 
           method_name = @groups.last.sdp_type
           define_group_accessor(method_name)
+          log "Added group type '#{method_name}' to #{sdp_type}"
         end
       elsif group.is_a? Hash
         klass = field_klass_from_hash(group)
@@ -176,16 +180,19 @@ class SDP
 
         method_name = @groups.last.sdp_type
         define_group_accessor(method_name)
+        log "Added group type '#{method_name}' to #{sdp_type}"
       elsif group.is_a? Symbol
         klass_name = klass_from_symbol(group)
         @groups << klass_name.new
         define_group_accessor(group)
+        log "Added group type '#{group}' to #{sdp_type}"
       elsif group.kind_of? SDP::FieldGroup
         check_group_type(group.class)
         @groups << group
 
         method_name = @groups.last.sdp_type
         define_group_accessor(method_name)
+        log "Added group type '#{method_name}' to #{sdp_type}"
       else
         raise SDP::RuntimeError,
           "Can't add a #{field.class} as a group"
@@ -232,6 +239,10 @@ class SDP
         group = groups.find { |g| g.is_a? klass }
         sorted_list << group if group
       end
+
+      log "Sorted list:"
+      sorted_list.each { |s| log s.sdp_type }
+      log ""
 
       sorted_list
     end
