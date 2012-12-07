@@ -8,7 +8,6 @@ class SDP
       prefix :v
 
       def initialize(init_data=nil)
-        @protocol_version = 0
         super(init_data) if init_data
       end
 

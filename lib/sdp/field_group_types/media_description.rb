@@ -21,10 +21,17 @@ class SDP
       allowed_group_types
       required_group_types
 
-      def initialize
-        super()
+      line_order :media,
+        :session_information,
+        :connection_data,
+        :bandwidth,
+        :encryption_key,
+        :attribute
 
-        add_field(SDP::FieldTypes::Media.new)
+      def seed
+        add_field(:media) unless has_field?(:media)
+
+        super
       end
     end
   end

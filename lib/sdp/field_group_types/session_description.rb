@@ -8,7 +8,6 @@ class SDP
   module FieldGroupTypes
     class SessionDescription < SDP::FieldGroup
 
-      # The FieldTypes that can belong in a session description.
       allowed_field_types :protocol_version,
         :origin,
         :session_name,
@@ -22,21 +21,34 @@ class SDP
         :encryption_key,
         :attribute
 
-      # The FieldTypes that *must* belong in a session description.
       required_field_types :protocol_version,
         :origin,
         :session_name
 
       allowed_group_types :time_description
       required_group_types :time_description
+      line_order :protocol_version,
+        :origin,
+        :session_name,
+        :session_information,
+        :uri,
+        :email_address,
+        :phone_number,
+        :connection_data,
+        :bandwidth,
+        :time_description,
+        :time_zone_adjustments,
+        :encryption_key,
+        :attribute
 
-      def initialize
-        super()
+      def seed
+        [:protocol_version, :origin, :session_name].each do |field|
+          add_field(field) unless has_field?(field)
+        end
 
-        add_field(SDP::FieldTypes::ProtocolVersion.new)
-        add_field(SDP::FieldTypes::Origin.new)
-        add_field(SDP::FieldTypes::SessionName.new)
-        add_group(SDP::FieldGroupTypes::TimeDescription.new)
+        add_group(:time_description) unless has_group?(:time_description)
+
+        super
       end
     end
   end

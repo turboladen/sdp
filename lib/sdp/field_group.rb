@@ -1,3 +1,4 @@
+require 'set'
 require_relative 'runtime_error'
 require_relative 'field_group_dsl'
 require_relative '../ext/string_case_conversions'
@@ -90,10 +91,13 @@ class SDP
     # @return [Array<SDP::Field>] The updated +fields+ list.
     def add_field(field)
       field_object = if field.is_a? String
-        klass = klass_from_prefix(field[0])
+        klass = field_klass_from_prefix(field[0])
         klass.new(field)
       elsif field.is_a? Hash
-        klass = klass_from_hash(field)
+        klass = field_klass_from_hash(field)
+        klass.new(field)
+      elsif field.is_a? Symbol
+        klass = field_klass_from_symbol(field)
         klass.new(field)
       elsif field.kind_of? SDP::Field
         field
@@ -102,26 +106,63 @@ class SDP
           "Can't add a #{field.class} as a field"
       end
 
-      unless self.class.allowed_field_types.include? field_object.class.sdp_type
-        raise SDP::RuntimeError,
-          "#{field_object.class} fields can't be added to #{self.class}s"
+      unless settings.allowed_field_types.include? field_object.class.sdp_type
+        message = "#{field_object.class} fields can't be added to #{self.class}s"
+        message << "\nField object: #{self}\n"
+        message << "Field: #{field}"
+        raise SDP::RuntimeError, message
       end
 
-      @fields << field_object
+      if field_object.kind_of? SDP::Field
+        @fields << field_object
+      else
+        raise SDP::RuntimeError, "Can't add #{field_object} to fields!"
+      end
+
       method_name = @fields.last.class.sdp_type
       define_field_accessor(method_name)
 
       @fields
     end
 
+    def has_group?(group)
+      if group.is_a? Symbol
+        @groups.any? { |g| g.class.sdp_type == group }
+      elsif group.kind_of? SDP::Field
+        @groups.any? { |g| g.class == group.class }
+      end
+    end
+
     # Adds a new group of SDP description field and value combo.  The field
-    # can be added by passing in a String, a Hash, or the SDP::Field.
+    # can be added by passing in a String, a Hash, a Symbol, or the SDP::Field.
+    #
+    # @example From a String
+    #   group = FieldGroup.new
+    #   group.add_group("o=joe 12345 9887 IN IP4 10.20.30.40")
+    #
+    # @example From a Hash
+    #   group = FieldGroup.new
+    #   origin = {
+    #     :origin => {
+    #       :username => "joe",
+    #       :session_id => 12345,
+    #       :session_version => 9887,
+    #       :network_type => "IN",
+    #       :address_type => "IP4",
+    #       :unicast_address => "10.20.30.40"
+    #       }
+    #     }
+    #   group.add_group(origin)
+    #
+    # @example From a Symbol
+    #   group = FieldGroup.new
+    #   group.add_group(:session_description)
     #
     # @param [String,Hash,SDP::FieldGroup] group
     def add_group(group)
       if group.is_a? String
         group.each_line do |line|
-          klass = klass_from_prefix(line[0])
+          klass = field_klass_from_prefix(line[0])
           check_group_type(klass)
           @groups << klass.new(line)
 
@@ -129,12 +170,16 @@ class SDP
           define_group_accessor(method_name)
         end
       elsif group.is_a? Hash
-        klass = klass_from_hash(group)
+        klass = field_klass_from_hash(group)
         check_group_type(klass)
         @groups << klass.new(group)
 
         method_name = @groups.last.class.sdp_type
         define_group_accessor(method_name)
+      elsif group.is_a? Symbol
+        klass_name = klass_from_symbol(group)
+        @groups << klass_name.new
+        define_group_accessor(group)
       elsif group.kind_of? SDP::FieldGroup
         check_group_type(group.class)
         @groups << group
@@ -149,18 +194,46 @@ class SDP
       @groups
     end
 
-    # @todo Sorting lines based on spec order
-    def to_s
-      missing_fields = self.class.required_field_types - added_field_types
 
-      unless missing_fields.empty?
-        warn "#to_s called on a #{self.class} without required fields added: #{missing_fields}"
+    def has_field?(field)
+      if field.is_a? Symbol
+        @fields.any? { |f| f.class.sdp_type == field }
+      elsif field.kind_of? SDP::Field
+        @fields.any? { |f| f.class == field.class }
+      end
+    end
+
+    def to_s
+      unless valid?
+        warn "#to_s called on a #{self.class} without required info added: #{errors}"
       end
 
-      s = @fields.map(&:to_s).join
-      s << @groups.map(&:to_s).join
+      sdp_sort.map(&:to_s).join
+    end
 
-      s
+    def sdp_sort
+      if settings.line_order.empty?
+        warn "#sdp_sort called on a #{self.class} without an order defined"
+        return
+      end
+
+      sorted_list = ::Set.new
+
+      settings.line_order.each do |sdp_type_name|
+        klass = klass_from_symbol(sdp_type_name)
+
+        fields = @fields.dup
+        field = fields.find { |field| field.is_a? klass }
+        sorted_list << field if field
+
+        next if field
+
+        groups = @groups.dup
+        group = groups.find { |g| g.is_a? klass }
+        sorted_list << group if group
+      end
+
+      sorted_list
     end
 
     def added_field_types
@@ -169,9 +242,15 @@ class SDP
       end
     end
 
+    def added_group_types
+      @groups.map do |group|
+        group.class.sdp_type
+      end
+    end
+
     # @yield [SDP::Field, SDP::FieldGroup]
     def each_field
-      lines = @fields
+      lines = @fields.dup
 
       lines << @groups.map do |group|
         group.fields + group.groups
@@ -181,7 +260,6 @@ class SDP
         yield item if block_given?
       end
     end
-
 
     # This custom redefinition of #inspect is needed because of the #to_s
     # definition.
@@ -223,13 +301,39 @@ class SDP
       fields_hash.merge(groups_hash)
     end
 
+    # @return [Boolean]
+    def valid?
+      errors.empty?
+    end
+
+    # @return [Hash]
+    def errors
+      errors = {}
+      missing_fields = settings.required_field_types - added_field_types
+      errors[:fields] = missing_fields unless missing_fields.empty?
+
+      missing_groups  = settings.required_group_types - added_group_types
+      errors[:groups] = missing_groups unless missing_groups.empty?
+
+      @groups.each do |group|
+        child_group_errors = group.errors
+
+        if child_group_errors && !child_group_errors.empty?
+          errors[:groups] ||= []
+          errors[:groups] << { group.class.sdp_type => child_group_errors }
+        end
+      end
+
+      errors
+    end
+
     private
 
     # Finds the Field class that matches the +prefix+.
     #
     # @param [String] prefix The 1-char String that represents a Field.
     # @return [Class] The SDP::FieldTypes class that matches the prefix.
-    def klass_from_prefix(prefix)
+    def field_klass_from_prefix(prefix)
       SDP::FieldTypes.constants.each do |field_type|
         klass = SDP::FieldTypes.const_get field_type
 
@@ -245,7 +349,7 @@ class SDP
     #
     # @param [Hash] hash
     # @return [Class] The SDP::FieldTypes class that matches the hash.
-    def klass_from_hash(hash)
+    def field_klass_from_hash(hash)
       SDP::FieldTypes.constants.each do |field_type|
         field_type_hash_key = field_type.to_s.snake_case.to_sym
 
@@ -255,6 +359,18 @@ class SDP
       end
 
       nil
+    end
+
+    def field_klass_from_symbol(symbol)
+      SDP::FieldTypes.const_get(symbol.to_s.camel_case)
+    end
+
+    def klass_from_symbol(symbol)
+      begin
+        SDP::FieldGroupTypes.const_get(symbol.to_s.camel_case)
+      rescue NameError
+        SDP::FieldTypes.const_get(symbol.to_s.camel_case)
+      end
     end
 
     def define_field_accessor(method_name)
@@ -278,11 +394,10 @@ class SDP
     end
 
     def check_group_type(klass)
-      unless self.class.allowed_group_types.include? klass.sdp_type
+      unless settings.allowed_group_types.include? klass.sdp_type
         raise SDP::RuntimeError,
           "#{klass} groups can't be added to #{self.class}s"
       end
     end
-
   end
 end
