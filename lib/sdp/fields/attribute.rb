@@ -3,7 +3,7 @@ require_relative '../version'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class Attribute < SDP::Field
       field_value :attribute
       field_value :value, true

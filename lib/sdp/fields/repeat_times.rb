@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class RepeatTimes < SDP::Field
       field_value :repeat_interval
       field_value :active_duration

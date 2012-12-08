@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class Timing < SDP::Field
       field_value :start_time
       field_value :stop_time

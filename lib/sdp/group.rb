@@ -5,7 +5,7 @@ require_relative 'logger'
 require_relative '../ext/string_case_conversions'
 require_relative '../ext/class_name_to_symbol'
 
-Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/fields/*.rb"].each { |f| require f }
 
 
 class SDP
@@ -64,7 +64,7 @@ class SDP
   #   session_section.add_field("o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5")
   #
   #   # Add a field using a SDP::Field
-  #   session_name = SDP::FieldTypes::SessionName.new
+  #   session_name = SDP::Fields::SessionName.new
   #   session_name.session_name = "SDP Seminar"
   #   session_section.add_field(session_name)
   #
@@ -240,7 +240,7 @@ class SDP
     # Returns the name of the lowest level class as a snake-case Symbol.
     #
     # @example
-    #   SDP::FieldTypes::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
+    #   SDP::Fields::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
     #
     # @return [Symbol]
     def sdp_type
@@ -359,10 +359,10 @@ class SDP
     # Finds the Field class that matches the +prefix+.
     #
     # @param [String] prefix The 1-char String that represents a Field.
-    # @return [Class] The SDP::FieldTypes class that matches the prefix.
+    # @return [Class] The SDP::Fields class that matches the prefix.
     def field_klass_from_prefix(prefix)
-      SDP::FieldTypes.constants.each do |field_type|
-        klass = SDP::FieldTypes.const_get field_type
+      SDP::Fields.constants.each do |field_type|
+        klass = SDP::Fields.const_get field_type
 
         if klass.prefix.to_s == prefix.to_s
           return klass
@@ -375,13 +375,13 @@ class SDP
     # Finds the Field class that defines values based on the +hash+.
     #
     # @param [Hash] hash
-    # @return [Class] The SDP::FieldTypes class that matches the hash.
+    # @return [Class] The SDP::Fields class that matches the hash.
     def field_klass_from_hash(hash)
-      SDP::FieldTypes.constants.each do |field_type|
+      SDP::Fields.constants.each do |field_type|
         field_type_hash_key = field_type.to_s.snake_case.to_sym
 
         if hash.keys.first == field_type_hash_key
-          return SDP::FieldTypes.const_get field_type
+          return SDP::Fields.const_get field_type
         end
       end
 
@@ -389,7 +389,7 @@ class SDP
     end
 
     def field_klass_from_symbol(symbol)
-      SDP::FieldTypes.const_get(symbol.to_s.camel_case)
+      SDP::Fields.const_get(symbol.to_s.camel_case)
     end
 
     def klass_from_symbol(symbol)
@@ -397,7 +397,7 @@ class SDP
       begin
         SDP::Groups.const_get(symbol.to_s.camel_case)
       rescue NameError
-        SDP::FieldTypes.const_get(symbol.to_s.camel_case)
+        SDP::Fields.const_get(symbol.to_s.camel_case)
       end
     end
 

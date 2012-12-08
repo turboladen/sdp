@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class Bandwidth < SDP::Field
       field_value :bandwidth_type
       field_value :bandwidth

@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
 
     # @example Build from scratch
     #   o = Origin.new

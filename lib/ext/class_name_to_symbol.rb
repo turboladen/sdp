@@ -6,7 +6,7 @@ class Class
   # Returns the name of the lowest level class as a snake-case Symbol.
   #
   # @example
-  #   SDP::FieldTypes::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
+  #   SDP::Fields::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
   #
   # @return [Symbol]
   def sdp_type

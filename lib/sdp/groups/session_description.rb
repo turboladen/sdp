@@ -1,7 +1,7 @@
 require_relative '../group'
 require_relative 'time_description'
 
-Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/fields/*.rb"].each { |f| require f }
 
 
 class SDP

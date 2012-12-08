@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class TimeZoneAdjustments < SDP::Field
       field_value :adjustment_sets
       prefix :z

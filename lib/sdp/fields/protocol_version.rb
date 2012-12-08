@@ -2,10 +2,10 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
-    class SessionName < SDP::Field
-      field_value :session_name
-      prefix :s
+  module Fields
+    class ProtocolVersion < SDP::Field
+      field_value :protocol_version
+      prefix :v
 
       def initialize(init_data=nil)
         super(init_data) if init_data
@@ -14,14 +14,20 @@ class SDP
       def to_s
         super
 
-        "#{prefix}=#{@session_name}\r\n"
+        "#{prefix}=#{@protocol_version}\r\n"
+      end
+
+      def seed
+        @protocol_version = 0
+
+        self
       end
 
       private
 
       def add_from_string(init_data)
-        match = init_data.match(/#{prefix}=(?<name>[^\r\n]+)/)
-        @session_name = match[:name]
+        match = init_data.match(/#{prefix}=(?<version>\S+)/)
+        @protocol_version = match[:version].to_i
       rescue NoMethodError
         raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end

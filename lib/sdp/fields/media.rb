@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class Media < SDP::Field
       field_value :media
       field_value :port

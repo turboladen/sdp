@@ -3,7 +3,7 @@ require_relative 'group'
 require_relative 'logger'
 require_relative 'runtime_error'
 
-Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/fields/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/groups/*.rb"].each { |f| require f }
 
 class SDP

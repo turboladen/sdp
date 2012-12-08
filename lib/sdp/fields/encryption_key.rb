@@ -2,7 +2,7 @@ require_relative '../field'
 
 
 class SDP
-  module FieldTypes
+  module Fields
     class EncryptionKey < SDP::Field
       field_value :encryption_method
       field_value :encryption_key, true
