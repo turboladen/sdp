@@ -1,9 +1,9 @@
-require_relative '../field_group'
+require_relative '../group'
 
 
 class SDP
-  module FieldGroupTypes
-    class TimeDescription < SDP::FieldGroup
+  module Groups
+    class TimeDescription < SDP::Group
       allowed_field_types :timing, :repeat_times
       allowed_group_types
 

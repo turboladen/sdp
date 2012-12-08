@@ -1,6 +1,6 @@
 require 'set'
 require_relative 'runtime_error'
-require_relative 'field_group_dsl'
+require_relative 'group_dsl'
 require_relative 'logger'
 require_relative '../ext/string_case_conversions'
 require_relative '../ext/class_name_to_symbol'
@@ -36,22 +36,22 @@ class SDP
   #   m=video 51372 RTP/AVP 99
   #   a=rtpmap:99 h263-1998/90000
   #
-  # The whole description can be a FieldGroup.  The lines from "v=0" to
-  # "a=recvonly" could be another FieldGroup inside the main FieldGroup to
+  # The whole description can be a Group.  The lines from "v=0" to
+  # "a=recvonly" could be another Group inside the main Group to
   # represent the session section.  The first "m=" line could be treated either
-  # as a FieldGroup or just a Field, depending on whether or not you planned on
+  # as a Group or just a Field, depending on whether or not you planned on
   # adding fields for that media section.  The last "m=" line through the end
-  # would be another FieldGroup.
+  # would be another Group.
   #
   # There are a number of ways you could use FieldGroups to build the
   # description above; here is one way.
   #
   # @example Build from scratch
-  #   description = SDP::FieldGroup.new
+  #   description = SDP::Group.new
   #
-  #   session_section = SDP::FieldGroup.new
-  #   audio_section = SDP::FieldGroup.new
-  #   video_section = SDP::FieldGroup.new
+  #   session_section = SDP::Group.new
+  #   audio_section = SDP::Group.new
+  #   video_section = SDP::Group.new
   #
   #   description.add_group(session_section)
   #   description.add_group(audio_section)
@@ -74,8 +74,8 @@ class SDP
   #   session_section.add_field("c=IN IP4 224.2.17.12/127")
   #   session_section.add_field("t=2873397496 2873404696")
   #   session_section.add_field("a=recvonly")
-  class FieldGroup
-    include SDP::FieldGroupDSL
+  class Group
+    include SDP::GroupDSL
     include LogSwitch::Mixin
 
     attr_reader :fields
@@ -135,11 +135,11 @@ class SDP
     # can be added by passing in a String, a Hash, a Symbol, or the SDP::Field.
     #
     # @example From a String
-    #   group = FieldGroup.new
+    #   group = Group.new
     #   group.add_group("o=joe 12345 9887 IN IP4 10.20.30.40")
     #
     # @example From a Hash
-    #   group = FieldGroup.new
+    #   group = Group.new
     #   origin = {
     #     :origin => {
     #       :username => "joe",
@@ -153,10 +153,10 @@ class SDP
     #   group.add_group(origin)
     #
     # @example From a Symbol
-    #   group = FieldGroup.new
+    #   group = Group.new
     #   group.add_group(:session_description)
     #
-    # @param [String,Hash,SDP::FieldGroup] group
+    # @param [String,Hash,SDP::Group] group
     # @todo Determine if the Hash interface is needed...
     def add_group(group)
       if group.is_a? Hash
@@ -172,7 +172,7 @@ class SDP
         @groups << klass_name.new
         define_group_accessor(@groups.last)
         log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
-      elsif group.kind_of? SDP::FieldGroup
+      elsif group.kind_of? SDP::Group
         check_allowed_group(group.class)
         @groups << group
 
@@ -271,7 +271,7 @@ class SDP
       end
     end
 
-    # @yield [SDP::Field, SDP::FieldGroup]
+    # @yield [SDP::Field, SDP::Group]
     def each_field
       lines = @fields.dup
 
@@ -393,8 +393,9 @@ class SDP
     end
 
     def klass_from_symbol(symbol)
+      p symbol
       begin
-        SDP::FieldGroupTypes.const_get(symbol.to_s.camel_case)
+        SDP::Groups.const_get(symbol.to_s.camel_case)
       rescue NameError
         SDP::FieldTypes.const_get(symbol.to_s.camel_case)
       end

@@ -17,7 +17,7 @@ end
 
 RSpec::Matchers.define :be_a_valid_description do |expected|
   match do |actual|
-    @result = if actual.kind_of? SDP::FieldGroup
+    @result = if actual.kind_of? SDP::Group
       actual
     else
       SDP::Description.parse(actual)

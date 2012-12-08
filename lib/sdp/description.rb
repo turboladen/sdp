@@ -1,10 +1,10 @@
 require_relative 'field'
-require_relative 'field_group'
+require_relative 'group'
 require_relative 'logger'
 require_relative 'runtime_error'
 
 Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
-Dir["#{File.dirname(__FILE__)}/field_group_types/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/groups/*.rb"].each { |f| require f }
 
 class SDP
 
@@ -19,7 +19,7 @@ class SDP
   # After building the description up, call +#to_s+ to render it.  This
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
-  class Description < FieldGroup
+  class Description < Group
     include LogSwitch::Mixin
 
     allowed_field_types

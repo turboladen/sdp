@@ -1,12 +1,12 @@
 class SDP
-  module FieldGroupDSL
+  module GroupDSL
     def self.included(base)
       base.extend(DSLMethods)
     end
 
     # Provides an easier way for the includer to get to the DSLMethods.  Allows
     # for:
-    #   t = SDP::FieldGroupTypes::TimingDescription.new
+    #   t = SDP::Groups::TimingDescription.new
     #   t.settings.allowed_field_types    # => [:timing, :repeat_times]
     #   t.settings.required_field_types    # => [:timing]
     def settings

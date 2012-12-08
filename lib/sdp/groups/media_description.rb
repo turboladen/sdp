@@ -1,11 +1,11 @@
-require_relative '../field_group'
+require_relative '../group'
 
 Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
 
 
 class SDP
-  module FieldGroupTypes
-    class MediaDescription < SDP::FieldGroup
+  module Groups
+    class MediaDescription < SDP::Group
 
       # The FieldTypes that can belong in a session description.
       allowed_field_types :media,

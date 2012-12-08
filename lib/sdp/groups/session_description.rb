@@ -1,12 +1,12 @@
-require_relative '../field_group'
+require_relative '../group'
 require_relative 'time_description'
 
 Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
 
 
 class SDP
-  module FieldGroupTypes
-    class SessionDescription < SDP::FieldGroup
+  module Groups
+    class SessionDescription < SDP::Group
 
       allowed_field_types :protocol_version,
         :origin,
