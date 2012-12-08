@@ -29,26 +29,7 @@ class SDP
       description = new
 
       text.each_line do |line|
-        case line[0]
-        when "v"
-          description.add_group :session_description
-        when "t"
-          description.session_description.add_group :time_description
-          description.session_description.time_description.add_field(line)
-          next
-        when "m"
-          description.add_group :media_description
-        end
-
-        current_group = if !description.groups.empty? &&
-          !description.groups.last.fields.empty? &&
-          description.groups.last.fields.last.prefix == :r
-          description.groups[-2]
-        else
-          description.groups.last
-        end
-
-        current_group.add_field(line)
+        parse_line(line, description)
       end
 
       diff(text, description.to_s)
@@ -63,6 +44,40 @@ class SDP
     end
 
     private
+
+    def self.parse_line(line, description)
+      case line[0]
+      when "v"
+        description.add_group :session_description
+      when "t"
+        description.session_description.add_group :time_description
+
+        if description.session_description.time_description.is_a? Array
+          description.session_description.time_description.last.add_field(line)
+        else
+          description.session_description.time_description.add_field(line)
+        end
+
+        return
+      when "m"
+        description.add_group :media_description
+      end
+
+      current_group = if !description.groups.empty? &&
+        !description.groups.last.fields.empty? &&
+        description.groups.last.fields.last.prefix == :r
+        description.groups[-2]
+      else
+        description.groups.last
+      end
+
+      if current_group.nil?
+        raise SDP::ParseError,
+          "SDP text is missing the required field for starting a new section"
+      end
+
+      current_group.add_field(line)
+    end
 
     def self.diff(one, two)
       parsed_set = one.to_s.split("\n").to_set
