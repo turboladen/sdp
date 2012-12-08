@@ -249,6 +249,12 @@ class SDP
       self.class.sdp_type
     end
 
+    def groups(type=nil)
+      return @groups unless type
+
+      @groups.find_all { |group| group.sdp_type == type }
+    end
+
     def added_field_types
       @fields.map do |field|
         field.sdp_type
