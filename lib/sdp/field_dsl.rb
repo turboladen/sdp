@@ -63,7 +63,7 @@ class SDP
       end
 
       def allows_multiple?
-        defined? @allow_multiple
+        !!defined?(@allow_multiple)
       end
     end
   end
