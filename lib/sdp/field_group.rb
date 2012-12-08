@@ -117,8 +117,7 @@ class SDP
         raise SDP::RuntimeError, "Can't add #{field_object} to fields!"
       end
 
-      method_name = @fields.last.sdp_type
-      define_field_accessor(method_name)
+      define_field_accessor(@fields.last)
 
       log "Added field type '#{field_object.sdp_type}' to a '#{sdp_type}' group"
       @fields
@@ -165,22 +164,20 @@ class SDP
         check_allowed_group(klass)
         @groups << klass.new(group)
 
-        method_name = @groups.last.sdp_type
-        define_group_accessor(method_name)
-        log "Added group type '#{method_name}' to #{sdp_type}"
+        define_group_accessor(@groups.last)
+        log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
       elsif group.is_a? Symbol
         klass_name = klass_from_symbol(group)
         check_allowed_group(klass_name)
         @groups << klass_name.new
-        define_group_accessor(group)
-        log "Added group type '#{group}' to #{sdp_type}"
+        define_group_accessor(@groups.last)
+        log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
       elsif group.kind_of? SDP::FieldGroup
         check_allowed_group(group.class)
         @groups << group
 
-        method_name = @groups.last.sdp_type
-        define_group_accessor(method_name)
-        log "Added group type '#{method_name}' to #{sdp_type}"
+        define_group_accessor(@groups.last)
+        log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
       else
         raise SDP::RuntimeError,
           "Can't add a #{field.class} as a group"
@@ -254,6 +251,12 @@ class SDP
       return @groups unless type
 
       @groups.find_all { |group| group.sdp_type == type }
+    end
+
+    def fields(type=nil)
+      return @fields unless type
+
+      @fields.find_all { |field| field.sdp_type == type }
     end
 
     def added_field_types
@@ -347,6 +350,10 @@ class SDP
       errors
     end
 
+    def allows_multiple?
+      self.class.allows_multiple?
+    end
+
     private
 
     # Finds the Field class that matches the +prefix+.
@@ -393,23 +400,27 @@ class SDP
       end
     end
 
-    def define_field_accessor(method_name)
-      define_singleton_method(method_name) do
-        fields = @fields.find_all do |field|
-          field.sdp_type == method_name
+    def define_field_accessor(new_field)
+      if new_field.allows_multiple?
+        define_singleton_method("#{new_field.sdp_type}s") do
+          fields(new_field.sdp_type)
         end
-
-        fields.size > 1 ? fields : fields.last
+      else
+        define_singleton_method(new_field.sdp_type) do
+          fields(new_field.sdp_type).first
+        end
       end
     end
 
-    def define_group_accessor(method_name)
-      define_singleton_method(method_name) do
-        groups = @groups.find_all do |group|
-          group.sdp_type == method_name
+    def define_group_accessor(new_group)
+      if new_group.allows_multiple?
+        define_singleton_method("#{new_group.sdp_type}s") do
+          groups(new_group.sdp_type)
         end
-
-        groups.size > 1 ? groups : groups.last
+      else
+        define_singleton_method(new_group.sdp_type) do
+          groups(new_group.sdp_type).first
+        end
       end
     end
 

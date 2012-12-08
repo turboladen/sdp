@@ -7,6 +7,7 @@ class SDP
       field_value :bandwidth_type
       field_value :bandwidth
       prefix :b
+      allow_multiple
 
       def initialize(init_data=nil)
         super(init_data) if init_data

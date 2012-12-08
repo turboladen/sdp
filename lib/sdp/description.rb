@@ -83,16 +83,11 @@ class SDP
         description.add_group :session_description
       when "t"
         description.session_description.add_group :time_description
-
-        #if description.session_description.time_description.is_a? Array
-        #  description.session_description.time_description.last.add_field(line)
-        #else
-          description.session_description.time_description.add_field(line)
-        #end
+        description.session_description.time_descriptions.last.add_field(line)
 
         return
       when "r"
-        description.session_description.time_description.add_field(line)
+        description.session_description.time_descriptions.last.add_field(line)
         return
       when "m"
         description.add_group :media_description
