@@ -32,7 +32,7 @@ class SDP
       private
 
       def add_from_string(init_data)
-        m = init_data.match(/#{prefix}=(?<m>\S+) (?<p>\d+) (?<t>\S+) (?<f>[^\r\n]+)?/)
+        m = init_data.match(/#{prefix}=(?<m>\S+) (?<p>\S+) (?<t>\S+) (?<f>[^\r\n]+)?/)
         @media = m[:m]
         @port = m[:p]
         @transport_protocol = m[:t]
