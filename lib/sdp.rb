@@ -3,8 +3,7 @@ require_relative 'sdp/description'
 
 
 # The only use for this class is the +#parse+ method, which is in this
-# base class solely for convenience.  Other than this method, this
-# base class doesn't really do anything.
+# base class solely for convenience.
 class SDP
 
   # Parses the given text in to an +SDP::Description+ object.
