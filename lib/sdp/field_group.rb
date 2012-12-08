@@ -91,6 +91,7 @@ class SDP
     #
     # @param [String,Hash,SDP::Field] field
     # @return [Array<SDP::Field>] The updated +fields+ list.
+    # @todo Determine if the Hash interface is needed...
     def add_field(field)
       field_object = if field.is_a? String
         klass = field_klass_from_prefix(field[0])
@@ -108,12 +109,7 @@ class SDP
           "Can't add a #{field.class} as a field"
       end
 
-      unless settings.allowed_field_types.include? field_object.sdp_type
-        message = "#{field_object.class} fields can't be added to #{self.class}s"
-        message << "\nField object: #{self}\n"
-        message << "Field: #{field}"
-        raise SDP::RuntimeError, message
-      end
+      check_allowed_field(field, field_object)
 
       if field_object.kind_of? SDP::Field
         @fields << field_object
@@ -128,11 +124,11 @@ class SDP
       @fields
     end
 
-    def has_group?(group)
-      if group.is_a? Symbol
-        @groups.any? { |g| g.sdp_type == group }
-      elsif group.kind_of? SDP::Field
-        @groups.any? { |g| g.class == group.class }
+    def has_field?(field)
+      if field.is_a? Symbol
+        @fields.any? { |f| f.sdp_type == field }
+      elsif field.kind_of? SDP::Field
+        @fields.any? { |f| f.class == field.class }
       end
     end
 
@@ -162,20 +158,11 @@ class SDP
     #   group.add_group(:session_description)
     #
     # @param [String,Hash,SDP::FieldGroup] group
+    # @todo Determine if the Hash interface is needed...
     def add_group(group)
-      if group.is_a? String
-        group.each_line do |line|
-          klass = field_klass_from_prefix(line[0])
-          check_group_type(klass)
-          @groups << klass.new(line)
-
-          method_name = @groups.last.sdp_type
-          define_group_accessor(method_name)
-          log "Added group type '#{method_name}' to #{sdp_type}"
-        end
-      elsif group.is_a? Hash
+      if group.is_a? Hash
         klass = field_klass_from_hash(group)
-        check_group_type(klass)
+        check_allowed_group(klass)
         @groups << klass.new(group)
 
         method_name = @groups.last.sdp_type
@@ -187,7 +174,7 @@ class SDP
         define_group_accessor(group)
         log "Added group type '#{group}' to #{sdp_type}"
       elsif group.kind_of? SDP::FieldGroup
-        check_group_type(group.class)
+        check_allowed_group(group.class)
         @groups << group
 
         method_name = @groups.last.sdp_type
@@ -201,12 +188,11 @@ class SDP
       @groups
     end
 
-
-    def has_field?(field)
-      if field.is_a? Symbol
-        @fields.any? { |f| f.sdp_type == field }
-      elsif field.kind_of? SDP::Field
-        @fields.any? { |f| f.class == field.class }
+    def has_group?(group)
+      if group.is_a? Symbol
+        @groups.any? { |g| g.sdp_type == group }
+      elsif group.kind_of? SDP::Field
+        @groups.any? { |g| g.class == group.class }
       end
     end
 
@@ -248,9 +234,7 @@ class SDP
         end
       end
 
-      log "Sorted list:"
-      sorted_list.each { |s| log s.sdp_type }
-      log ""
+      log "Sorted list:"; sorted_list.each { |s| log s.sdp_type }; log ""
 
       sorted_list
     end
@@ -422,11 +406,21 @@ class SDP
       end
     end
 
-    def check_group_type(klass)
+    def check_allowed_group(klass)
       unless settings.allowed_group_types.include? klass.sdp_type
         raise SDP::RuntimeError,
           "#{klass} groups can't be added to #{self.class}s"
       end
     end
+
+    def check_allowed_field(field, field_object)
+      unless settings.allowed_field_types.include? field_object.sdp_type
+        message = "#{field_object.class} fields can't be added to #{self.class}s"
+        message << "\nField object: #{self}\n"
+        message << "Field: #{field}"
+        raise SDP::RuntimeError, message
+      end
+    end
+
   end
 end
