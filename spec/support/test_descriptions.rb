@@ -33,6 +33,14 @@ s=This is a test session\r
 t=11111 22222\r
 }
 
+  NO_SESSION_CONNECT_MEDIA_CONNECT = %{v=0\r
+o=guy 1234 5555 IN IP4 123.33.22.123\r
+s=This is a test session\r
+t=11111 22222\r
+m=video 0 udp 33\r
+c=IN IP4 0.0.0.0\r
+}
+
   NO_TIMING = %{v=0\r
 o=- 1809368942 3379601213 IN IP4 127.0.0.1\r
 s=Test session\r
