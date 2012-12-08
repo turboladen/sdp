@@ -1,5 +1,6 @@
 require_relative 'field'
 require_relative 'field_group'
+require_relative 'logger'
 require_relative 'runtime_error'
 
 Dir["#{File.dirname(__FILE__)}/field_types/*.rb"].each { |f| require f }
@@ -19,6 +20,8 @@ class SDP
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
   class Description < FieldGroup
+    include LogSwitch::Mixin
+
     allowed_field_types
     required_field_types
     allowed_group_types :session_description, :media_description
@@ -43,7 +46,36 @@ class SDP
       super
     end
 
+    def errors
+      errors = super()
+
+      unless has_connection_data?
+        errors[:fields] ||= []
+        errors[:fields] << :connection_data
+      end
+
+      errors
+    end
+
     private
+
+    def has_connection_data?
+      if self.session_description.has_field?(:connection_data)
+        log "Session description has connection_data field"
+        return true
+      end
+
+      if self.has_group?(:media_description)
+        groups(:media_description).all? do |group|
+          result = group.has_field?(:connection_data)
+          log "Group #{group.sdp_type} has connection data: #{result}"
+          result
+        end
+      else
+        log "Session description nor media descriptions had connection data"
+        false
+      end
+    end
 
     def self.parse_line(line, description)
       case line[0]
@@ -52,24 +84,21 @@ class SDP
       when "t"
         description.session_description.add_group :time_description
 
-        if description.session_description.time_description.is_a? Array
-          description.session_description.time_description.last.add_field(line)
-        else
+        #if description.session_description.time_description.is_a? Array
+        #  description.session_description.time_description.last.add_field(line)
+        #else
           description.session_description.time_description.add_field(line)
-        end
+        #end
 
+        return
+      when "r"
+        description.session_description.time_description.add_field(line)
         return
       when "m"
         description.add_group :media_description
       end
 
-      current_group = if !description.groups.empty? &&
-        !description.groups.last.fields.empty? &&
-        description.groups.last.fields.last.prefix == :r
-        description.groups[-2]
-      else
-        description.groups.last
-      end
+      current_group = description.groups.last
 
       if current_group.nil?
         raise SDP::ParseError,
