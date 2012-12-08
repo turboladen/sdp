@@ -92,6 +92,10 @@ class SDP
       self.class.prefix
     end
 
+    def allows_multiple?
+      self.class.allows_multiple?
+    end
+
     # This custom redefinition of #inspect is needed because of the #to_s
     # definition.
     #

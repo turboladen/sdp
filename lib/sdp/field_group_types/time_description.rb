@@ -12,6 +12,8 @@ class SDP
 
       line_order :timing, :repeat_times
 
+      allow_multiple
+
       def seed
         add_field(:timing) unless has_field?(:timing)
 

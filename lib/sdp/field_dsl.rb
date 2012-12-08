@@ -57,6 +57,14 @@ class SDP
 
         @prefix = char
       end
+
+      def allow_multiple
+        @allow_multiple = true
+      end
+
+      def allows_multiple?
+        defined? @allow_multiple
+      end
     end
   end
 end

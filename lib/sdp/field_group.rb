@@ -170,6 +170,7 @@ class SDP
         log "Added group type '#{method_name}' to #{sdp_type}"
       elsif group.is_a? Symbol
         klass_name = klass_from_symbol(group)
+        check_allowed_group(klass_name)
         @groups << klass_name.new
         define_group_accessor(group)
         log "Added group type '#{group}' to #{sdp_type}"
@@ -417,6 +418,12 @@ class SDP
         raise SDP::RuntimeError,
           "#{klass} groups can't be added to #{self.class}s"
       end
+
+      if !klass.allows_multiple? && has_group?(klass.sdp_type)
+        message = "#{klass} fields don't allow multiples and "
+        message << "one is already defined."
+        raise SDP::RuntimeError, message
+      end
     end
 
     def check_allowed_field(field, field_object)
@@ -424,6 +431,12 @@ class SDP
         message = "#{field_object.class} fields can't be added to #{self.class}s"
         message << "\nField object: #{self}\n"
         message << "Field: #{field}"
+        raise SDP::RuntimeError, message
+      end
+
+      if !field_object.allows_multiple? && has_field?(field_object)
+        message = "#{field_object.class} fields don't allow multiples and "
+        message << "one is already defined."
         raise SDP::RuntimeError, message
       end
     end

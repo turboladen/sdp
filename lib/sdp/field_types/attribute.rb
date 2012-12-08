@@ -7,6 +7,7 @@ class SDP
     class Attribute < SDP::Field
       field_value :attribute
       field_value :value, true
+      allow_multiple
       prefix :a
 
       TOOL_NAME = "RubySDP v#{SDP::VERSION}"

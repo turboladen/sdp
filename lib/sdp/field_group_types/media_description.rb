@@ -28,6 +28,8 @@ class SDP
         :encryption_key,
         :attribute
 
+      allow_multiple
+
       def seed
         add_field(:media) unless has_field?(:media)
 

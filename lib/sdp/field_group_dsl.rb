@@ -65,6 +65,14 @@ class SDP
         @line_order = types
       end
 
+      def allow_multiple
+        @allow_multiple = true
+      end
+
+      def allows_multiple?
+        !!defined?(@allow_multiple)
+      end
+
       private
 
       def check_field_types(types)
