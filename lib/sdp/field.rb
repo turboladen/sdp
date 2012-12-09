@@ -10,7 +10,7 @@ class SDP
     include SDP::FieldDSL
 
     # @param [Hash,String] init_data
-    def initialize(init_data)
+    def initialize(init_data=nil)
       if init_data.is_a? Hash
         add_from_hash(init_data)
       elsif init_data.is_a? String
@@ -40,8 +40,7 @@ class SDP
     #   o.add_from_hash(o_hash)
     def add_from_hash(init_data)
       init_data.each do |k, v|
-        ivar = k.to_s.insert(0, '@').to_sym
-        instance_variable_set(ivar, v)
+        instance_variable_set(k.to_ivar, v)
       end
     end
 
@@ -79,7 +78,7 @@ class SDP
       end
     end
 
-    # The list of requried values defined for the Field type.
+    # The list of required values defined for the Field type.
     #
     # @return [Array<Symbol>]
     def required_values
@@ -123,7 +122,16 @@ class SDP
     #   +:time_zone_adjustments+.
     # @return [SDP::Field]
     def self.new_from_type(sdp_type)
-      SDP::Fields.const_get(sdp_type.to_s.camel_case).new
+      begin
+        SDP::Fields.const_get(sdp_type.to_s.camel_case).new
+      rescue NameError
+        valid_types = SDP::Fields.constants.map(&:to_s).map(&:snake_case).map(&:to_sym)
+
+        message = "#{sdp_type} isn't a valid SDP::Fields type.\n"
+        message << "Valid types: #{valid_types}"
+
+        raise TypeError, message
+      end
     end
 
     # Creates a new Field class that matches the +prefix+.
@@ -136,7 +144,18 @@ class SDP
         klass.prefix.to_s == string[0]
       end
 
-      SDP::Fields.const_get(klass).new(string)
+      begin
+        SDP::Fields.const_get(klass).new(string)
+      rescue TypeError
+        valid_prefixes = SDP::Fields.constants.map do |class_name|
+          SDP::Fields.const_get(class_name).prefix
+        end
+
+        message = "#{string} doesn't start with a valid Field prefix.\n"
+        message << "Valid prefixes: #{valid_prefixes}"
+
+        raise TypeError, message
+      end
     end
 
     # Creates a Field that defines values based on the +hash+.
@@ -144,12 +163,27 @@ class SDP
     # @param [Hash] hash
     # @return [SDP::Field] The SDP::Fields object that matches the hash.
     def self.new_from_hash(hash)
-      klass = SDP::Fields.constants.find do |field_class|
-        sdp_type = SDP::Fields.const_get(field_class).sdp_type
-        hash.keys.first = sdp_type
+      if hash.keys.size > 1
+        message = ".new_from_hash called with a Hash that has > 1 key; "
+        message << "only the first key/value pair will be used."
+        warn message
       end
 
-      SDP::Fields.const_get(klass).new(hash)
+      klass = SDP::Fields.constants.find do |field_class|
+        sdp_type = SDP::Fields.const_get(field_class).sdp_type
+        hash.keys.first == sdp_type
+      end
+
+      begin
+        SDP::Fields.const_get(klass).new(hash[klass.to_s.snake_case.to_sym])
+      rescue TypeError
+        valid_types = SDP::Fields.constants.map(&:to_s).map(&:snake_case).map(&:to_sym)
+
+        message = "#{hash.keys.first} isn't a valid SDP::Fields type.\n"
+        message << "Valid types: #{valid_types}"
+
+        raise TypeError, message
+      end
     end
   end
 end
