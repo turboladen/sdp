@@ -1,13 +1,7 @@
 require_relative '../ext/string_case_conversions'
 require_relative 'parse_error'
+require_relative '../../lib/ext/symbol_to_ivar'
 require_relative 'field_dsl'
-
-
-class Symbol
-  def to_ivar
-    "@#{self}".to_sym
-  end
-end
 
 
 class SDP
