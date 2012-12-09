@@ -1,11 +1,12 @@
 require_relative '../ext/string_case_conversions'
-require_relative 'parse_error'
 require_relative '../../lib/ext/symbol_to_ivar'
+require_relative 'base'
 require_relative 'field_dsl'
+require_relative 'parse_error'
 
 
 class SDP
-  class Field
+  class Field < Base
     include SDP::FieldDSL
 
     # @param [Hash,String] init_data
@@ -17,43 +18,43 @@ class SDP
       end
     end
 
-    def to_s
-      unless valid?
-        warn "#to_s called on a #{self.class} without required values added: " +
-          "#{errors}"
-      end
+    # Defined here, but must be implemented in subclasses.  Should allow for
+    # setting a value on the Field by passing in some String.  Allows for Fields
+    # to specify different formats of values to add the value.  For example,
+    # ConnectionData accepts an IP address, then determines the other values
+    # from that; it also allows for passing in all values like from the RFC.
+    #
+    # @param [String]
+    def add_from_string(init_data)
+      # Implement in children.
+      warn "#add_from_string called on #{self.class} but is not implemented"
+    end
 
-      if self.class.prefix.nil?
+    # Allows for passing key/value pairs that correlate to the field value's
+    # name and field value's value.
+    #
+    # @example Origin
+    #   o = SDP::Fields::Origin.new
+    #   o_hash = { username: "john", session_id: 12345, session_version: 98765,
+    #     network_type: "IN", address_type: "IP4" }
+    #   o.add_from_hash(o_hash)
+    def add_from_hash(init_data)
+      init_data.each do |k, v|
+        ivar = k.to_s.insert(0, '@').to_sym
+        instance_variable_set(ivar, v)
+      end
+    end
+
+    # Converts the Field to a String.  Defined here so subclassed Fields can use
+    # the warnings defined here.
+    #
+    # @return [String]
+    def to_s
+      super
+
+      if settings.prefix.nil?
         warn "Calling #to_s on a #{self.class} without a prefix defined"
       end
-    end
-
-    def set_values
-      self.class.field_values.find_all do |value|
-        instance_variable_get(value.to_ivar)
-      end
-    end
-
-    def required_values
-      self.class.field_values - self.class.optional_field_values
-    end
-
-    def valid?
-      errors.empty?
-    end
-
-    def errors
-      required_values - set_values
-    end
-
-    # Returns the name of the lowest level class as a snake-case Symbol.
-    #
-    # @example
-    #   SDP::Fields::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
-    #
-    # @return [Symbol]
-    def sdp_type
-      self.class.sdp_type
     end
 
     # Converts the field to a Hash.
@@ -66,45 +67,30 @@ class SDP
         result
       end
 
-      klass_name = self.class.name.split("::").last
-      key = klass_name.snake_case.to_sym
-
-      { key => values_hash }
+      { sdp_type => values_hash }
     end
 
-    # Hook method defined for children to redefine if desired.
-    def seed
-      # Implement in children.
-      warn "#seed called on #{self.class} but is not implemented"
-    end
-
-    def field_values
-      self.class.field_values ||= []
-    end
-
-    def prefix
-      self.class.prefix
-    end
-
-    def allows_multiple?
-      self.class.allows_multiple?
-    end
-
-    # This custom redefinition of #inspect is needed because of the #to_s
-    # definition.
+    # All values of the Field that have been set.
     #
-    # @return [String]
-    def inspect
-      me = "#<#{self.class.name}:0x#{self.object_id.to_s(16)}"
+    # @return [Array<Symbol>]
+    def set_values
+      settings.field_values.find_all do |value|
+        instance_variable_get(value.to_ivar)
+      end
+    end
 
-      ivars = self.instance_variables.map do |variable|
-        "#{variable}=#{instance_variable_get(variable).inspect}"
-      end.join(' ')
+    # The list of requried values defined for the Field type.
+    #
+    # @return [Array<Symbol>]
+    def required_values
+      settings.field_values - settings.optional_field_values
+    end
 
-      me << " #{ivars} " unless ivars.empty?
-      me << ">"
-
-      me
+    # Returns the list of values that are required but not set.
+    #
+    # @return [Array<Symbol>]
+    def errors
+      required_values - set_values
     end
 
     protected
@@ -122,17 +108,48 @@ class SDP
     ensure
       Socket.do_not_reverse_lookup = orig
     end
+  end
+end
 
-    def add_from_string(init_data)
-      # Implement in children.
-      warn "#add_from_string called on #{self.class} but is not implemented"
+
+# Everything below here depends on SDP::Field having been defined already.
+Dir["#{File.dirname(__FILE__)}/fields/*.rb"].each { |f| require f }
+
+
+class SDP
+  class Field
+    # @param [Symbol] sdp_type The Field type as a snake-case Symbol; i.e.
+    #   to create a new SDP::Fields::TimeZoneAdjustments, pass in
+    #   +:time_zone_adjustments+.
+    # @return [SDP::Field]
+    def self.new_from_type(sdp_type)
+      SDP::Fields.const_get(sdp_type.to_s.camel_case).new
     end
 
-    def add_from_hash(init_data)
-      init_data.each do |k, v|
-        ivar = k.to_s.insert(0, '@').to_sym
-        instance_variable_set(ivar, v)
+    # Creates a new Field class that matches the +prefix+.
+    #
+    # @param [String] prefix The 1-char String that represents a Field.
+    # @return [SDP::Field] The SDP::Fields class that matches the prefix.
+    def self.new_from_string(string)
+      klass = SDP::Fields.constants.find do |field_class|
+        klass = SDP::Fields.const_get field_class
+        klass.prefix.to_s == string[0]
       end
+
+      SDP::Fields.const_get(klass).new(string)
+    end
+
+    # Creates a Field that defines values based on the +hash+.
+    #
+    # @param [Hash] hash
+    # @return [SDP::Field] The SDP::Fields object that matches the hash.
+    def self.new_from_hash(hash)
+      klass = SDP::Fields.constants.find do |field_class|
+        sdp_type = SDP::Fields.const_get(field_class).sdp_type
+        hash.keys.first = sdp_type
+      end
+
+      SDP::Fields.const_get(klass).new(hash)
     end
   end
 end

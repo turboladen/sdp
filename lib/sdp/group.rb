@@ -1,7 +1,8 @@
 require 'set'
-require_relative 'runtime_error'
+require_relative 'base'
 require_relative 'group_dsl'
 require_relative 'logger'
+require_relative 'runtime_error'
 require_relative '../ext/string_case_conversions'
 require_relative '../ext/class_name_to_symbol'
 
@@ -74,12 +75,9 @@ class SDP
   #   session_section.add_field("c=IN IP4 224.2.17.12/127")
   #   session_section.add_field("t=2873397496 2873404696")
   #   session_section.add_field("a=recvonly")
-  class Group
+  class Group < Base
     include SDP::GroupDSL
     include LogSwitch::Mixin
-
-    attr_reader :fields
-    attr_reader :groups
 
     def initialize
       @fields = []
@@ -94,14 +92,11 @@ class SDP
     # @todo Determine if the Hash interface is needed...
     def add_field(field)
       field_object = if field.is_a? String
-        klass = field_klass_from_prefix(field[0])
-        klass.new(field)
+        SDP::Field.new_from_string(field)
       elsif field.is_a? Hash
-        klass = field_klass_from_hash(field)
-        klass.new(field)
+        SDP::Field.new_from_hash(field)
       elsif field.is_a? Symbol
-        klass = field_klass_from_symbol(field)
-        klass.new(field)
+        SDP::Field.new_from_type(field)
       elsif field.kind_of? SDP::Field
         field
       else
@@ -160,16 +155,16 @@ class SDP
     # @todo Determine if the Hash interface is needed...
     def add_group(group)
       if group.is_a? Hash
-        klass = field_klass_from_hash(group)
-        check_allowed_group(klass)
-        @groups << klass.new(group)
+        new_group = SDP::Group.new_from_hash(group)
+        check_allowed_group(new_group.class)
+        @groups << new_group
 
         define_group_accessor(@groups.last)
         log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
       elsif group.is_a? Symbol
-        klass_name = klass_from_symbol(group)
-        check_allowed_group(klass_name)
-        @groups << klass_name.new
+        new_group = SDP::Group.new_from_type(group)
+        check_allowed_group(new_group.class)
+        @groups << new_group
         define_group_accessor(@groups.last)
         log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
       elsif group.kind_of? SDP::Group
@@ -195,11 +190,25 @@ class SDP
     end
 
     def to_s
-      unless valid?
-        warn "#to_s called on a #{self.class} without required info added: #{errors}"
-      end
+      super
 
       sdp_sort.map(&:to_s).join
+    end
+
+    def to_hash
+      fields_hash = @fields.inject({}) do |result, field|
+        result.merge!(field.to_hash)
+
+        result
+      end
+
+      groups_hash = @groups.inject({}) do |result, group|
+        result.merge!(group.to_hash)
+
+        result
+      end
+
+      fields_hash.merge(groups_hash)
     end
 
     def sdp_sort
@@ -235,16 +244,6 @@ class SDP
       log "Sorted list:"; sorted_list.each { |s| log s.sdp_type }; log ""
 
       sorted_list
-    end
-
-    # Returns the name of the lowest level class as a snake-case Symbol.
-    #
-    # @example
-    #   SDP::Fields::TimeZoneAdjustments.sdp_type   # => :time_zone_adjustments
-    #
-    # @return [Symbol]
-    def sdp_type
-      self.class.sdp_type
     end
 
     def groups(type=nil)
@@ -284,49 +283,11 @@ class SDP
       end
     end
 
-    # This custom redefinition of #inspect is needed because of the #to_s
-    # definition.
-    #
-    # @return [String]
-    def inspect
-      me = "#<#{self.class.name}:0x#{self.object_id.to_s(16)}"
-
-      ivars = self.instance_variables.map do |variable|
-        "#{variable}=#{instance_variable_get(variable).inspect}"
-      end.join(' ')
-
-      me << " #{ivars}" unless ivars.empty?
-      me << ">"
-
-      me
-    end
-
     def seed
       @fields.each(&:seed)
       @groups.each(&:seed)
 
       self
-    end
-
-    def to_hash
-      fields_hash = @fields.inject({}) do |result, field|
-        result.merge!(field.to_hash)
-
-        result
-      end
-
-      groups_hash = @groups.inject({}) do |result, group|
-        result.merge!(group.to_hash)
-
-        result
-      end
-
-      fields_hash.merge(groups_hash)
-    end
-
-    # @return [Boolean]
-    def valid?
-      errors.empty?
     end
 
     # @return [Hash]
@@ -350,59 +311,10 @@ class SDP
       errors
     end
 
-    def allows_multiple?
-      self.class.allows_multiple?
-    end
-
     private
 
-    # Finds the Field class that matches the +prefix+.
-    #
-    # @param [String] prefix The 1-char String that represents a Field.
-    # @return [Class] The SDP::Fields class that matches the prefix.
-    def field_klass_from_prefix(prefix)
-      SDP::Fields.constants.each do |field_type|
-        klass = SDP::Fields.const_get field_type
-
-        if klass.prefix.to_s == prefix.to_s
-          return klass
-        end
-      end
-
-      nil
-    end
-
-    # Finds the Field class that defines values based on the +hash+.
-    #
-    # @param [Hash] hash
-    # @return [Class] The SDP::Fields class that matches the hash.
-    def field_klass_from_hash(hash)
-      SDP::Fields.constants.each do |field_type|
-        field_type_hash_key = field_type.to_s.snake_case.to_sym
-
-        if hash.keys.first == field_type_hash_key
-          return SDP::Fields.const_get field_type
-        end
-      end
-
-      nil
-    end
-
-    def field_klass_from_symbol(symbol)
-      SDP::Fields.const_get(symbol.to_s.camel_case)
-    end
-
-    def klass_from_symbol(symbol)
-      p symbol
-      begin
-        SDP::Groups.const_get(symbol.to_s.camel_case)
-      rescue NameError
-        SDP::Fields.const_get(symbol.to_s.camel_case)
-      end
-    end
-
     def define_field_accessor(new_field)
-      if new_field.allows_multiple?
+      if new_field.settings.allows_multiple?
         define_singleton_method("#{new_field.sdp_type}s") do
           fields(new_field.sdp_type)
         end
@@ -414,7 +326,7 @@ class SDP
     end
 
     def define_group_accessor(new_group)
-      if new_group.allows_multiple?
+      if new_group.settings.allows_multiple?
         define_singleton_method("#{new_group.sdp_type}s") do
           groups(new_group.sdp_type)
         end
@@ -446,12 +358,32 @@ class SDP
         raise SDP::RuntimeError, message
       end
 
-      if !field_object.allows_multiple? && has_field?(field_object)
+      if !field_object.settings.allows_multiple? && has_field?(field_object)
         message = "#{field_object.class} fields don't allow multiples and "
         message << "one is already defined."
         raise SDP::RuntimeError, message
       end
     end
+  end
+end
 
+class SDP
+  class Group
+    def self.new_from_type(sdp_type)
+      SDP::Groups.const_get(sdp_type.to_s.camel_case).new
+    end
+
+    # Creates a Group that defines values based on the +hash+.
+    #
+    # @param [Hash] hash
+    # @return [SDP::Group] The SDP::Groups object that matches the hash.
+    def self.new_from_hash(hash)
+      klass = SDP::Groups.constants.find do |group_class|
+        sdp_type = SDP::Groups.const_get(group_class).sdp_type
+        hash.keys.first = sdp_type
+      end
+
+      SDP::Groups.const_get(klass).new(hash)
+    end
   end
 end

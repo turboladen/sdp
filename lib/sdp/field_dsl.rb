@@ -4,6 +4,30 @@ class SDP
       base.extend(DSLMethods)
     end
 
+    # Provides an easier way for the includer to get to the DSLMethods.  Allows
+    # for:
+    #   t = SDP::Groups::TimingDescription.new
+    #   t.settings.allowed_field_types    # => [:timing, :repeat_times]
+    #   t.settings.required_field_types    # => [:timing]
+    def settings
+      if @settings.nil?
+        includer = self.class
+        @settings = Object.new
+
+        DSLMethods.instance_methods.each do |m|
+          @settings.define_singleton_method(m) do
+            includer.send(m)
+          end
+        end
+      end
+
+      @settings
+    end
+
+    def prefix
+      settings.prefix
+    end
+
     module DSLMethods
       # Defines a special attr_accessor.  This separates out values (these) that
       # make up a field from any other instance variables that a Field might
