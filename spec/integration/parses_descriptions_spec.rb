@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'sdp/description'
 require 'base64'
 
-SDP::Logger.log = true
 
 describe "Parsing and creating descriptions" do
   subject { SDP::Description }
