@@ -1,5 +1,3 @@
-
-
 class SDP
   class Base
     def to_s
