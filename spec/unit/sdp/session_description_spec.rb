@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 require 'sdp/session_description'
 
@@ -110,3 +111,4 @@ describe SDP::SessionDescription do
     specify { subject.send(:local_ip).should_not be_empty }
   end
 end
+=end
