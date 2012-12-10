@@ -34,7 +34,7 @@ class SDP
       private
 
       def add_from_string(init_data)
-        match = init_data.match(/#{prefix}=(?<attrib>\w+)(:(?<value>[^\r\n]+))?/)
+        match = init_data.match(/#{prefix}=(?<attrib>[^:\r\n]+)(:(?<value>[^\r\n]+))?/)
         @attribute = match[:attrib]
         @attribute.force_encoding("US-ASCII")
 
