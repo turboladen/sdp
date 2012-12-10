@@ -1,4 +1,7 @@
 class SDP
+
+  # This provides the DSL methods to Field classes and instances which make
+  # defining those fields more intuitive.
   module FieldDSL
     def self.included(base)
       base.extend(DSLMethods)
@@ -24,6 +27,9 @@ class SDP
       @settings
     end
 
+    # Shortcut to settings.prefix.
+    #
+    # @return [Symbol]
     def prefix
       settings.prefix
     end
@@ -33,7 +39,7 @@ class SDP
       # make up a field from any other instance variables that a Field might
       # define.
       #
-      # @param [Symbol] value
+      # @param [Symbol] value The new value name to define.
       # @param [Boolean] optional Set to +true+ if the value is optional for
       #   the field.  This will keep Fields from complaining if this value isn't
       #   set.
@@ -70,10 +76,10 @@ class SDP
         @optional_field_values ||= []
       end
 
-      # The letter that represents the field line in a description (i.e. "v"
+      # The letter that represents the Field in a description (i.e. "v"
       # represents Protocol Version).
       #
-      # @param [String] char The character that represents the field.
+      # @param [String,Symbol] char The character that represents the field.
       # @return [String] The character.
       def prefix(char=nil)
         return @prefix if char.nil?
@@ -82,10 +88,15 @@ class SDP
         @prefix = char
       end
 
+      # When called, it enables the Field to be used multiple times in a Group.
+      # Without this, a Field can only be used once within a Group.
       def allow_multiple
         @allow_multiple = true
       end
 
+      # Tells whether or not the Field can be used multiple times in a Group.
+      #
+      # @return [Boolean]
       def allows_multiple?
         !!defined?(@allow_multiple)
       end
