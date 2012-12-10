@@ -40,7 +40,6 @@ describe "Create descriptions" do
   end
 =end
 
-  SDP::Logger.log = true
 
   context "from scratch, adding fields in reverse order, no media sections" do
     it "from scratch" do
