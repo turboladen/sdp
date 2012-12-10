@@ -6,7 +6,9 @@ Dir["#{File.dirname(__FILE__)}/fields/*.rb"].each { |f| require f }
 
 class SDP
   module Groups
-    class SessionDescription < SDP::Group
+
+    # This represents the session section of a session description.
+    class SessionSection < SDP::Group
 
       allowed_field_types :protocol_version,
         :origin,

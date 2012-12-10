@@ -148,7 +148,7 @@ class SDP
     #
     # @example From a Symbol
     #   group = Group.new
-    #   group.add_group(:session_description)
+    #   group.add_group(:session_section)
     #
     # @param [String,Hash,SDP::Group] group
     # @todo Determine if the Hash interface is needed...

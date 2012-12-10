@@ -24,9 +24,9 @@ class SDP
 
     allowed_field_types
     required_field_types
-    allowed_group_types :session_description, :media_description
-    required_group_types :session_description
-    line_order :session_description, :media_description
+    allowed_group_types :session_section, :media_description
+    required_group_types :session_section
+    line_order :session_section, :media_description
 
     def self.parse(text)
       description = new
@@ -41,7 +41,7 @@ class SDP
     end
 
     def seed
-      add_group(:session_description) unless has_field?(:session_description)
+      add_group(:session_section) unless has_field?(:session_section)
 
       super
     end
@@ -60,7 +60,7 @@ class SDP
     private
 
     def has_connection_data?
-      if self.session_description.has_field?(:connection_data)
+      if self.session_section.has_field?(:connection_data)
         log "Session description has connection_data field"
         return true
       end
@@ -80,14 +80,14 @@ class SDP
     def self.parse_line(line, description)
       case line[0]
       when "v"
-        description.add_group :session_description
+        description.add_group :session_section
       when "t"
-        description.session_description.add_group :time_description
-        description.session_description.time_descriptions.last.add_field(line)
+        description.session_section.add_group :time_description
+        description.session_section.time_descriptions.last.add_field(line)
 
         return
       when "r"
-        description.session_description.time_descriptions.last.add_field(line)
+        description.session_section.time_descriptions.last.add_field(line)
         return
       when "m"
         description.add_group :media_description

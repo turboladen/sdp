@@ -3,16 +3,16 @@ require 'spec_helper'
 require 'sdp/session_description'
 
 
-describe SDP::SessionDescription do
+describe SDP::SessionSection do
   describe "#initialize" do
     it "creates read methods for all FIELDS" do
-      SDP::SessionDescription::FIELDS.each do |field|
+      SDP::SessionSection::FIELDS.each do |field|
         subject.should respond_to field
       end
     end
 
     it "creates write methods for all FIELDS" do
-      SDP::SessionDescription::FIELDS.each do |field|
+      SDP::SessionSection::FIELDS.each do |field|
         subject.should respond_to "#{field}="
       end
     end
