@@ -229,7 +229,6 @@ class SDP
         found_field = false
 
         fields(sdp_type_name) do |field|
-          p field.sdp_type
           sorted_list << field
           log "Sorted list << Field #{field.sdp_type}"
           found_field = true
