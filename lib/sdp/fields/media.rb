@@ -4,9 +4,9 @@ require_relative '../field'
 class SDP
   module Fields
     class Media < SDP::Field
-      field_value :media
+      field_value :type
       field_value :port
-      field_value :transport_protocol
+      field_value :protocol
       field_value :format
       prefix :m
 
@@ -26,16 +26,16 @@ class SDP
         check_media_type
         check_protocol_type
 
-        "#{prefix}=#{@media} #{@port} #{@transport_protocol} #{@format}\r\n"
+        "#{prefix}=#{@type} #{@port} #{@protocol} #{@format}\r\n"
       end
 
       private
 
       def add_from_string(init_data)
         m = init_data.match(/#{prefix}=(?<m>\S+) (?<p>\S+) (?<t>\S+) (?<f>[^\r\n]+)?/)
-        @media = m[:m]
+        @type = m[:m]
         @port = m[:p]
-        @transport_protocol = m[:t]
+        @protocol = m[:t]
         @format = m[:f]
 
         check_media_type
@@ -45,15 +45,15 @@ class SDP
       end
 
       def check_protocol_type
-        unless PROTOCOL_TYPES.include? @transport_protocol.to_s
-          warn "Transport protocol '#{@transport_protocol}' is not " +
+        unless PROTOCOL_TYPES.include? @protocol.to_s
+          warn "Transport protocol '#{@protocol}' is not " +
             "in the known list: #{PROTOCOL_TYPES}"
         end
       end
 
       def check_media_type
-        unless MEDIA_TYPES.include? @media.to_s
-          warn "Media type '#{@media}' is not in the known list: #{MEDIA_TYPES}"
+        unless MEDIA_TYPES.include? @type.to_s
+          warn "Media type '#{@type}' is not in the known list: #{MEDIA_TYPES}"
         end
       end
     end
