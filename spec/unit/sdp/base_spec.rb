@@ -50,10 +50,10 @@ describe SDP::Base do
     specify { subject.sdp_type.should == :base }
   end
 
-  describe "#seed" do
+  describe "#seed!" do
     it "should warn that children should implement it" do
       subject.should_receive(:warn)
-      subject.seed
+      subject.seed!
     end
   end
 end

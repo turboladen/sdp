@@ -43,7 +43,7 @@ class SDP
         :encryption_key,
         :attribute
 
-      def seed
+      def seed!
         [:protocol_version, :origin, :session_name].each do |field|
           add_field(field) unless has_field?(field)
         end

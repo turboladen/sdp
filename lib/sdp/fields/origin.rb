@@ -52,7 +52,7 @@ class SDP
           "#{@network_type} #{@address_type} #{@unicast_address}\r\n"
       end
 
-      def seed
+      def seed!
         require 'socket'
         require 'etc'
         require_relative '../../ext/time_ntp'

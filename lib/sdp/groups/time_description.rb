@@ -14,7 +14,7 @@ class SDP
 
       allow_multiple
 
-      def seed
+      def seed!
         add_field(:timing) unless has_field?(:timing)
 
         super

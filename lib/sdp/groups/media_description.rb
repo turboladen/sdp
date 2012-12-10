@@ -28,7 +28,7 @@ class SDP
 
       allow_multiple
 
-      def seed
+      def seed!
         add_field(:media) unless has_field?(:media)
 
         super

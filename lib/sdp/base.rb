@@ -29,8 +29,8 @@ class SDP
     end
 
     # Hook method defined for children to redefine if desired.
-    def seed
-      warn "#seed called on #{self.class} but must be implemented in child"
+    def seed!
+      warn "#seed! called on #{self.class} but must be implemented in child"
     end
 
     # This custom redefinition of #inspect is needed because of the #to_s

@@ -18,7 +18,7 @@ class SDP
         "#{prefix}=#{@start_time} #{@stop_time}\r\n"
       end
 
-      def seed
+      def seed!
         @start_time = 0
         @stop_time = 0
 

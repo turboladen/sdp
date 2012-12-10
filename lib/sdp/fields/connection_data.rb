@@ -61,7 +61,7 @@ class SDP
 
       # Seeds +network_type+ as "IN", +address_type+ as "IP4", and
       # +connection_address+ with your local IP address.
-      def seed
+      def seed!
         @network_type = "IN"
         @address_type = "IP4"
         @connection_address = local_ip

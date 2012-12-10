@@ -331,9 +331,9 @@ class SDP
     # Seeds all fields and groups.
     #
     # @returns [self]
-    def seed
-      @fields.each(&:seed)
-      @groups.each(&:seed)
+    def seed!
+      @fields.each(&:seed!)
+      @groups.each(&:seed!)
 
       self
     end

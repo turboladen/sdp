@@ -40,7 +40,7 @@ class SDP
       description
     end
 
-    def seed
+    def seed!
       add_group(:session_section) unless has_field?(:session_section)
 
       super

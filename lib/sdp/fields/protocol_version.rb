@@ -17,7 +17,7 @@ class SDP
         "#{prefix}=#{@protocol_version}\r\n"
       end
 
-      def seed
+      def seed!
         @protocol_version = 0
 
         self

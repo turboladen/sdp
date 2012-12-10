@@ -26,7 +26,7 @@ class SDP
         s
       end
 
-      def seed
+      def seed!
         @attribute = 'tool'
         @value = TOOL_NAME
       end
