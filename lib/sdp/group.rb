@@ -87,11 +87,11 @@ class SDP
     # Adds a new (single) SDP description field and value combo.  The field
     # can be added by passing in a String, a Hash, or the SDP::Field.
     #
-    # @param [String,Hash,SDP::Field] field
+    # @param [String,Symbol,Hash,SDP::Field] field
     # @return [Array<SDP::Field>] The updated +fields+ list.
     # @todo Determine if the Hash interface is needed...
     def add_field(field)
-      field_object = if field.is_a? String
+      field_instance = if field.is_a? String
         SDP::Field.new_from_string(field)
       elsif field.is_a? Hash
         SDP::Field.new_from_hash(field)
@@ -104,20 +104,19 @@ class SDP
           "Can't add a #{field.class} as a field"
       end
 
-      check_allowed_field(field, field_object)
-
-      if field_object.kind_of? SDP::Field
-        @fields << field_object
-      else
-        raise SDP::RuntimeError, "Can't add #{field_object} to fields!"
-      end
-
+      check_allowed_field(field, field_instance)
+      update_fields(field_instance)
       define_field_accessor(@fields.last)
+      log "Added field type '#{field_instance.sdp_type}' to a '#{sdp_type}' group"
 
-      log "Added field type '#{field_object.sdp_type}' to a '#{sdp_type}' group"
       @fields
     end
 
+    # Shortcut for checking if this group has a field of this type.  Can check by
+    # passing in an SDP type (Symbol) or an actual SDP::Field object.
+    #
+    # @param [Symbol,SDP::Field] field
+    # @return [Boolean]
     def has_field?(field)
       if field.is_a? Symbol
         @fields.any? { |f| f.sdp_type == field }
@@ -154,47 +153,51 @@ class SDP
     # @param [String,Hash,SDP::Group] group
     # @todo Determine if the Hash interface is needed...
     def add_group(group)
-      if group.is_a? Hash
-        new_group = SDP::Group.new_from_hash(group)
-        check_allowed_group(new_group.class)
-        @groups << new_group
-
-        define_group_accessor(@groups.last)
-        log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
+      new_group = if group.is_a? Hash
+        SDP::Group.new_from_hash(group)
       elsif group.is_a? Symbol
-        new_group = SDP::Group.new_from_type(group)
-        check_allowed_group(new_group.class)
-        @groups << new_group
-        define_group_accessor(@groups.last)
-        log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
+        SDP::Group.new_from_type(group)
       elsif group.kind_of? SDP::Group
-        check_allowed_group(group.class)
-        @groups << group
-
-        define_group_accessor(@groups.last)
-        log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
+        group
       else
         raise SDP::RuntimeError,
           "Can't add a #{field.class} as a group"
       end
 
+      check_allowed_group(new_group.class)
+      @groups << new_group
+      define_group_accessor(@groups.last)
+      log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
+
       @groups
     end
 
+    # Shortcut for checking if this group has another group.  Can check by
+    # passing in an SDP type (Symbol) or an actual SDP::Group object.
+    #
+    # @param [Symbol,SDP::Group] group
+    # @return [Boolean]
     def has_group?(group)
       if group.is_a? Symbol
         @groups.any? { |g| g.sdp_type == group }
-      elsif group.kind_of? SDP::Field
+      elsif group.kind_of? SDP::Group
         @groups.any? { |g| g.class == group.class }
       end
     end
 
+    # Sorts the fields and groups according to the spec and outputs them all
+    # as a String that follows the RFC.
+    #
+    # @return [String]
     def to_s
       super
 
       sdp_sort.map(&:to_s).join
     end
 
+    # Outputs all fields and groups as a Hash.
+    #
+    # @return [Hash]
     def to_hash
       fields_hash = @fields.inject({}) do |result, field|
         result.merge!(field.to_hash)
@@ -211,33 +214,32 @@ class SDP
       fields_hash.merge(groups_hash)
     end
 
+    # Sorts the fields and groups according the the RFC.
+    #
+    # @return [Array]
     def sdp_sort
+      sorted_list = []
+
       if settings.line_order.empty?
         warn "#sdp_sort called on a #{self.class} without an order defined"
-        return
+        return sorted_list
       end
 
-      sorted_list = ::Set.new
-      fields = @fields.dup
-      groups = @groups.dup
+      settings.line_order.each do |sdp_type_name|
+        found_field = false
 
-      until fields.empty? && groups.empty?
-        settings.line_order.each do |sdp_type_name|
-          field = fields.find { |field| field.sdp_type == sdp_type_name }
+        fields(sdp_type_name) do |field|
+          p field.sdp_type
+          sorted_list << field
+          log "Sorted list << Field #{field.sdp_type}"
+          found_field = true
+        end
 
-          if field
-            sorted_list << fields.delete(field)
-            log "Sorted list << Field #{field.sdp_type}"
-          end
+        next if found_field
 
-          next if field
-
-          group = groups.find { |g| g.sdp_type == sdp_type_name }
-
-          if group
-            sorted_list << groups.delete(group)
-            log "Sorted list << Group #{group.sdp_type}"
-          end
+        groups(sdp_type_name) do |group|
+          sorted_list << group
+          log "Sorted list << Group #{group.sdp_type}"
         end
       end
 
@@ -246,43 +248,89 @@ class SDP
       sorted_list
     end
 
+    # Accessor for all groups that belong to this group.  Allows for passing in
+    # a sdp type (Symbol, like :time_description) to find all groups by that
+    # type.  If a block is given, it will yield each of the Group objects found.
+    #
+    # @param [Symbol] type The SDP Group type.
+    # @return [Array<SDP::Group>] The list of groups found (if no block is
+    #   given).
     def groups(type=nil)
-      return @groups unless type
+      list = if type.nil?
+        @groups
+      else
+        @groups.find_all { |group| group.sdp_type == type }
+      end
 
-      @groups.find_all { |group| group.sdp_type == type }
+      if block_given? && !list.empty?
+        list.each { |group| yield group }
+      else
+        list
+      end
     end
 
+    # Accessor for all fields that belong to this group.  Allows for passing in
+    # a sdp type (Symbol, like :session_name) to find all fields by that
+    # type.  If a block is given, it will yield each of the Field objects found.
+    #
+    # @param [Symbol] type The SDP Field type.
+    # @return [Array<SDP::Field>] The list of fields found (if no block is
+    #   given).
     def fields(type=nil)
-      return @fields unless type
+      list = if type.nil?
+        @fields
+      else
+        @fields.find_all { |field| field.sdp_type == type }
+      end
 
-      @fields.find_all { |field| field.sdp_type == type }
-    end
-
-    def added_field_types
-      @fields.map do |field|
-        field.sdp_type
+      if block_given? && !list.empty?
+        list.each { |field| yield field }
+      else
+        list
       end
     end
 
-    def added_group_types
-      @groups.map do |group|
-        group.sdp_type
-      end
-    end
-
+    # Similar to #fields, but recursively gets fields from all child groups and
+    # its children's groups, etc.
+    #
     # @yield [SDP::Field, SDP::Group]
-    def each_field
-      lines = @fields.dup
+    def recursive_fields(type=nil)
+      lines = fields(type)
 
-      lines << @groups.map do |group|
-        group.fields + group.groups
+      @groups.each do |group|
+        lines.concat(group.fields)
+
+        group.recursive_fields do |field|
+          lines << field unless lines.include?(field)
+        end
       end
 
-      lines.flatten.each do |item|
+      lines.each do |item|
         yield item if block_given?
       end
     end
 
+    # List of all types of fields that have been added to the group.
+    #
+    # @return [Array<Symbol>]
+    def added_field_types
+      @fields.map do |field|
+        field.sdp_type
+      end.uniq
+    end
+
+    # List of all types of groups that have been added to the group.
+    #
+    # @return [Array<Symbol>]
+    def added_group_types
+      @groups.map do |group|
+        group.sdp_type
+      end.uniq
+    end
+
+    # Seeds all fields and groups.
+    #
+    # @returns [self]
     def seed
       @fields.each(&:seed)
       @groups.each(&:seed)
@@ -290,28 +338,45 @@ class SDP
       self
     end
 
+    # Gets all errors from all child groups and fields.
+    #
     # @return [Hash]
     def errors
-      errors = {}
-      missing_fields = settings.required_field_types - added_field_types
-      errors[:fields] = missing_fields unless missing_fields.empty?
+      tmp_errors = {}
+      tmp_errors[:missing_fields] = missing_fields unless missing_fields.empty?
+      tmp_errors[:missing_groups] = missing_groups unless missing_groups.empty?
 
-      missing_groups  = settings.required_group_types - added_group_types
-      errors[:groups] = missing_groups unless missing_groups.empty?
+      unless fields_with_missing_values.empty?
+        tmp_errors[:fields_with_missing_values] = fields_with_missing_values
+      end
 
       @groups.each do |group|
         child_group_errors = group.errors
 
         if child_group_errors && !child_group_errors.empty?
-          errors[:groups] ||= []
-          errors[:groups] << { group.sdp_type => child_group_errors }
+          tmp_errors[:child_errors] ||= []
+          tmp_errors[:child_errors] << { group.sdp_type => child_group_errors }
         end
       end
 
-      errors
+      tmp_errors
     end
 
     private
+
+    def missing_fields
+      settings.required_field_types - added_field_types
+    end
+
+    def missing_groups
+      settings.required_group_types - added_group_types
+    end
+
+    def fields_with_missing_values
+      @fields.map do |field|
+        { field.sdp_type => field.errors } unless field.errors.empty?
+      end.compact
+    end
 
     def define_field_accessor(new_field)
       if new_field.settings.allows_multiple?
@@ -350,18 +415,27 @@ class SDP
       end
     end
 
-    def check_allowed_field(field, field_object)
-      unless settings.allowed_field_types.include? field_object.sdp_type
-        message = "#{field_object.class} fields can't be added to #{self.class}s"
+    def check_allowed_field(field, field_instance)
+      unless settings.allowed_field_types.include? field_instance.sdp_type
+        message = "#{field_instance.class} fields can't be added to #{self.class}s"
         message << "\nField object: #{self}\n"
         message << "Field: #{field}"
         raise SDP::RuntimeError, message
       end
 
-      if !field_object.settings.allows_multiple? && has_field?(field_object)
-        message = "#{field_object.class} fields don't allow multiples and "
+      if !field_instance.settings.allows_multiple? && has_field?(field_instance)
+        message = "#{field_instance.class} fields don't allow multiples and "
         message << "one is already defined."
         raise SDP::RuntimeError, message
+      end
+    end
+
+    def update_fields(field_object)
+      if field_object.kind_of? SDP::Field
+        @fields << field_object
+      else
+        raise SDP::RuntimeError,
+          "Can't add a #{field_object.class} object to fields!"
       end
     end
   end

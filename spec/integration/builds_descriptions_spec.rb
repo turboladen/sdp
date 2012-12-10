@@ -3,6 +3,7 @@ require 'sdp/description'
 
 
 describe "Create descriptions" do
+=begin
   let(:session) do
     session = SDP::Description.new
     session.protocol_version = 0
@@ -37,6 +38,7 @@ describe "Create descriptions" do
     session.to_s.should == example_file
     session.should be_valid
   end
+=end
 
   SDP::Logger.log = true
 
