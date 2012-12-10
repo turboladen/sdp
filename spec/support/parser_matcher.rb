@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'sdp'
+require 'sdp/description'
 
 
 RSpec::Matchers.define :parse do |expected|
