@@ -52,7 +52,7 @@ describe "Create descriptions" do
       }.to raise_error SDP::RuntimeError
 
       d.session_section.add_field :attribute
-      d.session_section.attributes.last.attribute = 'tool'
+      d.session_section.attributes.last.type = 'tool'
       d.session_section.attributes.last.value = 'Test Tool v1'
       d.session_section.add_field :attribute
       d.session_section.add_field :attribute

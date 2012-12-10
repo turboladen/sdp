@@ -5,7 +5,7 @@ require_relative '../version'
 class SDP
   module Fields
     class Attribute < SDP::Field
-      field_value :attribute
+      field_value :type
       field_value :value, true
       allow_multiple
       prefix :a
@@ -19,7 +19,7 @@ class SDP
       def to_s
         super
 
-        s = "#{prefix}=#{@attribute}"
+        s = "#{prefix}=#{@type}"
         s << ":#{@value}" if @value
         s << "\r\n"
 
@@ -27,16 +27,16 @@ class SDP
       end
 
       def seed!
-        @attribute = 'tool'
+        @type = 'tool'
         @value = TOOL_NAME
       end
 
       private
 
       def add_from_string(init_data)
-        match = init_data.match(/#{prefix}=(?<attrib>[^:\r\n]+)(:(?<value>[^\r\n]+))?/)
-        @attribute = match[:attrib]
-        @attribute.force_encoding("US-ASCII")
+        match = init_data.match(/#{prefix}=(?<type>[^:\r\n]+)(:(?<value>[^\r\n]+))?/)
+        @type = match[:type]
+        @type.force_encoding("US-ASCII")
 
         if match[:value]
           @value = match[:value]
