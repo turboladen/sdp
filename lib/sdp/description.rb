@@ -41,7 +41,7 @@ class SDP
     end
 
     def seed!
-      add_group(:session_section) unless has_field?(:session_section)
+      add_group(:session_section) unless has_group?(:session_section)
 
       super
     end
