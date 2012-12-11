@@ -125,6 +125,10 @@ class SDP
       end
     end
 
+    def remove_field(&block)
+      @fields.delete_if(&block)
+    end
+
     # Adds a new group of SDP description field and value combo.  The field
     # can be added by passing in a String, a Hash, a Symbol, or the SDP::Field.
     #
@@ -170,6 +174,10 @@ class SDP
       log "Added group type '#{@groups.last.sdp_type}' to #{sdp_type}"
 
       @groups
+    end
+
+    def remove_group(&block)
+      @groups.delete_if(&block)
     end
 
     # Shortcut for checking if this group has another group.  Can check by
