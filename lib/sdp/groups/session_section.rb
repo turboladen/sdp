@@ -44,7 +44,7 @@ class SDP
         :attribute
 
       def seed!
-        [:protocol_version, :origin, :session_name].each do |field|
+        [:protocol_version, :origin, :session_name, :connection_data].each do |field|
           add_field(field) unless has_field?(field)
         end
 
