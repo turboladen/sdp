@@ -1,8 +1,10 @@
-# encoding: utf-8
-require 'erb'
-require File.expand_path(File.dirname(__FILE__) + '/runtime_error')
-require_relative 'session_description'
-require_relative 'media_description'
+require_relative 'field'
+require_relative 'group'
+require_relative 'logger'
+require_relative 'runtime_error'
+
+Dir["#{File.dirname(__FILE__)}/fields/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/groups/*.rb"].each { |f| require f }
 
 class SDP
 
@@ -17,130 +19,104 @@ class SDP
   # After building the description up, call +#to_s+ to render it.  This
   # will render the String with fields in order that they were added
   # to the object, so be sure to add them according to spec!
-  class Description < Hash
+  class Description < Group
+    include LogSwitch::Mixin
 
-    # @param [Hash] session_as_hash Pass this in to use these values instead
-    #   of building your own from scratch.
-    def initialize(session_as_hash=nil)
-      super()
+    allowed_field_types
+    required_field_types
+    allowed_group_types :session_section, :media_description
+    required_group_types :session_section
+    line_order :session_section, :media_description
 
-      if session_as_hash.nil?
-        self[:session_description] = SessionDescription.new
-        self[:media_descriptions] = []
-      else
-        self[:session_description] =
-          SessionDescription.new(session_as_hash[:session_description])
+    def self.parse(text)
+      description = new
 
-        self[:media_descriptions] = session_as_hash[:media_descriptions].map do |md|
-          MediaDescription.new(md[:media_description])
-        end
-      end
-    end
-
-    # @param [SDP::SessionDescription] sd The new SDP::SessionDescription.
-    # @raise [SDP::RuntimeError] If +sd+ is not an SDP::SessionDescription.
-    def session_description=(sd)
-      raise SDP::RuntimeError unless sd.is_a? SDP::SessionDescription
-
-      self[:session_description] = sd
-    end
-
-    # @return [SDP::SessionDescription]
-    def session_description
-      self[:session_description]
-    end
-
-    # @return [Array<SDP::MediaDescription>]
-    def media_descriptions
-      self[:media_descriptions]
-    end
-
-    # Seeds the SessionDescription with some basic data.
-    #
-    # @see SDP::SessionDescription#seed
-    def seed
-      session_description.seed
-
-      self
-    end
-
-    # Turns the current +SDP::Description+ object into the SDP description,
-    # ready to be used.
-    #
-    # @return [String] The SDP description.
-    def to_s
-      session = session_description.to_s
-
-      unless media_descriptions.empty?
-        media_descriptions.each do |media_section|
-          session << media_section.to_s
-        end
+      text.each_line do |line|
+        parse_line(line, description)
       end
 
-      session
+      diff(text, description.to_s)
+
+      description
     end
 
-    # Checks to see if the fields set in the current object will yield an SDP
-    # description that meets the RFC 4566 spec.
-    #
-    # @return [Boolean] true if the object will meet spec; false if not.
-    def valid?
-      errors.empty?
+    def seed!
+      add_group(:session_section) unless has_group?(:session_section)
+
+      super
     end
 
-    # Checks to see if any required fields are not set.
-    #
-    # @return [Array] The list of unset fields that need to be set.
     def errors
-=begin
-      errors = []
-      required_fields.each do |attrib|
-        errors << attrib unless self.send(attrib)
-      end
+      errors = super()
 
-      self.each do |section_type, section_values|
-        section_values.each do |k, v|
-          p k
-          p v
-          p '--'
-          if v.nil? || v.to_s.empty?
-            errors << k
-          end
-        end
-      end
-
-      unless has_session_connection_fields? || has_media_connection_fields?
-        connection_errors = []
-
-        connection_fields.each do |attrib|
-          connection_errors << attrib unless self.send(attrib)
-        end
-
-        if connection_errors.empty?
-          media_sections.each_with_index do |ms, i|
-            connection_fields.each do |attrib|
-              unless ms.has_key?(attrib.to_sym)
-                connection_errors << "media_section[#{i}][#{attrib}]"
-              end
-            end
-          end
-        end
-
-        errors += connection_errors
-      end
-
-      errors
-=end
-      errors = []
-      errors += session_description.errors
-
-      unless media_descriptions.empty?
-        media_descriptions.each do |media_description|
-          errors += media_description
-        end
+      unless has_connection_data?
+        errors[:fields] ||= []
+        errors[:fields] << :connection_data
       end
 
       errors
     end
+
+    private
+
+    def has_connection_data?
+      if self.session_section.has_field?(:connection_data)
+        log "Session description has connection_data field"
+        return true
+      end
+
+      if self.has_group?(:media_description)
+        groups(:media_description).all? do |group|
+          result = group.has_field?(:connection_data)
+          log "Group #{group.sdp_type} has connection data: #{result}"
+          result
+        end
+      else
+        log "Session description nor media descriptions had connection data"
+        false
+      end
+    end
+
+    def self.parse_line(line, description)
+      case line[0]
+      when "v"
+        description.add_group :session_section
+      when "t"
+        description.session_section.add_group :time_description
+        description.session_section.time_descriptions.last.add_field(line)
+
+        return
+      when "r"
+        description.session_section.time_descriptions.last.add_field(line)
+        return
+      when "m"
+        description.add_group :media_description
+      end
+
+      current_group = description.groups.last
+
+      if current_group.nil?
+        raise SDP::ParseError,
+          "SDP text is missing the required field for starting a new section"
+      end
+
+      current_group.add_field(line)
+    end
+
+    def self.diff(one, two)
+      parsed_set = one.to_s.split("\n").to_set
+      original_set = two.split("\n").to_set
+      difference = parsed_set ^ original_set
+
+      unless difference.empty?
+        message = "**********************************************************\n"
+        message << "The parsed description does not match the original.\n"
+        message << "This is probably a parser bug.  Differences in lines:\n"
+        difference.each { |d| message << "#{d}\n" }
+        message << "**********************************************************\n"
+        warn message
+      end
+    end
+
   end
 end

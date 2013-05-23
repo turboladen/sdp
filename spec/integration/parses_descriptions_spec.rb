@@ -1,9 +1,10 @@
 require 'spec_helper'
-require 'sdp/parser'
+require 'sdp/description'
 require 'base64'
 
+
 describe "Parsing and creating descriptions" do
-  subject { SDP::Parser.new }
+  subject { SDP::Description }
 
   context "required fields only" do
     let(:description) { REQUIRED_ONLY }
@@ -15,7 +16,37 @@ describe "Parsing and creating descriptions" do
   end
 
   context "missing required values" do
-    %w[NO_VERSION NO_ORIGIN NO_NAME NO_CONNECT NO_TIMING].each do |missing_line|
+    context "value starts a section" do
+      let(:description) { TestDescriptions::NO_VERSION }
+
+      it "raises a SDP::ParseError" do
+        expect {
+          subject.parse(description)
+        }.to raise_error SDP::ParseError
+      end
+    end
+
+    context "connection fields" do
+      context "not anywhere" do
+        let(:description) { TestDescriptions::NO_CONNECT }
+
+        it "successfully parses but is not valid" do
+          result = subject.should parse(description)
+          result.should_not be_a_valid_description
+        end
+      end
+
+      context "not in session section, but in media section" do
+        let(:description) { TestDescriptions::NO_SESSION_CONNECT_MEDIA_CONNECT }
+
+        it "is valid" do
+          result = subject.should parse(description)
+          result.should be_a_valid_description
+        end
+      end
+    end
+
+    %w[NO_ORIGIN NO_NAME NO_TIMING].each do |missing_line|
       context missing_line.downcase.sub!(/_/, " ") do
         let(:description) { TestDescriptions.const_get(missing_line.to_sym) }
 

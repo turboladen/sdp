@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 require 'sdp/parser'
 require 'base64'
@@ -152,3 +153,4 @@ describe SDP::Parser do
     end
   end
 end
+=end

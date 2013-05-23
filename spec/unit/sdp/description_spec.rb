@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 require 'sdp'
 require 'sdp/description'
@@ -294,3 +295,4 @@ describe SDP::Description do
     end
   end
 end
+=end

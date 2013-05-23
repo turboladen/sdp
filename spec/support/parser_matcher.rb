@@ -1,12 +1,12 @@
 require 'spec_helper'
-require 'sdp'
+require 'sdp/description'
 
 
 RSpec::Matchers.define :parse do |expected|
   match do
     begin
-      result = SDP::Parser.new.parse(expected)
-    rescue Parslet::ParseFailed => ex
+      result = SDP::Description.parse(expected)
+    rescue SDP::ParseError => ex
       puts ex
       raise
     end
@@ -17,12 +17,10 @@ end
 
 RSpec::Matchers.define :be_a_valid_description do |expected|
   match do |actual|
-    descriptions = [SDP::Description, SDP::SessionDescription, SDP::MediaDescription]
-
-    @result = if descriptions.any? { |d| actual.is_a? d }
+    @result = if actual.kind_of? SDP::Group
       actual
     else
-      SDP::Description.new(actual)
+      SDP::Description.parse(actual)
     end
 
     @result.valid?
