@@ -4,8 +4,8 @@ require_relative '../field'
 class SDP
   module Fields
     class Bandwidth < SDP::Field
-      field_value :bandwidth_type
-      field_value :bandwidth
+      field_value :modifier
+      field_value :value
       prefix :b
       allow_multiple
 
@@ -16,15 +16,15 @@ class SDP
       def to_s
         super
 
-        "#{prefix}=#{@bandwidth_type}:#{@bandwidth}\r\n"
+        "#{prefix}=#{@modifier}:#{@value}\r\n"
       end
 
       private
 
       def add_from_string(init_data)
-        match = init_data.match(/#{prefix}=(?<type>\S+):(?<bandwidth>\S+)/)
-        @bandwidth_type = match[:type]
-        @bandwidth = match[:bandwidth]
+        match = init_data.match(/#{prefix}=(?<type>\S+):(?<value>\S+)/)
+        @modifier = match[:type]
+        @value = match[:value]
       rescue NoMethodError
         raise SDP::ParseError, "Error parsing string '#{init_data}'"
       end
