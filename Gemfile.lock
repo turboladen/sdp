@@ -25,7 +25,7 @@ GEM
       multi_json (~> 1.0)
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
-    yard (0.8.3)
+    yard (0.9.25)
 
 PLATFORMS
   java
